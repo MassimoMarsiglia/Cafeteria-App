@@ -1,98 +1,127 @@
 /**
  * React Hooks for Mensa API
  * 
- * Custom hooks to use the Mensa API in React components
+ * Simple and efficient hooks to use the Mensa API in React components
  */
 
 import { useCallback, useEffect, useState } from 'react';
 import { mensaApi } from '../services/mensaApi';
 
-// Hook to get all canteens
+// Simple cache interface
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+// Simple global cache
+const cache = {
+  canteens: null as CacheEntry<any[]> | null,
+  menus: new Map<string, CacheEntry<any[]>>(),
+};
+
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+// Helper function to check if cache is valid
+function isCacheValid(entry: CacheEntry<any> | null): boolean {
+  return entry !== null && Date.now() - entry.timestamp < CACHE_DURATION;
+}
+
+// Hook to get all canteens with simple caching
 export function useCanteens() {
   const [data, setData] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasInitialized, setHasInitialized] = useState(false);
 
   const fetchData = useCallback(async () => {
+    // Check cache first
+    if (isCacheValid(cache.canteens)) {
+      setData(cache.canteens!.data);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
       const result = await mensaApi.getCanteens();
+      cache.canteens = {
+        data: result,
+        timestamp: Date.now()
+      };
       setData(result);
     } catch (err) {
-      console.error('Error fetching canteens:', err);
-      setError(err instanceof Error ? err.message : 'Fehler beim Laden der Mensen');
+      const errorMessage = err instanceof Error ? err.message : 'Fehler beim Laden der Mensen';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Only initialize once with a delay
   useEffect(() => {
-    if (hasInitialized) return;
-    
-    const timer = setTimeout(() => {
-      setHasInitialized(true);
-      fetchData();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [hasInitialized, fetchData]);
+    fetchData();
+  }, [fetchData]);
 
   const refetch = useCallback(() => {
+    cache.canteens = null;
     fetchData();
   }, [fetchData]);
 
   return { data, loading, error, refetch };
 }
 
-// Hook to get today's menu for a specific canteen
+// Hook to get today's menu for a specific canteen with simple caching
 export function useTodaysMenu(canteenId: string | null) {
   const [data, setData] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastCanteenId, setLastCanteenId] = useState<string | null>(null);
 
   const fetchData = useCallback(async (id: string) => {
+    // Check cache first
+    const cacheEntry = cache.menus.get(id);
+    if (cacheEntry && isCacheValid(cacheEntry)) {
+      setData(cacheEntry.data);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
       const result = await mensaApi.getTodaysMenu(id);
+      cache.menus.set(id, {
+        data: result,
+        timestamp: Date.now()
+      });
       setData(result);
-      setLastCanteenId(id);
     } catch (err) {
-      console.error('Error fetching menu:', err);
-      setError(err instanceof Error ? err.message : 'Fehler beim Laden des Menüs');
+      const errorMessage = err instanceof Error ? err.message : 'Fehler beim Laden des Menüs';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Only fetch when canteenId changes and is available
   useEffect(() => {
     if (!canteenId) {
-      setData([]);
+      setData(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    // Validate canteenId format
+    if (typeof canteenId !== 'string' || canteenId.length !== 24) {
+      setError('Ungültige Mensa-ID');
       setLoading(false);
       return;
     }
 
-    // Avoid refetching the same data
-    if (canteenId === lastCanteenId) {
-      return;
-    }
-
-    // Debounce the fetch with a shorter timeout
-    const timer = setTimeout(() => {
-      fetchData(canteenId);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [canteenId, lastCanteenId, fetchData]);
+    fetchData(canteenId);
+  }, [canteenId, fetchData]);
 
   const refetch = useCallback(() => {
     if (canteenId) {
-      setLastCanteenId(null); // Reset to force refetch
+      cache.menus.delete(canteenId);
       fetchData(canteenId);
     }
   }, [canteenId, fetchData]);
@@ -100,7 +129,7 @@ export function useTodaysMenu(canteenId: string | null) {
   return { data, loading, error, refetch };
 }
 
-// Hook for submitting reviews with state management
+// Hook for submitting reviews
 export function useSubmitReview() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -135,3 +164,40 @@ export function useSubmitReview() {
 
   return { submitMealReview, submitCanteenReview, submitting, error };
 }
+
+// Simple cache management functions
+export const cacheManager = {
+  clearAll: () => {
+    cache.canteens = null;
+    cache.menus.clear();
+  },
+  
+  clearCanteens: () => {
+    cache.canteens = null;
+  },
+  
+  clearMenu: (canteenId: string) => {
+    cache.menus.delete(canteenId);
+  },
+  
+  clearAllMenus: () => {
+    cache.menus.clear();
+  },
+  
+  getStats: () => {
+    const now = Date.now();
+    return {
+      canteens: {
+        cached: !!cache.canteens,
+        valid: isCacheValid(cache.canteens),
+        age: cache.canteens ? now - cache.canteens.timestamp : null,
+        itemCount: cache.canteens?.data?.length || 0
+      },
+      menus: {
+        cachedCanteens: cache.menus.size,
+        validCaches: Array.from(cache.menus.values()).filter(entry => isCacheValid(entry)).length,
+        totalItems: Array.from(cache.menus.values()).reduce((sum, entry) => sum + (entry.data?.length || 0), 0)
+      }
+    };
+  }
+};

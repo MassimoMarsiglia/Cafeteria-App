@@ -10,44 +10,32 @@ import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const { data: canteens, loading: canteensLoading, error: canteensError, refetch: refetchCanteens } = useCanteens();
-  // Start with the known HTW ID directly
-  const [htwCanteenId, setHtwCanteenId] = useState<string | null>('655ff175136d3b580c970f80');
-  const { data: todaysMenu, loading: menuLoading, error: menuError, refetch: refetchMenu } = useTodaysMenu(htwCanteenId);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [selectedCanteenId, setSelectedCanteenId] = useState<string | null>(null);
+  
+  const { data: todaysMenu, loading: menuLoading, error: menuError, refetch: refetchMenu } = useTodaysMenu(selectedCanteenId);
 
-  // Simple one-time initialization when canteens are loaded
+  // Set default canteen when canteens are loaded
   useEffect(() => {
-    if (canteens && canteens.length > 0 && !isInitialized) {
-      console.log(`${canteens.length} Mensen gefunden`);
-      
-      // Look for HTW canteen or use the fixed ID
-      const htwCanteen = canteens.find(canteen => 
+    if (canteens && canteens.length > 0 && !selectedCanteenId) {
+      // Look for HTW canteen or use the first one
+      const htwCanteen = canteens.find((canteen: any) => 
         canteen.id === '655ff175136d3b580c970f80' ||
         canteen.name.toLowerCase().includes('htw') ||
         canteen.name.toLowerCase().includes('treskowallee')
       );
       
-      if (htwCanteen && htwCanteen.id !== htwCanteenId) {
-        console.log(`HTW Mensa gefunden: ${htwCanteen.name}`);
-        setHtwCanteenId(htwCanteen.id);
-      } else if (canteens.length > 0 && canteens[0].id !== htwCanteenId) {
-        console.log(`HTW nicht gefunden, verwende erste Mensa: ${canteens[0].name}`);
-        setHtwCanteenId(canteens[0].id);
-      }
-      
-      setIsInitialized(true);
+      setSelectedCanteenId(htwCanteen ? htwCanteen.id : canteens[0].id);
     }
-  }, [canteens, isInitialized, htwCanteenId]);
+  }, [canteens, selectedCanteenId]);
 
   const handleRefresh = () => {
     refetchCanteens();
-    if (htwCanteenId) {
-      refetchMenu();
-    }
+    refetchMenu();
   };
 
   const loading = canteensLoading || menuLoading;
   const error = canteensError || menuError;
+  const selectedCanteen = canteens?.find((c: any) => c.id === selectedCanteenId);
 
   return (
     <ScrollView 
@@ -60,61 +48,45 @@ export default function HomeScreen() {
         <IconSymbol size={32} name="fork.knife" color={Colors[colorScheme ?? 'light'].tint} />
         <ThemedText type="title" style={styles.title}>Heutige Gerichte</ThemedText>
         <ThemedText type="default" style={styles.subtitle}>
-          {canteens && htwCanteenId ? 
-            canteens.find(c => c.id === htwCanteenId)?.name || 'Mensa' : 
-            'HTW Mensa'
-          }
+          {selectedCanteen?.name || 'HTW Mensa'}
         </ThemedText>
       </ThemedView>
 
-      {!isInitialized && (
-        <ThemedView style={styles.centerContainer}>
-          <ThemedText>App wird geladen...</ThemedText>
-        </ThemedView>
-      )}
-
-      {loading && isInitialized && (
+      {loading && (
         <ThemedView style={styles.centerContainer}>
           <ThemedText>Lade Gerichte...</ThemedText>
         </ThemedView>
       )}
 
-      {error && isInitialized && (
+      {error && (
         <ThemedView style={styles.errorContainer}>
           <IconSymbol size={24} name="exclamationmark.triangle" color="#FF6B6B" />
-          <ThemedText style={styles.errorText}>Fehler beim Laden: {error}</ThemedText>
+          <ThemedText style={styles.errorText}>Fehler: {error}</ThemedText>
           <ThemedText style={styles.retryText} onPress={handleRefresh}>
             Tippen zum erneut versuchen
           </ThemedText>
         </ThemedView>
       )}
 
-      {!loading && !error && isInitialized && (!todaysMenu || todaysMenu.length === 0) && (
+      {!loading && !error && (!todaysMenu || todaysMenu.length === 0) && (
         <ThemedView style={styles.centerContainer}>
           <IconSymbol size={32} name="tray" color={Colors[colorScheme ?? 'light'].text} />
           <ThemedText style={styles.emptyText}>Heute sind keine Gerichte verfügbar</ThemedText>
-          <ThemedText style={styles.retryText} onPress={handleRefresh}>
-            Tippen zum aktualisieren
-          </ThemedText>
         </ThemedView>
       )}
 
-      {!loading && !error && isInitialized && todaysMenu && todaysMenu.length > 0 && (
+      {!loading && !error && todaysMenu && todaysMenu.length > 0 && (
         <ThemedView style={styles.menuContainer}>
-          {todaysMenu.map((menu, menuIndex) => (
-            <ThemedView key={`menu-${menu.id || menuIndex}`} style={styles.menuSection}>
+          {todaysMenu.map((menu: any, menuIndex: number) => (
+            <ThemedView key={menu.id || menuIndex} style={styles.menuSection}>
               {menu.meals && menu.meals.map((meal: any, mealIndex: number) => (
-                <ThemedView key={`meal-${meal.id || mealIndex}`} style={[styles.mealCard, { borderColor: Colors[colorScheme ?? 'light'].tint + '30' }]}>
+                <ThemedView key={meal.id || mealIndex} style={[styles.mealCard, { borderColor: Colors[colorScheme ?? 'light'].tint + '30' }]}>
                   <ThemedView style={styles.mealHeader}>
                     <ThemedText type="subtitle" style={styles.mealName}>{meal.name}</ThemedText>
-                    {meal.price && (
-                      <ThemedView style={styles.priceContainer}>
-                        {meal.price.students && (
-                          <ThemedText style={[styles.price, { color: Colors[colorScheme ?? 'light'].tint }]}>
-                            {meal.price.students.toFixed(2)}€
-                          </ThemedText>
-                        )}
-                      </ThemedView>
+                    {meal.price?.students && (
+                      <ThemedText style={[styles.price, { color: Colors[colorScheme ?? 'light'].tint }]}>
+                        {meal.price.students.toFixed(2)}€
+                      </ThemedText>
                     )}
                   </ThemedView>
                   
@@ -133,7 +105,7 @@ export default function HomeScreen() {
                   {meal.badges && meal.badges.length > 0 && (
                     <ThemedView style={styles.badgesContainer}>
                       {meal.badges.map((badge: any, badgeIndex: number) => (
-                        <ThemedView key={`badge-${meal.id}-${badge.id || badgeIndex}`} style={[styles.badge, { backgroundColor: '#4CAF50' + '20' }]}>
+                        <ThemedView key={badgeIndex} style={[styles.badge, { backgroundColor: '#4CAF50' + '20' }]}>
                           <ThemedText style={[styles.badgeText, { color: '#4CAF50' }]}>
                             {badge.name}
                           </ThemedText>
@@ -145,16 +117,6 @@ export default function HomeScreen() {
               ))}
             </ThemedView>
           ))}
-        </ThemedView>
-      )}
-
-      {!loading && !error && (!todaysMenu || todaysMenu.length === 0) && (
-        <ThemedView style={styles.centerContainer}>
-          <IconSymbol size={48} name="fork.knife.circle" color={Colors[colorScheme ?? 'light'].tint + '50'} />
-          <ThemedText style={styles.noDataText}>Heute keine Gerichte verfügbar</ThemedText>
-          <ThemedText style={styles.noDataSubtext}>
-            Versuche es später erneut oder prüfe andere Mensen
-          </ThemedText>
         </ThemedView>
       )}
     </ScrollView>
@@ -219,9 +181,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 12,
   },
-  priceContainer: {
-    alignItems: 'flex-end',
-  },
   price: {
     fontWeight: 'bold',
     fontSize: 16,
@@ -256,17 +215,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  noDataText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 16,
-  },
-  noDataSubtext: {
-    textAlign: 'center',
-    opacity: 0.7,
-    marginTop: 8,
-  },
   emptyText: {
     fontSize: 16,
     textAlign: 'center',
@@ -279,12 +227,5 @@ const styles = StyleSheet.create({
     marginTop: 12,
     opacity: 0.6,
     textDecorationLine: 'underline',
-  },
-  debugText: {
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 8,
-    opacity: 0.7,
-    fontFamily: 'monospace',
   },
 });

@@ -14,7 +14,7 @@ export default function AllCafeteriasScreen() {
     refetch();
   };
 
-  const handleCanteenPress = (canteenId: number) => {
+  const handleCanteenPress = (canteenId: string) => {
     // TODO: Navigate to canteen detail page
     console.log('Pressed canteen:', canteenId);
   };
