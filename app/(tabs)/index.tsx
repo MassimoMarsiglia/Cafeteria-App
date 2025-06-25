@@ -1,3 +1,4 @@
+import { AppHeader } from '@/components/AppHeader';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -7,7 +8,7 @@ import { cacheManager, useCanteens, useTodaysMenu } from '@/hooks/useMensaApi';
 import { useTabFocusEffect } from '@/hooks/useTabFocusEffect';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -138,26 +139,24 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView 
-      style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
-      }
-    >
-      <ThemedView style={styles.header}>
-        <IconSymbol size={32} name="fork.knife" color={Colors[colorScheme ?? 'light'].tint} />
-        <ThemedText type="title" style={styles.title}>Heutige Gerichte</ThemedText>
-        <ThemedText type="default" style={styles.subtitle}>
-          {selectedCanteen?.name || 'HTW Mensa'}
-        </ThemedText>
+    <View style={{ flex: 1, backgroundColor: Colors[colorScheme ?? 'light'].background }}>
+      <AppHeader 
+        title="Heutige Gerichte" 
+        subtitle={selectedCanteen?.name || 'HTW Mensa'}
+      />
+      <ScrollView 
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+        }
+      >
         {/* Debug info */}
         {__DEV__ && (
-          <ThemedText style={{ fontSize: 10, opacity: 0.7, marginTop: 4 }}>
+          <ThemedText style={{ fontSize: 10, opacity: 0.7, margin: 16, textAlign: 'center' }}>
             Debug: Canteen ID: {selectedCanteenId || 'none'} | Menu items: {todaysMenu?.length || 0} | Total meals: {allMeals.length}
           </ThemedText>
         )}
-      </ThemedView>
 
       {loading && (
         <ThemedView style={styles.centerContainer}>
@@ -199,7 +198,8 @@ export default function HomeScreen() {
           />
         </ThemedView>
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -207,20 +207,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 24,
-    paddingTop: 20,
-  },
-  title: {
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    textAlign: 'center',
-    opacity: 0.7,
-    marginTop: 4,
   },
   centerContainer: {
     alignItems: 'center',

@@ -1,3 +1,4 @@
+import { AppHeader } from '@/components/AppHeader';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -5,7 +6,7 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { cacheManager, useCanteens } from '@/hooks/useMensaApi';
 import { useTabFocusEffect } from '@/hooks/useTabFocusEffect';
-import { RefreshControl, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function AllCafeteriasScreen() {
   const colorScheme = useColorScheme();
@@ -27,20 +28,18 @@ export default function AllCafeteriasScreen() {
   };
 
   return (
-    <ScrollView 
-      style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
-      }
-    >
-      <ThemedView style={styles.header}>
-        <IconSymbol size={32} name="building.2" color={Colors[colorScheme ?? 'light'].tint} />
-        <ThemedText type="title" style={styles.title}>Alle Cafeterias</ThemedText>
-        <ThemedText type="default" style={styles.subtitle}>
-          {canteens ? `${canteens.length} Mensen gefunden` : 'Lade Mensen...'}
-        </ThemedText>
-      </ThemedView>
+    <View style={{ flex: 1, backgroundColor: Colors[colorScheme ?? 'light'].background }}>
+      <AppHeader 
+        title="Alle Cafeterias" 
+        subtitle={canteens ? `${canteens.length} Mensen gefunden` : 'Lade Mensen...'}
+      />
+      <ScrollView 
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+        }
+      >
 
       {loading && (
         <ThemedView style={styles.centerContainer}>
@@ -133,7 +132,8 @@ export default function AllCafeteriasScreen() {
           </ThemedText>
         </ThemedView>
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -141,20 +141,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 24,
-    paddingTop: 20,
-  },
-  title: {
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    textAlign: 'center',
-    opacity: 0.7,
-    marginTop: 4,
   },
   centerContainer: {
     alignItems: 'center',
