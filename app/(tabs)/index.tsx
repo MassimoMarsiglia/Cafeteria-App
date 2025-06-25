@@ -131,6 +131,7 @@ export default function HomeScreen() {
   return (
     <ScrollView 
       style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}
+      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
       }
@@ -179,36 +180,15 @@ export default function HomeScreen() {
           <FlatList
             data={allMeals}
             renderItem={renderMealCard}
+            keyExtractor={(item) => item.ID}
             numColumns={2}
             scrollEnabled={false}
             columnWrapperStyle={styles.row}
             contentContainerStyle={styles.gridContent}
             showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
           />
         </ThemedView>
-      )}
-
-      {/* Grid layout for meals */}
-      {!loading && !error && todaysMenu && todaysMenu.length > 0 && (
-        <FlatList
-          data={allMeals}
-          renderItem={renderMealCard}
-          keyExtractor={(item) => item.ID}
-          numColumns={2}
-          columnWrapperStyle={styles.row}
-          contentContainerStyle={styles.gridContainer}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          ListEmptyComponent={() => (
-            <ThemedView style={styles.emptyGridContainer}>
-              <IconSymbol size={32} name="tray" color={Colors[colorScheme ?? 'light'].text} />
-              <ThemedText style={styles.emptyText}>Heute sind keine Gerichte verfügbar</ThemedText>
-            </ThemedView>
-          )}
-          refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
-          }
-        />
       )}
     </ScrollView>
   );

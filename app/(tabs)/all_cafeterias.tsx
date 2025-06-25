@@ -29,6 +29,7 @@ export default function AllCafeteriasScreen() {
   return (
     <ScrollView 
       style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}
+      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
       }
