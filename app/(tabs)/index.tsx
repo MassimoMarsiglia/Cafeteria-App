@@ -3,7 +3,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useCanteens, useTodaysMenu } from '@/hooks/useMensaApi';
+import { cacheManager, useCanteens, useTodaysMenu } from '@/hooks/useMensaApi';
+import { useTabFocusEffect } from '@/hooks/useTabFocusEffect';
 import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
@@ -14,28 +15,65 @@ export default function HomeScreen() {
   
   const { data: todaysMenu, loading: menuLoading, error: menuError, refetch: refetchMenu } = useTodaysMenu(selectedCanteenId);
 
-  // Set default canteen when canteens are loaded
+  // Add focus effect to refresh data when tab gains focus, but clean cache when losing focus
+  useTabFocusEffect(() => {
+    // Clean up cache when leaving tab to prevent stale data on return
+    console.log('Tab losing focus, cleaning cache...');
+    cacheManager.cleanup();
+  });
+
+  // Set default canteen and trigger immediate menu loading
   useEffect(() => {
     if (canteens && canteens.length > 0 && !selectedCanteenId) {
-      // Look for HTW canteen or use the first one
-      const htwCanteen = canteens.find((canteen: any) => 
-        canteen.id === '655ff175136d3b580c970f80' ||
+      // Debug: Log all canteens to see what's available
+      console.log('Available canteens:', canteens.map(c => ({ ID: c.ID, name: c.name })));
+      
+      // Look for HTW canteen with multiple search criteria
+      const htwCanteen = canteens.find((canteen) => 
+        canteen.ID === '655ff175136d3b580c970f80' ||
         canteen.name.toLowerCase().includes('htw') ||
-        canteen.name.toLowerCase().includes('treskowallee')
+        canteen.name.toLowerCase().includes('treskowallee') ||
+        canteen.name.toLowerCase().includes('technik') ||
+        canteen.name.toLowerCase().includes('wirtschaft')
       );
       
-      setSelectedCanteenId(htwCanteen ? htwCanteen.id : canteens[0].id);
+      console.log('HTW Canteen found:', htwCanteen ? { ID: htwCanteen.ID, name: htwCanteen.name } : 'Not found');
+      const targetCanteenId = htwCanteen ? htwCanteen.ID : canteens[0]?.ID;
+      console.log('Selected canteen ID will be:', targetCanteenId);
+      
+      // Set the canteen ID immediately to trigger menu loading
+      if (targetCanteenId) {
+        setSelectedCanteenId(targetCanteenId);
+      }
     }
-  }, [canteens, selectedCanteenId]);
-
-  const handleRefresh = () => {
-    refetchCanteens();
-    refetchMenu();
-  };
+  }, [canteens]); // Remove selectedCanteenId from dependencies to prevent loops
 
   const loading = canteensLoading || menuLoading;
   const error = canteensError || menuError;
-  const selectedCanteen = canteens?.find((c: any) => c.id === selectedCanteenId);
+  const selectedCanteen = canteens?.find((c) => c.ID === selectedCanteenId);
+
+  const handleRefresh = () => {
+    console.log('Manual refresh triggered');
+    // Clear cache to force fresh data
+    cacheManager.clearAll();
+    refetchCanteens();
+    if (selectedCanteenId) {
+      refetchMenu();
+    }
+  };
+
+  // Auto-retry mechanism with improved timing for faster response
+  useEffect(() => {
+    if (!loading && !error && canteens && canteens.length > 0 && selectedCanteenId && (!todaysMenu || todaysMenu.length === 0)) {
+      console.log('Auto-retry: No menu data found, retrying...');
+      const retryTimeout = setTimeout(() => {
+        console.log('Executing auto-retry...');
+        refetchMenu();
+      }, 500); // Further reduced to 500ms for immediate response
+      
+      return () => clearTimeout(retryTimeout);
+    }
+  }, [loading, error, canteens, selectedCanteenId, todaysMenu, refetchMenu]);
 
   return (
     <ScrollView 
@@ -50,11 +88,19 @@ export default function HomeScreen() {
         <ThemedText type="default" style={styles.subtitle}>
           {selectedCanteen?.name || 'HTW Mensa'}
         </ThemedText>
+        {/* Debug info */}
+        {__DEV__ && (
+          <ThemedText style={{ fontSize: 10, opacity: 0.7, marginTop: 4 }}>
+            Debug: Canteen ID: {selectedCanteenId || 'none'} | Menu items: {todaysMenu?.length || 0}
+          </ThemedText>
+        )}
       </ThemedView>
 
       {loading && (
         <ThemedView style={styles.centerContainer}>
           <ThemedText>Lade Gerichte...</ThemedText>
+          {canteensLoading && <ThemedText style={{fontSize: 12, opacity: 0.7, marginTop: 4}}>Lade Mensen...</ThemedText>}
+          {menuLoading && <ThemedText style={{fontSize: 12, opacity: 0.7, marginTop: 4}}>Lade Menü...</ThemedText>}
         </ThemedView>
       )}
 
@@ -77,22 +123,19 @@ export default function HomeScreen() {
 
       {!loading && !error && todaysMenu && todaysMenu.length > 0 && (
         <ThemedView style={styles.menuContainer}>
-          {todaysMenu.map((menu: any, menuIndex: number) => (
-            <ThemedView key={menu.id || menuIndex} style={styles.menuSection}>
-              {menu.meals && menu.meals.map((meal: any, mealIndex: number) => (
-                <ThemedView key={meal.id || mealIndex} style={[styles.mealCard, { borderColor: Colors[colorScheme ?? 'light'].tint + '30' }]}>
+          {todaysMenu.map((menu, menuIndex: number) => (
+            <ThemedView key={menu.date || menuIndex} style={styles.menuSection}>
+              {menu.meals && menu.meals.length > 0 && menu.meals.map((meal, mealIndex: number) => (
+                <ThemedView key={meal.ID || mealIndex} style={[styles.mealCard, { borderColor: Colors[colorScheme ?? 'light'].tint + '30' }]}>
                   <ThemedView style={styles.mealHeader}>
-                    <ThemedText type="subtitle" style={styles.mealName}>{meal.name}</ThemedText>
-                    {meal.price?.students && (
+                    <ThemedText type="subtitle" style={styles.mealName}>{meal.name || 'Unbekanntes Gericht'}</ThemedText>
+                    {meal.prices && meal.prices.length > 0 && (
                       <ThemedText style={[styles.price, { color: Colors[colorScheme ?? 'light'].tint }]}>
-                        {meal.price.students.toFixed(2)}€
+                        {meal.prices.find(p => p.priceType === 'Student')?.price.toFixed(2) || 
+                         meal.prices[0]?.price?.toFixed(2) || '0.00'}€
                       </ThemedText>
                     )}
                   </ThemedView>
-                  
-                  {meal.description && (
-                    <ThemedText style={styles.description}>{meal.description}</ThemedText>
-                  )}
                   
                   {meal.category && (
                     <ThemedView style={[styles.categoryBadge, { backgroundColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
@@ -104,10 +147,10 @@ export default function HomeScreen() {
                   
                   {meal.badges && meal.badges.length > 0 && (
                     <ThemedView style={styles.badgesContainer}>
-                      {meal.badges.map((badge: any, badgeIndex: number) => (
-                        <ThemedView key={badgeIndex} style={[styles.badge, { backgroundColor: '#4CAF50' + '20' }]}>
+                      {meal.badges.map((badge, badgeIndex: number) => (
+                        <ThemedView key={badge.ID || badgeIndex} style={[styles.badge, { backgroundColor: '#4CAF50' + '20' }]}>
                           <ThemedText style={[styles.badgeText, { color: '#4CAF50' }]}>
-                            {badge.name}
+                            {badge.name || 'Badge'}
                           </ThemedText>
                         </ThemedView>
                       ))}

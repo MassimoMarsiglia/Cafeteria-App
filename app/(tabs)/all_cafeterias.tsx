@@ -3,12 +3,19 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useCanteens } from '@/hooks/useMensaApi';
+import { cacheManager, useCanteens } from '@/hooks/useMensaApi';
+import { useTabFocusEffect } from '@/hooks/useTabFocusEffect';
 import { RefreshControl, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function AllCafeteriasScreen() {
   const colorScheme = useColorScheme();
   const { data: canteens, loading, error, refetch } = useCanteens();
+
+  // Add focus effect to clean up cache when tab loses focus
+  useTabFocusEffect(() => {
+    // Clean up any stale cache entries when switching away from this tab
+    cacheManager.cleanup();
+  });
 
   const handleRefresh = () => {
     refetch();
@@ -16,7 +23,7 @@ export default function AllCafeteriasScreen() {
 
   const handleCanteenPress = (canteenId: string) => {
     // TODO: Navigate to canteen detail page
-    console.log('Pressed canteen:', canteenId);
+    // Removed console.log to prevent memory issues
   };
 
   return (
@@ -51,9 +58,9 @@ export default function AllCafeteriasScreen() {
         <ThemedView style={styles.canteensContainer}>
           {canteens.map((canteen) => (
             <TouchableOpacity
-              key={canteen.id}
+              key={canteen.ID}
               style={[styles.canteenCard, { borderColor: Colors[colorScheme ?? 'light'].tint + '30' }]}
-              onPress={() => handleCanteenPress(canteen.id)}
+              onPress={() => handleCanteenPress(canteen.ID)}
               activeOpacity={0.7}
             >
               <ThemedView style={styles.canteenHeader}>
@@ -68,14 +75,11 @@ export default function AllCafeteriasScreen() {
                   </ThemedText>
                   {canteen.address && (
                     <ThemedText style={styles.canteenAddress}>
-                      {typeof canteen.address === 'string' 
-                        ? canteen.address 
-                        : [
-                            canteen.address.street,
-                            [canteen.address.zipcode, canteen.address.city].filter(Boolean).join(' '),
-                            canteen.address.district
-                          ].filter(Boolean).join(', ')
-                      }
+                      {[
+                        canteen.address.street,
+                        [canteen.address.zipcode, canteen.address.city].filter(Boolean).join(' '),
+                        canteen.address.district
+                      ].filter(Boolean).join(', ') || 'Adresse nicht verfügbar'}
                     </ThemedText>
                   )}
                 </ThemedView>
@@ -86,27 +90,29 @@ export default function AllCafeteriasScreen() {
                 />
               </ThemedView>
 
-              {canteen.location && (
+              {canteen.address?.geolocation && (
                 <ThemedView style={styles.locationContainer}>
                   <IconSymbol size={14} name="location" color={Colors[colorScheme ?? 'light'].text + '70'} />
                   <ThemedText style={styles.locationText}>
-                    {canteen.location.latitude.toFixed(4)}, {canteen.location.longitude.toFixed(4)}
+                    {canteen.address.geolocation.latitude.toFixed(4)}, {canteen.address.geolocation.longitude.toFixed(4)}
                   </ThemedText>
                 </ThemedView>
               )}
 
-              {canteen.openingHours && canteen.openingHours.length > 0 && (
+              {canteen.businessDays && canteen.businessDays.length > 0 && (
                 <ThemedView style={styles.hoursContainer}>
                   <IconSymbol size={14} name="clock" color={Colors[colorScheme ?? 'light'].text + '70'} />
                   <ThemedView style={styles.hoursInfo}>
-                    {canteen.openingHours.slice(0, 2).map((hours: any, index: number) => (
+                    {canteen.businessDays.slice(0, 2).map((businessDay, index: number) => (
                       <ThemedText key={index} style={styles.hoursText}>
-                        {hours.day}: {hours.closed ? 'Geschlossen' : `${hours.openTime} - ${hours.closeTime}`}
+                        {businessDay.day}: {businessDay.businesshours && businessDay.businesshours.length > 0 
+                          ? `${businessDay.businesshours[0].openAt} - ${businessDay.businesshours[0].closeAt}` 
+                          : 'Geschlossen'}
                       </ThemedText>
                     ))}
-                    {canteen.openingHours.length > 2 && (
+                    {canteen.businessDays.length > 2 && (
                       <ThemedText style={[styles.hoursText, { opacity: 0.7 }]}>
-                        +{canteen.openingHours.length - 2} weitere Tage
+                        +{canteen.businessDays.length - 2} weitere Tage
                       </ThemedText>
                     )}
                   </ThemedView>

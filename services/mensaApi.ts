@@ -1,142 +1,196 @@
 /**
  * Mensa API Service
  * Wrapper for mensa.gregorflachs.de API
+ * Based on official Swagger documentation
  */
 
 const BASE_URL = 'https://mensa.gregorflachs.de/api/v1';
 
-// Types for API responses
+// Types for API responses based on Swagger documentation
 export interface Canteen {
-  id: string; // MongoDB ObjectID string
+  ID: string; // MongoDB ObjectID string
   name: string;
-  address?: string | {
+  address?: {
     street?: string;
     city?: string;
     zipcode?: string;
     district?: string;
-    geoLocation?: {
+    geolocation?: {
       latitude: number;
       longitude: number;
     };
   };
-  location?: {
-    latitude: number;
-    longitude: number;
+  contactInfo?: {
+    phone?: string;
+    email?: string;
   };
-  openingHours?: OpeningHours[];
+  businessDays?: BusinessDay[];
+  url?: string;
+  lastUpdated?: string;
+  canteenReviews?: CanteenReview[];
+}
+
+export interface BusinessDay {
+  day: string;
+  businesshours: BusinessHour[];
+}
+
+export interface BusinessHour {
+  openAt: string;
+  closeAt: string;
+  businessHourType: string;
 }
 
 export interface Meal {
-  id: string; // MongoDB ObjectID string
+  ID: string; // MongoDB ObjectID string
   name: string;
-  description?: string;
-  price?: {
-    students?: number;
-    employees?: number;
-    guests?: number;
-  };
+  prices?: Price[];
   category?: string;
-  badges?: Badge[];
   additives?: Additive[];
+  badges?: Badge[];
+  waterBilanz?: number;
+  co2Bilanz?: number;
+  mealReviews?: MealReview[];
+}
+
+export interface Price {
+  price: number;
+  priceType: string; // Student, Angestellte, Gäste
 }
 
 export interface Menu {
-  id: string; // MongoDB ObjectID string
+  date: string; // YYYY-MM-DD format
   canteenId: string; // MongoDB ObjectID string
-  date: string;
   meals: Meal[];
 }
 
 export interface Badge {
-  id: string;
+  ID: string;
   name: string;
   description?: string;
 }
 
 export interface Additive {
-  id: string;
-  name: string;
-  description?: string;
+  ID: string;
+  text: string;
+  referenceid: string;
 }
 
 export interface MealReview {
-  id: string;
-  mealId: string;
-  rating: number;
+  ID: string;
+  mealID: string;
+  userID: string;
+  averageRating?: number;
+  detailRatings: DetailRating[];
   comment?: string;
-  createdAt: string;
+  lastUpdated?: string;
+  createdAt?: string;
 }
 
 export interface CanteenReview {
-  id: string;
-  canteenId: string;
-  rating: number;
+  ID: string;
+  canteenID: string;
+  userID: string;
+  averageRating?: number;
+  detailRatings: DetailRating[];
   comment?: string;
-  createdAt: string;
+  lastUpdated?: string;
+  createdAt?: string;
 }
 
-export interface OpeningHours {
-  day: string;
-  openTime?: string;
-  closeTime?: string;
-  closed?: boolean;
+export interface DetailRating {
+  rating: number;
+  name: string;
 }
 
-export interface ApiError {
-  message: string;
-  statusCode: number;
-}
-
-// Filter interfaces
+// Filter interfaces based on Swagger documentation
 export interface CanteenFilter {
+  ID?: string;
+  loadingtype?: 'lazy' | 'complete';
   name?: string;
-  location?: string;
+  zipcode?: string;
+  district?: string;
+  clickandcollect?: boolean;
+  time?: string;
+  businesshourtype?: 'Mensa' | 'Mittagstisch' | 'Backshop';
+  open?: string; // Format: WOCHENTAG;UHRZEIT;ÖFFNUNGSZEITENTYP
 }
 
 export interface MealFilter {
-  name?: string;
-  canteenId?: string;
+  ID?: string;
+  loadingtype?: 'lazy' | 'complete' | 'mealonly';
   category?: string;
+  name?: string;
+  price?: string; // Format: PREIS;PREISTYP
+  pricegreater?: string;
+  pricelower?: string;
+  additive?: string; // ; separated list
+  badges?: string; // ; separated list
 }
 
 export interface MenuFilter {
+  loadingtype?: 'lazy' | 'complete';
   canteenId?: string;
+  startdate?: string; // YYYY-MM-DD
+  enddate?: string; // YYYY-MM-DD
 }
 
-export interface ReviewFilter {
+export interface MealReviewFilter {
+  ID?: string;
   mealId?: string;
-  canteenId?: string;
-  rating?: number;
-  dateFrom?: string;
-  dateTo?: string;
+  usderId?: string; // Note: API has typo "usderId" instead of "userId"
+  ratingequal?: string;
+  ratinggreaterthan?: string;
+  ratinglowerthan?: string;
+  sortby?: 'rating' | 'date' | 'rating:desc' | 'date:desc' | 'rating:asc' | 'date:asc';
+  limit?: string; // Max 100
+  page?: string;
 }
 
+export interface CanteenReviewFilter {
+  ID?: string;
+  canteenId?: string;
+  usderId?: string; // Note: API has typo "usderId" instead of "userId"
+  ratingequal?: string;
+  ratinggreaterthan?: string;
+  ratinglowerthan?: string;
+  sortby?: 'rating' | 'date' | 'rating:desc' | 'date:desc' | 'rating:asc' | 'date:asc';
+  limit?: string; // Max 100
+  page?: string;
+}
+
+// Request types for creating reviews
+export interface CreateMealReviewRequest {
+  mealID: string;
+  userID: string;
+  detailRatings: DetailRating[];
+  comment?: string;
+}
+
+export interface CreateCanteenReviewRequest {
+  canteenID: string;
+  userID: string;
+  detailRatings: DetailRating[];
+  comment?: string;
+}
+
+/**
+ * Mensa API Service Class
+ * Handles all communication with the mensa.gregorflachs.de API
+ */
 class MensaApiService {
-  private apiKey: string | null = null;
   private static instance: MensaApiService | null = null;
+  private apiKey: string | null = null;
 
   constructor(apiKey?: string) {
-    // Prevent multiple instances in development with hot reload
-    if (MensaApiService.instance) {
-      return MensaApiService.instance;
-    }
-
-    // Try to get API key from environment variable first, then fallback to parameter
-    // Use a safer way to access environment variables that works in all environments
+    // Try to get API key from various sources
     let envApiKey: string | undefined;
+    
     try {
-      // Check multiple ways to access environment variables
-      if (typeof process !== 'undefined' && process.env) {
-        envApiKey = process.env.EXPO_PUBLIC_MENSA_API_KEY;
-      }
+      // Try process.env first
+      envApiKey = process.env.EXPO_PUBLIC_MENSA_API_KEY;
       
-      // For web, also check window.__expo_env or global variables
-      if (!envApiKey && typeof window !== 'undefined') {
-        const windowWithEnv = window as any;
-        envApiKey = windowWithEnv.__expo_env?.EXPO_PUBLIC_MENSA_API_KEY;
-      }
-      
-      // For Expo web, also check the global expo object
+      // Fallback for development - this key is from the user's request
       if (!envApiKey && typeof global !== 'undefined') {
         const globalWithExpo = global as any;
         envApiKey = globalWithExpo.__DEV__ ? 
@@ -145,21 +199,15 @@ class MensaApiService {
       }
       
     } catch (e) {
-      console.log('Error accessing environment variables:', e);
+      // Silent error handling to prevent console spam
       envApiKey = undefined;
     }
     
     this.apiKey = apiKey || envApiKey || null;
     
-    // Only log on first initialization
-    if (!MensaApiService.instance) {
-      console.log('MensaApiService initialized');
-      console.log('API Key from env:', !!envApiKey);
-      console.log('API Key final:', !!this.apiKey);
-      
-      if (!this.apiKey) {
-        console.warn('No Mensa API key found. Please set EXPO_PUBLIC_MENSA_API_KEY in your .env file or call setApiKey()');
-      }
+    // Only log on first initialization and only in development
+    if (!MensaApiService.instance && __DEV__ && this.apiKey) {
+      console.log('MensaApiService initialized with API key');
     }
 
     MensaApiService.instance = this;
@@ -191,29 +239,19 @@ class MensaApiService {
       headers['X-API-KEY'] = this.apiKey;
     }
 
-    // Create a promise that rejects after a timeout
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => {
-        reject(new Error('Request timeout - API nicht erreichbar'));
-      }, 15000); // Longer timeout for web (15 seconds)
-    });
-
     try {
-      // Create abort controller for timeout handling (cross-platform compatible)
+      // Use only AbortController for timeout handling (increase timeout significantly for slow connections)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // Increased to 30 seconds for very slow connections
 
-      const fetchPromise = fetch(url, {
+      const response = await fetch(url, {
         ...options,
         headers,
         signal: controller.signal,
-        // Add mode for CORS handling in web
         mode: 'cors',
-        // Add credentials handling
         credentials: 'omit',
       });
 
-      const response = await Promise.race([fetchPromise, timeoutPromise]);
       clearTimeout(timeoutId);
 
       // Handle rate limiting
@@ -230,39 +268,136 @@ class MensaApiService {
       return await response.json();
     } catch (error) {
       if (error instanceof Error) {
+        // Handle AbortError specifically to prevent memory leaks
+        if (error.name === 'AbortError') {
+          throw new Error('Request timeout - please try again');
+        }
+        
         // Provide user-friendly error messages
-        if (error.name === 'AbortError' || error.message.includes('timeout')) {
-          throw new Error('Verbindung zur Mensa-API fehlgeschlagen - bitte später versuchen');
+        if (error.message.includes('fetch')) {
+          throw new Error('Network error - check your internet connection');
         }
-        if (error.message.includes('Failed to fetch') || error.message.includes('Network request failed')) {
-          throw new Error('Keine Internetverbindung oder API nicht verfügbar');
-        }
+        
         throw error;
       }
-      throw new Error('Unbekannter Fehler beim Laden der Daten');
+      
+      throw new Error('Unknown error occurred');
     }
   }
 
   /**
    * Build query string from filter object
    */
-  private buildQueryString(params: Record<string, any>): string {
+  private buildQueryString(filter: Record<string, any>): string {
     const searchParams = new URLSearchParams();
     
-    Object.entries(params).forEach(([key, value]) => {
+    Object.entries(filter).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         searchParams.append(key, String(value));
       }
     });
-
+    
     const queryString = searchParams.toString();
     return queryString ? `?${queryString}` : '';
   }
 
+  /**
+   * Normalize API response fields in case they differ from Swagger documentation
+   */
+  private normalizeCanteen(raw: any): Canteen {
+    // Handle different possible ID field names
+    const id = raw.ID || raw.id || raw._id;
+    
+    if (!id) {
+      console.warn('Canteen without ID field:', raw);
+    }
+    
+    return {
+      ...raw,
+      ID: id, // Ensure ID field is always present
+    } as Canteen;
+  }
+
+  private normalizeMenu(raw: any): Menu {
+    // Handle different possible canteenId field names
+    const canteenId = raw.canteenId || raw.canteenID || raw.canteen_id;
+    
+    if (!canteenId) {
+      console.warn('Menu without canteenId field:', raw);
+    }
+    
+    return {
+      ...raw,
+      canteenId: canteenId, // Ensure canteenId field is always present
+    } as Menu;
+  }
+
   // Canteen endpoints
   async getCanteens(filter?: CanteenFilter): Promise<Canteen[]> {
-    const queryString = filter ? this.buildQueryString(filter) : '';
-    return this.makeRequest<Canteen[]>(`/canteen${queryString}`);
+    // Always include clickandcollect=false unless explicitly set
+    const defaultFilter = { clickandcollect: false, ...(filter || {}) };
+    const queryString = this.buildQueryString(defaultFilter);
+    console.log('API Request: /canteen' + queryString);
+    
+    const result = await this.makeRequest<any[]>(`/canteen${queryString}`);
+    
+    // Debug: Log the raw API response to understand the structure
+    console.log('Raw API response for canteens:', JSON.stringify(result.slice(0, 2), null, 2));
+    
+    // Check what fields are actually available in the API response
+    if (result && result.length > 0) {
+      const firstItem = result[0];
+      console.log('Available fields in first canteen:', Object.keys(firstItem));
+      console.log('First canteen sample:', {
+        ID: firstItem.ID,
+        id: firstItem.id,
+        _id: firstItem._id,
+        name: firstItem.name
+      });
+    }
+    
+    return result.map(item => this.normalizeCanteen(item));
+  }
+
+  /**
+   * Enhanced canteen loading with fallback strategies
+   */
+  async getCanteensWithFallback(): Promise<Canteen[]> {
+    try {
+      // Try primary approach with clickandcollect filter
+      console.log('Attempting primary canteen fetch...');
+      const primaryResult = await this.getCanteens({ clickandcollect: false });
+      
+      if (primaryResult && primaryResult.length > 0) {
+        console.log('Primary canteen fetch successful:', primaryResult.length, 'canteens');
+        return primaryResult;
+      }
+      
+      // Fallback 1: Try without any filters
+      console.log('Primary fetch failed, trying without filters...');
+      const fallbackResult = await this.getCanteens();
+      
+      if (fallbackResult && fallbackResult.length > 0) {
+        console.log('Fallback canteen fetch successful:', fallbackResult.length, 'canteens');
+        return fallbackResult;
+      }
+      
+      // Fallback 2: Try minimal request
+      console.log('Standard fetch failed, trying basic request...');
+      const basicResult = await this.makeRequest<any[]>('/canteen');
+      
+      if (basicResult && Array.isArray(basicResult)) {
+        console.log('Basic canteen fetch successful:', basicResult.length, 'canteens');
+        return basicResult.map(item => this.normalizeCanteen(item));
+      }
+      
+      console.warn('All canteen fetch strategies failed');
+      return [];
+      
+    } catch (error) {
+      console.error('Error in getCanteensWithFallback:', error);
+      return [];
+    }
   }
 
   // Meal endpoints
@@ -271,10 +406,20 @@ class MensaApiService {
     return this.makeRequest<Meal[]>(`/meal${queryString}`);
   }
 
-  // Menu endpoints
+  // Menu endpoints (note: API uses "/menue" not "/menu")
   async getMenus(filter?: MenuFilter): Promise<Menu[]> {
     const queryString = filter ? this.buildQueryString(filter) : '';
-    return this.makeRequest<Menu[]>(`/menue${queryString}`);
+    console.log('Menu API request: /menue' + queryString);
+    
+    const result = await this.makeRequest<any[]>(`/menue${queryString}`);
+    
+    // Debug: Log raw response
+    console.log('Raw Menu API response length:', result?.length || 0);
+    if (result && result.length > 0) {
+      console.log('First menu raw structure:', Object.keys(result[0]));
+    }
+    
+    return result.map(item => this.normalizeMenu(item));
   }
 
   // Badge endpoints
@@ -287,14 +432,26 @@ class MensaApiService {
     return this.makeRequest<Additive[]>('/additive');
   }
 
-  // Meal Review endpoints
-  async getMealReviews(filter?: ReviewFilter): Promise<MealReview[]> {
+  // Review endpoints
+  async getMealReviews(filter?: MealReviewFilter): Promise<MealReview[]> {
     const queryString = filter ? this.buildQueryString(filter) : '';
     return this.makeRequest<MealReview[]>(`/mealreview${queryString}`);
   }
 
-  async createMealReview(review: Omit<MealReview, 'id' | 'createdAt'>): Promise<MealReview> {
+  async getCanteenReviews(filter?: CanteenReviewFilter): Promise<CanteenReview[]> {
+    const queryString = filter ? this.buildQueryString(filter) : '';
+    return this.makeRequest<CanteenReview[]>(`/canteenreview${queryString}`);
+  }
+
+  async createMealReview(review: CreateMealReviewRequest): Promise<MealReview> {
     return this.makeRequest<MealReview>('/mealreview', {
+      method: 'POST',
+      body: JSON.stringify(review),
+    });
+  }
+
+  async createCanteenReview(review: CreateCanteenReviewRequest): Promise<CanteenReview> {
+    return this.makeRequest<CanteenReview>('/canteenreview', {
       method: 'POST',
       body: JSON.stringify(review),
     });
@@ -307,25 +464,6 @@ class MensaApiService {
     });
   }
 
-  async deleteMealReview(id: string): Promise<void> {
-    return this.makeRequest<void>(`/mealreview/${id}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Canteen Review endpoints
-  async getCanteenReviews(filter?: ReviewFilter): Promise<CanteenReview[]> {
-    const queryString = filter ? this.buildQueryString(filter) : '';
-    return this.makeRequest<CanteenReview[]>(`/canteenreview${queryString}`);
-  }
-
-  async createCanteenReview(review: Omit<CanteenReview, 'id' | 'createdAt'>): Promise<CanteenReview> {
-    return this.makeRequest<CanteenReview>('/canteenreview', {
-      method: 'POST',
-      body: JSON.stringify(review),
-    });
-  }
-
   async updateCanteenReview(review: CanteenReview): Promise<CanteenReview> {
     return this.makeRequest<CanteenReview>('/canteenreview', {
       method: 'PUT',
@@ -333,19 +471,21 @@ class MensaApiService {
     });
   }
 
-  async deleteCanteenReview(id: string): Promise<void> {
-    return this.makeRequest<void>(`/canteenreview/${id}`, {
+  async deleteMealReview(reviewId: string): Promise<MealReview> {
+    return this.makeRequest<MealReview>(`/mealreview/${reviewId}`, {
       method: 'DELETE',
     });
   }
 
-  // Test method to check API availability
+  async deleteCanteenReview(reviewId: string): Promise<CanteenReview> {
+    return this.makeRequest<CanteenReview>(`/canteenreview/${reviewId}`, {
+      method: 'DELETE',
+    });
+  }
+
   async testConnection(): Promise<boolean> {
     try {
-      console.log('Testing API connection...');
-      console.log('API Key available:', !!this.apiKey);
-      console.log('API Key length:', this.apiKey ? this.apiKey.length : 0);
-      
+      // Use the correct endpoint from Swagger documentation
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
@@ -353,16 +493,13 @@ class MensaApiService {
       // Add API key if available
       if (this.apiKey) {
         headers['X-API-KEY'] = this.apiKey;
-        console.log('API Key set in headers');
-      } else {
-        console.log('No API Key available');
       }
       
-      // Try a simple GET request with short timeout
+      // Try a simple GET request with longer timeout for stability
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // Increased timeout
       
-      const response = await fetch(`${BASE_URL}/canteen`, {
+      const response = await fetch(`${BASE_URL}/canteen?clickandcollect=false`, {
         method: 'GET',
         headers,
         signal: controller.signal,
@@ -372,49 +509,59 @@ class MensaApiService {
       
       clearTimeout(timeoutId);
       
-      console.log('API Response status:', response.status);
-      console.log('API Response headers:', Object.fromEntries(response.headers.entries()));
+      // Only log in development mode
+      if (__DEV__) {
+        console.log('API Response status:', response.status);
+      }
       
       if (response.status === 401) {
-        console.log('API requires authentication but key might be invalid');
         return false;
       }
       
       return response.ok;
     } catch (error) {
-      console.log('API connection test failed:', error);
+      if (__DEV__) {
+        console.log('API connection test failed:', error);
+      }
       return false;
     }
   }
 
-  // Utility methods
+  // Utility methods for the app
   async getTodaysMenu(canteenId: string): Promise<Menu[]> {
     try {
-      // First try to get menus directly for the canteen
-      const menus = await this.getMenus({ canteenId });
+      // Get today's date in YYYY-MM-DD format
+      const today = new Date().toISOString().split('T')[0];
       
-      if (menus && menus.length > 0) {
-        return menus;
+      console.log('getTodaysMenu called with:', { canteenId, today });
+      
+      // Use the menue endpoint with canteenId filter
+      const result = await this.getMenus({
+        canteenId: canteenId,
+        startdate: today,
+        enddate: today,
+        loadingtype: 'complete'
+      });
+
+      console.log('Menu API result:', result);
+      console.log('Menu API result type:', typeof result, 'length:', Array.isArray(result) ? result.length : 'not array');
+      
+      // Debug: Check structure of menu items
+      if (result && Array.isArray(result) && result.length > 0) {
+        console.log('First menu item keys:', Object.keys(result[0]));
+        console.log('First menu item sample:', {
+          date: result[0].date,
+          canteenId: result[0].canteenId,
+          meals: Array.isArray(result[0].meals) ? result[0].meals.length : 'not array'
+        });
       }
       
-      // Fallback: try to get meals and wrap them in a menu structure
-      const meals = await this.getMeals({ canteenId });
-      
-      if (meals && meals.length > 0) {
-        // Create a mock menu structure with today's date
-        const today = new Date().toISOString().split('T')[0];
-        return [{
-          id: `temp_${Date.now()}`, // Generate a temporary string ID
-          canteenId: canteenId,
-          date: today,
-          meals: meals
-        }];
-      }
-      
-      // Return empty array if no data found
-      return [];
+      // Return the menu data directly
+      return result;
     } catch (error) {
-      console.error('Error in getTodaysMenu:', error);
+      if (__DEV__) {
+        console.error('Error in getTodaysMenu:', error);
+      }
       // Return empty array instead of throwing to prevent app crash
       return [];
     }
@@ -422,11 +569,11 @@ class MensaApiService {
 
   async getCanteenWithTodaysMenu(canteenId: string): Promise<{ canteen: Canteen; menu: Menu[] }> {
     const [canteens, menu] = await Promise.all([
-      this.getCanteens(),
+      this.getCanteens({ ID: canteenId }),
       this.getTodaysMenu(canteenId)
     ]);
     
-    const canteen = canteens.find(c => c.id === canteenId);
+    const canteen = canteens.find(c => c.ID === canteenId);
     if (!canteen) {
       throw new Error(`Canteen with ID ${canteenId} not found`);
     }
@@ -435,15 +582,8 @@ class MensaApiService {
   }
 }
 
-// Export singleton instance - use getInstance to ensure single instance
-let mensaApiInstance: MensaApiService | null = null;
+// Create and export a singleton instance
+export const mensaApi = new MensaApiService();
 
-export const mensaApi = (() => {
-  if (!mensaApiInstance) {
-    mensaApiInstance = new MensaApiService();
-  }
-  return mensaApiInstance;
-})();
-
-// Export class for custom instances
-export default MensaApiService;
+// Export default instance
+export default mensaApi;
