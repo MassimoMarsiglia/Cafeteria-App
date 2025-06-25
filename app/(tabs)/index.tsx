@@ -6,7 +6,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { cacheManager, useCanteens, useTodaysMenu } from '@/hooks/useMensaApi';
 import { useTabFocusEffect } from '@/hooks/useTabFocusEffect';
 import { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -75,6 +75,59 @@ export default function HomeScreen() {
     }
   }, [loading, error, canteens, selectedCanteenId, todaysMenu, refetchMenu]);
 
+  // Flatten all meals from all menus for grid display
+  const allMeals = todaysMenu?.flatMap(menu => menu.meals || []) || [];
+
+  // Get screen width for responsive layout
+  const screenWidth = Dimensions.get('window').width;
+  const cardWidth = (screenWidth - 48) / 2; // 16px padding on each side + 16px gap between cards
+
+  // Render individual meal card
+  const renderMealCard = ({ item: meal, index }: { item: any, index: number }) => (
+    <ThemedView key={meal.ID || index} style={[styles.mealCard, { 
+      borderColor: Colors[colorScheme ?? 'light'].tint + '30',
+      width: cardWidth
+    }]}>
+      <ThemedView style={styles.mealHeader}>
+        <ThemedText type="subtitle" style={styles.mealName} numberOfLines={2}>
+          {meal.name || 'Unbekanntes Gericht'}
+        </ThemedText>
+      </ThemedView>
+      
+      {meal.prices && meal.prices.length > 0 && (
+        <ThemedText style={[styles.price, { color: Colors[colorScheme ?? 'light'].tint }]}>
+          {meal.prices.find((p: any) => p.priceType === 'Student')?.price.toFixed(2) || 
+           meal.prices[0]?.price?.toFixed(2) || '0.00'}€
+        </ThemedText>
+      )}
+      
+      {meal.category && (
+        <ThemedView style={[styles.categoryBadge, { backgroundColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
+          <ThemedText style={[styles.categoryText, { color: Colors[colorScheme ?? 'light'].tint }]}>
+            {meal.category}
+          </ThemedText>
+        </ThemedView>
+      )}
+      
+      {meal.badges && meal.badges.length > 0 && (
+        <ThemedView style={styles.badgesContainer}>
+          {meal.badges.slice(0, 2).map((badge: any, badgeIndex: number) => (
+            <ThemedView key={badge.ID || badgeIndex} style={[styles.badge, { backgroundColor: '#4CAF50' + '20' }]}>
+              <ThemedText style={[styles.badgeText, { color: '#4CAF50' }]} numberOfLines={1}>
+                {badge.name || 'Badge'}
+              </ThemedText>
+            </ThemedView>
+          ))}
+          {meal.badges.length > 2 && (
+            <ThemedText style={[styles.badgeText, { color: Colors[colorScheme ?? 'light'].text, opacity: 0.6 }]}>
+              +{meal.badges.length - 2}
+            </ThemedText>
+          )}
+        </ThemedView>
+      )}
+    </ThemedView>
+  );
+
   return (
     <ScrollView 
       style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}
@@ -91,7 +144,7 @@ export default function HomeScreen() {
         {/* Debug info */}
         {__DEV__ && (
           <ThemedText style={{ fontSize: 10, opacity: 0.7, marginTop: 4 }}>
-            Debug: Canteen ID: {selectedCanteenId || 'none'} | Menu items: {todaysMenu?.length || 0}
+            Debug: Canteen ID: {selectedCanteenId || 'none'} | Menu items: {todaysMenu?.length || 0} | Total meals: {allMeals.length}
           </ThemedText>
         )}
       </ThemedView>
@@ -114,53 +167,48 @@ export default function HomeScreen() {
         </ThemedView>
       )}
 
-      {!loading && !error && (!todaysMenu || todaysMenu.length === 0) && (
+      {!loading && !error && (!allMeals || allMeals.length === 0) && (
         <ThemedView style={styles.centerContainer}>
           <IconSymbol size={32} name="tray" color={Colors[colorScheme ?? 'light'].text} />
           <ThemedText style={styles.emptyText}>Heute sind keine Gerichte verfügbar</ThemedText>
         </ThemedView>
       )}
 
-      {!loading && !error && todaysMenu && todaysMenu.length > 0 && (
-        <ThemedView style={styles.menuContainer}>
-          {todaysMenu.map((menu, menuIndex: number) => (
-            <ThemedView key={menu.date || menuIndex} style={styles.menuSection}>
-              {menu.meals && menu.meals.length > 0 && menu.meals.map((meal, mealIndex: number) => (
-                <ThemedView key={meal.ID || mealIndex} style={[styles.mealCard, { borderColor: Colors[colorScheme ?? 'light'].tint + '30' }]}>
-                  <ThemedView style={styles.mealHeader}>
-                    <ThemedText type="subtitle" style={styles.mealName}>{meal.name || 'Unbekanntes Gericht'}</ThemedText>
-                    {meal.prices && meal.prices.length > 0 && (
-                      <ThemedText style={[styles.price, { color: Colors[colorScheme ?? 'light'].tint }]}>
-                        {meal.prices.find(p => p.priceType === 'Student')?.price.toFixed(2) || 
-                         meal.prices[0]?.price?.toFixed(2) || '0.00'}€
-                      </ThemedText>
-                    )}
-                  </ThemedView>
-                  
-                  {meal.category && (
-                    <ThemedView style={[styles.categoryBadge, { backgroundColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-                      <ThemedText style={[styles.categoryText, { color: Colors[colorScheme ?? 'light'].tint }]}>
-                        {meal.category}
-                      </ThemedText>
-                    </ThemedView>
-                  )}
-                  
-                  {meal.badges && meal.badges.length > 0 && (
-                    <ThemedView style={styles.badgesContainer}>
-                      {meal.badges.map((badge, badgeIndex: number) => (
-                        <ThemedView key={badge.ID || badgeIndex} style={[styles.badge, { backgroundColor: '#4CAF50' + '20' }]}>
-                          <ThemedText style={[styles.badgeText, { color: '#4CAF50' }]}>
-                            {badge.name || 'Badge'}
-                          </ThemedText>
-                        </ThemedView>
-                      ))}
-                    </ThemedView>
-                  )}
-                </ThemedView>
-              ))}
-            </ThemedView>
-          ))}
+      {!loading && !error && allMeals && allMeals.length > 0 && (
+        <ThemedView style={styles.gridContainer}>
+          <FlatList
+            data={allMeals}
+            renderItem={renderMealCard}
+            numColumns={2}
+            scrollEnabled={false}
+            columnWrapperStyle={styles.row}
+            contentContainerStyle={styles.gridContent}
+            showsVerticalScrollIndicator={false}
+          />
         </ThemedView>
+      )}
+
+      {/* Grid layout for meals */}
+      {!loading && !error && todaysMenu && todaysMenu.length > 0 && (
+        <FlatList
+          data={allMeals}
+          renderItem={renderMealCard}
+          keyExtractor={(item) => item.ID}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={styles.gridContainer}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <ThemedView style={styles.emptyGridContainer}>
+              <IconSymbol size={32} name="tray" color={Colors[colorScheme ?? 'light'].text} />
+              <ThemedText style={styles.emptyText}>Heute sind keine Gerichte verfügbar</ThemedText>
+            </ThemedView>
+          )}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+          }
+        />
       )}
     </ScrollView>
   );
@@ -209,24 +257,25 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   mealCard: {
-    padding: 16,
+    padding: 12,
     borderRadius: 12,
     borderWidth: 1,
     marginBottom: 8,
+    minHeight: 140,
+    justifyContent: 'space-between',
   },
   mealHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: 8,
   },
   mealName: {
-    flex: 1,
-    marginRight: 12,
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 18,
   },
   price: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 14,
+    marginBottom: 6,
   },
   description: {
     opacity: 0.8,
@@ -247,15 +296,16 @@ const styles = StyleSheet.create({
   badgesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: 4,
+    marginTop: 6,
   },
   badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
   badgeText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '500',
   },
   emptyText: {
@@ -270,5 +320,21 @@ const styles = StyleSheet.create({
     marginTop: 12,
     opacity: 0.6,
     textDecorationLine: 'underline',
+  },
+  // Grid layout styles
+  gridContainer: {
+    paddingBottom: 32,
+  },
+  gridContent: {
+    paddingHorizontal: 8,
+  },
+  row: {
+    justifyContent: 'space-between',
+    gap: 16,
+  },
+  emptyGridContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
   },
 });
