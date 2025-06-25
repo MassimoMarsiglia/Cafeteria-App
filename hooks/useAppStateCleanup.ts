@@ -7,21 +7,21 @@ import { cacheManager } from './useMensaApi';
  * This helps prevent memory leaks during app state changes
  */
 export function useAppStateCleanup() {
-    useEffect(() => {
-        const handleAppStateChange = (nextAppState: string) => {
-            if (nextAppState === 'background' || nextAppState === 'inactive') {
-                // Clean up cache when app goes to background
-                cacheManager.cleanup();
-            }
-        };
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        // Clean up cache when app goes to background
+        cacheManager.cleanup();
+      }
+    };
 
-        const subscription = AppState.addEventListener(
-            'change',
-            handleAppStateChange,
-        );
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange,
+    );
 
-        return () => {
-            subscription?.remove();
-        };
-    }, []);
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
 }
