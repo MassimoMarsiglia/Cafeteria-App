@@ -4,7 +4,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { usePathname } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { useState } from 'react';
 import { StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -24,6 +24,10 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
 
   const handleMenuClose = () => {
     setMenuVisible(false);
+  };
+
+  const handleProfilePress = () => {
+    router.push('/profile');
   };
 
   return (
@@ -58,8 +62,18 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
           )}
         </ThemedView>
 
-        {/* Placeholder for right side (future features like notifications) */}
-        <ThemedView style={styles.rightPlaceholder} />
+        {/* Profile button on the right */}
+        <TouchableOpacity 
+          onPress={handleProfilePress} 
+          style={styles.profileButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <IconSymbol 
+            size={24} 
+            name="person.circle" 
+            color={Colors[colorScheme ?? 'light'].text} 
+          />
+        </TouchableOpacity>
       </ThemedView>
 
       <BurgerMenu 
@@ -114,5 +128,11 @@ const styles = StyleSheet.create({
   rightPlaceholder: {
     width: 40, // Same width as menu button for balance
     height: 40,
+  },
+  profileButton: {
+    padding: 8,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
