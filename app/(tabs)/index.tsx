@@ -5,8 +5,9 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { cacheManager, useCanteens, useTodaysMenu } from '@/hooks/useMensaApi';
 import { useTabFocusEffect } from '@/hooks/useTabFocusEffect';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -84,10 +85,15 @@ export default function HomeScreen() {
 
   // Render individual meal card
   const renderMealCard = ({ item: meal, index }: { item: any, index: number }) => (
-    <ThemedView key={meal.ID || index} style={[styles.mealCard, { 
-      borderColor: Colors[colorScheme ?? 'light'].tint + '30',
-      width: cardWidth
-    }]}>
+    <TouchableOpacity 
+      key={meal.ID || index} 
+      style={[styles.mealCard, { 
+        borderColor: Colors[colorScheme ?? 'light'].tint + '30',
+        width: cardWidth
+      }]}
+      onPress={() => handleMealPress(meal)}
+      activeOpacity={0.7}
+    >
       <ThemedView style={styles.mealHeader}>
         <ThemedText type="subtitle" style={styles.mealName} numberOfLines={2}>
           {meal.name || 'Unbekanntes Gericht'}
@@ -109,24 +115,27 @@ export default function HomeScreen() {
         </ThemedView>
       )}
       
-      {meal.badges && meal.badges.length > 0 && (
-        <ThemedView style={styles.badgesContainer}>
-          {meal.badges.slice(0, 2).map((badge: any, badgeIndex: number) => (
-            <ThemedView key={badge.ID || badgeIndex} style={[styles.badge, { backgroundColor: '#4CAF50' + '20' }]}>
-              <ThemedText style={[styles.badgeText, { color: '#4CAF50' }]} numberOfLines={1}>
-                {badge.name || 'Badge'}
-              </ThemedText>
-            </ThemedView>
-          ))}
-          {meal.badges.length > 2 && (
-            <ThemedText style={[styles.badgeText, { color: Colors[colorScheme ?? 'light'].text, opacity: 0.6 }]}>
-              +{meal.badges.length - 2}
-            </ThemedText>
-          )}
-        </ThemedView>
-      )}
-    </ThemedView>
+      {/* Visual indicator that this is clickable */}
+      <ThemedView style={styles.clickIndicator}>
+        <IconSymbol size={16} name="chevron.right" color={Colors[colorScheme ?? 'light'].text} style={{ opacity: 0.5 }} />
+      </ThemedView>
+    </TouchableOpacity>
   );
+
+  // Handle meal card press
+  const handleMealPress = (meal: any) => {
+    try {
+      // Navigate to meal detail screen with meal data
+      router.push({
+        pathname: '/meal-detail',
+        params: {
+          mealData: JSON.stringify(meal)
+        }
+      });
+    } catch (error) {
+      console.error('Error navigating to meal detail:', error);
+    }
+  };
 
   return (
     <ScrollView 
@@ -241,8 +250,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     marginBottom: 8,
-    minHeight: 140,
+    minHeight: 120, // Reduced from 140 since no badges
     justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   mealHeader: {
     marginBottom: 8,
@@ -273,20 +290,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  badgesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4,
-    marginTop: 6,
-  },
-  badge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '500',
+  clickIndicator: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
   },
   emptyText: {
     fontSize: 16,
