@@ -9,130 +9,134 @@ import { useState } from 'react';
 import { StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface AppHeaderProps {
-  title: string;
-  subtitle?: string;
+    title: string;
+    subtitle?: string;
 }
 
 export function AppHeader({ title, subtitle }: AppHeaderProps) {
-  const colorScheme = useColorScheme();
-  const pathname = usePathname();
-  const [menuVisible, setMenuVisible] = useState(false);
+    const colorScheme = useColorScheme();
+    const pathname = usePathname();
+    const [menuVisible, setMenuVisible] = useState(false);
 
-  const handleMenuPress = () => {
-    setMenuVisible(true);
-  };
+    const handleMenuPress = () => {
+        setMenuVisible(true);
+    };
 
-  const handleMenuClose = () => {
-    setMenuVisible(false);
-  };
+    const handleMenuClose = () => {
+        setMenuVisible(false);
+    };
 
-  const handleProfilePress = () => {
-    router.push('/profile');
-  };
+    const handleProfilePress = () => {
+        router.push('/profile');
+    };
 
-  return (
-    <>
-      <ThemedView style={[
-        styles.header, 
-        { 
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
-          borderBottomColor: Colors[colorScheme ?? 'light'].tint + '20'
-        }
-      ]}>
-        <TouchableOpacity 
-          onPress={handleMenuPress} 
-          style={styles.menuButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <IconSymbol 
-            size={24} 
-            name="line.3.horizontal" 
-            color={Colors[colorScheme ?? 'light'].text} 
-          />
-        </TouchableOpacity>
+    return (
+        <>
+            <ThemedView
+                style={[
+                    styles.header,
+                    {
+                        backgroundColor:
+                            Colors[colorScheme ?? 'light'].background,
+                        borderBottomColor:
+                            Colors[colorScheme ?? 'light'].tint + '20',
+                    },
+                ]}
+            >
+                <TouchableOpacity
+                    onPress={handleMenuPress}
+                    style={styles.menuButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                    <IconSymbol
+                        size={24}
+                        name="line.3.horizontal"
+                        color={Colors[colorScheme ?? 'light'].text}
+                    />
+                </TouchableOpacity>
 
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title" style={styles.headerTitle}>
-            {title}
-          </ThemedText>
-          {subtitle && (
-            <ThemedText style={styles.headerSubtitle}>
-              {subtitle}
-            </ThemedText>
-          )}
-        </ThemedView>
+                <ThemedView style={styles.titleContainer}>
+                    <ThemedText type="title" style={styles.headerTitle}>
+                        {title}
+                    </ThemedText>
+                    {subtitle && (
+                        <ThemedText style={styles.headerSubtitle}>
+                            {subtitle}
+                        </ThemedText>
+                    )}
+                </ThemedView>
 
-        {/* Profile button on the right */}
-        <TouchableOpacity 
-          onPress={handleProfilePress} 
-          style={styles.profileButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <IconSymbol 
-            size={24} 
-            name="person.circle" 
-            color={Colors[colorScheme ?? 'light'].text} 
-          />
-        </TouchableOpacity>
-      </ThemedView>
+                {/* Profile button on the right */}
+                <TouchableOpacity
+                    onPress={handleProfilePress}
+                    style={styles.profileButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                    <IconSymbol
+                        size={24}
+                        name="person.circle"
+                        color={Colors[colorScheme ?? 'light'].text}
+                    />
+                </TouchableOpacity>
+            </ThemedView>
 
-      <BurgerMenu 
-        visible={menuVisible}
-        onClose={handleMenuClose}
-        currentRoute={pathname}
-      />
-    </>
-  );
+            <BurgerMenu
+                visible={menuVisible}
+                onClose={handleMenuClose}
+                currentRoute={pathname}
+            />
+        </>
+    );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: (StatusBar.currentHeight || 0) + 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingTop: (StatusBar.currentHeight || 0) + 16,
+        paddingBottom: 16,
+        borderBottomWidth: 1,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  menuButton: {
-    padding: 8,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: 'center',
-    marginHorizontal: 16,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    opacity: 0.7,
-    textAlign: 'center',
-    marginTop: 2,
-  },
-  rightPlaceholder: {
-    width: 40, // Same width as menu button for balance
-    height: 40,
-  },
-  profileButton: {
-    padding: 8,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    menuButton: {
+        padding: 8,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    titleContainer: {
+        flex: 1,
+        alignItems: 'center',
+        marginHorizontal: 16,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    headerSubtitle: {
+        fontSize: 14,
+        opacity: 0.7,
+        textAlign: 'center',
+        marginTop: 2,
+    },
+    rightPlaceholder: {
+        width: 40, // Same width as menu button for balance
+        height: 40,
+    },
+    profileButton: {
+        padding: 8,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });

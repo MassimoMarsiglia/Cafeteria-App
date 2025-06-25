@@ -1,0 +1,7 @@
+# .prettierignore
+node_modules
+android
+ios
+build
+
+*/ui/*

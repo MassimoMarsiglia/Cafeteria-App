@@ -1,6 +1,9 @@
 # Projektarbeit 2025 Mensa App
+
 ## GRUPPE 03
+
 ### Gruppenmitglieder:
+
 - Thi Thanh Hang Truong - 589108
 - Massimo Diego Marsiglia - 589958
 - Christian Raisch - 589530
@@ -10,15 +13,15 @@
 
 1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
 2. Start the app
 
-   ```bash
-   npx expo start
-   ```
+    ```bash
+    npx expo start
+    ```
 
 In the output, you'll find options to open the app in a
 
