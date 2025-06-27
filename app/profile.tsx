@@ -5,25 +5,30 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { 
-  ScrollView, 
-  StyleSheet, 
-  TouchableOpacity, 
-  View, 
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
   Alert,
-  Switch
+  Switch,
 } from 'react-native';
 
 export default function ProfileScreen() {
   const colorScheme = useColorScheme();
-  const [darkModeEnabled, setDarkModeEnabled] = useState(colorScheme === 'dark');
+  const [darkModeEnabled, setDarkModeEnabled] = useState(
+    colorScheme === 'dark',
+  );
 
   const handleBack = () => {
     router.back();
   };
 
   const handleEditProfile = () => {
-    Alert.alert('Profil bearbeiten', 'Diese Funktion ist noch nicht verfügbar.');
+    Alert.alert(
+      'Profil bearbeiten',
+      'Diese Funktion ist noch nicht verfügbar.',
+    );
   };
 
   const handleFavorites = () => {
@@ -35,17 +40,17 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Abmelden',
-      'Möchten Sie sich wirklich abmelden?',
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        { text: 'Abmelden', style: 'destructive', onPress: () => {
+    Alert.alert('Abmelden', 'Möchten Sie sich wirklich abmelden?', [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Abmelden',
+        style: 'destructive',
+        onPress: () => {
           // TODO: Implement logout logic
           Alert.alert('Abgemeldet', 'Sie wurden erfolgreich abgemeldet.');
-        }}
-      ]
-    );
+        },
+      },
+    ]);
   };
 
   const profileItems = [
@@ -54,94 +59,179 @@ export default function ProfileScreen() {
       title: 'Profil bearbeiten',
       icon: 'person.circle',
       action: handleEditProfile,
-      showArrow: true
+      showArrow: true,
     },
     {
       id: 'favorites',
       title: 'Meine Favoriten',
       icon: 'heart',
       action: handleFavorites,
-      showArrow: true
+      showArrow: true,
     },
     {
       id: 'settings',
       title: 'Einstellungen',
       icon: 'gearshape',
       action: handleSettings,
-      showArrow: true
-    }
+      showArrow: true,
+    },
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors[colorScheme ?? 'light'].background }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: Colors[colorScheme ?? 'light'].background,
+      }}
+    >
       {/* Header mit Back Button */}
-      <ThemedView style={[styles.header, { borderBottomColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
+      <ThemedView
+        style={[
+          styles.header,
+          {
+            borderBottomColor: Colors[colorScheme ?? 'light'].tint + '20',
+          },
+        ]}
+      >
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <IconSymbol size={24} name="chevron.left" color={Colors[colorScheme ?? 'light'].text} />
+          <IconSymbol
+            size={24}
+            name="chevron.left"
+            color={Colors[colorScheme ?? 'light'].text}
+          />
         </TouchableOpacity>
-        <ThemedText type="title" style={styles.headerTitle}>Profil</ThemedText>
+        <ThemedText type="title" style={styles.headerTitle}>
+          Profil
+        </ThemedText>
         <View style={styles.headerRight} />
       </ThemedView>
 
-      <ScrollView 
-        style={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Profil Header */}
         <ThemedView style={styles.profileHeader}>
-          <ThemedView style={[styles.avatarContainer, { backgroundColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-            <IconSymbol 
-              size={60} 
-              name="person.fill" 
-              color={Colors[colorScheme ?? 'light'].tint} 
+          <ThemedView
+            style={[
+              styles.avatarContainer,
+              {
+                backgroundColor: Colors[colorScheme ?? 'light'].tint + '20',
+              },
+            ]}
+          >
+            <IconSymbol
+              size={60}
+              name="person.fill"
+              color={Colors[colorScheme ?? 'light'].tint}
             />
           </ThemedView>
-          <ThemedText type="title" style={styles.userName}>Max Mustermann</ThemedText>
-          <ThemedText style={styles.userEmail}>max.mustermann@htw-berlin.de</ThemedText>
+          <ThemedText type="title" style={styles.userName}>
+            Max Mustermann
+          </ThemedText>
+          <ThemedText style={styles.userEmail}>
+            max.mustermann@htw-berlin.de
+          </ThemedText>
           <ThemedText style={styles.userRole}>Student • HTW Berlin</ThemedText>
         </ThemedView>
 
         {/* Statistiken */}
-        <ThemedView style={[styles.section, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>Statistiken</ThemedText>
+        <ThemedView
+          style={[
+            styles.section,
+            {
+              borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+            },
+          ]}
+        >
+          <ThemedText type="subtitle" style={styles.sectionTitle}>
+            Statistiken
+          </ThemedText>
           <ThemedView style={styles.statsContainer}>
             <ThemedView style={styles.statItem}>
-              <ThemedText style={[styles.statNumber, { color: Colors[colorScheme ?? 'light'].tint }]}>23</ThemedText>
-              <ThemedText style={styles.statLabel}>Besuche diese Woche</ThemedText>
+              <ThemedText
+                style={[
+                  styles.statNumber,
+                  {
+                    color: Colors[colorScheme ?? 'light'].tint,
+                  },
+                ]}
+              >
+                23
+              </ThemedText>
+              <ThemedText style={styles.statLabel}>
+                Besuche diese Woche
+              </ThemedText>
             </ThemedView>
             <ThemedView style={styles.statItem}>
-              <ThemedText style={[styles.statNumber, { color: Colors[colorScheme ?? 'light'].tint }]}>12</ThemedText>
-              <ThemedText style={styles.statLabel}>Lieblingsgerichte</ThemedText>
+              <ThemedText
+                style={[
+                  styles.statNumber,
+                  {
+                    color: Colors[colorScheme ?? 'light'].tint,
+                  },
+                ]}
+              >
+                12
+              </ThemedText>
+              <ThemedText style={styles.statLabel}>
+                Lieblingsgerichte
+              </ThemedText>
             </ThemedView>
             <ThemedView style={styles.statItem}>
-              <ThemedText style={[styles.statNumber, { color: Colors[colorScheme ?? 'light'].tint }]}>4.8</ThemedText>
+              <ThemedText
+                style={[
+                  styles.statNumber,
+                  {
+                    color: Colors[colorScheme ?? 'light'].tint,
+                  },
+                ]}
+              >
+                4.8
+              </ThemedText>
               <ThemedText style={styles.statLabel}>Ø Bewertung</ThemedText>
             </ThemedView>
           </ThemedView>
         </ThemedView>
 
         {/* Profil Optionen */}
-        <ThemedView style={[styles.section, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>Profil</ThemedText>
-          {profileItems.map((item) => (
+        <ThemedView
+          style={[
+            styles.section,
+            {
+              borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+            },
+          ]}
+        >
+          <ThemedText type="subtitle" style={styles.sectionTitle}>
+            Profil
+          </ThemedText>
+          {profileItems.map(item => (
             <TouchableOpacity
               key={item.id}
               style={styles.menuItem}
               onPress={item.action}
             >
               <ThemedView style={styles.menuItemContent}>
-                <ThemedView style={[styles.iconContainer, { backgroundColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-                  <IconSymbol 
-                    size={20} 
-                    name={item.icon as any} 
-                    color={Colors[colorScheme ?? 'light'].tint} 
+                <ThemedView
+                  style={[
+                    styles.iconContainer,
+                    {
+                      backgroundColor:
+                        Colors[colorScheme ?? 'light'].tint + '20',
+                    },
+                  ]}
+                >
+                  <IconSymbol
+                    size={20}
+                    name={item.icon as any}
+                    color={Colors[colorScheme ?? 'light'].tint}
                   />
                 </ThemedView>
-                <ThemedText style={styles.menuItemTitle}>{item.title}</ThemedText>
+                <ThemedText style={styles.menuItemTitle}>
+                  {item.title}
+                </ThemedText>
                 {item.showArrow && (
-                  <IconSymbol 
-                    size={16} 
-                    name="chevron.right" 
+                  <IconSymbol
+                    size={16}
+                    name="chevron.right"
                     color={Colors[colorScheme ?? 'light'].text}
                     style={{ opacity: 0.5 }}
                   />
@@ -152,24 +242,47 @@ export default function ProfileScreen() {
         </ThemedView>
 
         {/* Einstellungen */}
-        <ThemedView style={[styles.section, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>Einstellungen</ThemedText>
+        <ThemedView
+          style={[
+            styles.section,
+            {
+              borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+            },
+          ]}
+        >
+          <ThemedText type="subtitle" style={styles.sectionTitle}>
+            Einstellungen
+          </ThemedText>
 
           <ThemedView style={styles.menuItem}>
             <ThemedView style={styles.menuItemContent}>
-              <ThemedView style={[styles.iconContainer, { backgroundColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-                <IconSymbol 
-                  size={20} 
-                  name="moon" 
-                  color={Colors[colorScheme ?? 'light'].tint} 
+              <ThemedView
+                style={[
+                  styles.iconContainer,
+                  {
+                    backgroundColor: Colors[colorScheme ?? 'light'].tint + '20',
+                  },
+                ]}
+              >
+                <IconSymbol
+                  size={20}
+                  name="moon"
+                  color={Colors[colorScheme ?? 'light'].tint}
                 />
               </ThemedView>
               <ThemedText style={styles.menuItemTitle}>Dark Mode</ThemedText>
               <Switch
                 value={darkModeEnabled}
                 onValueChange={setDarkModeEnabled}
-                trackColor={{ false: '#767577', true: Colors[colorScheme ?? 'light'].tint + '50' }}
-                thumbColor={darkModeEnabled ? Colors[colorScheme ?? 'light'].tint : '#f4f3f4'}
+                trackColor={{
+                  false: '#767577',
+                  true: Colors[colorScheme ?? 'light'].tint + '50',
+                }}
+                thumbColor={
+                  darkModeEnabled
+                    ? Colors[colorScheme ?? 'light'].tint
+                    : '#f4f3f4'
+                }
               />
             </ThemedView>
           </ThemedView>
@@ -177,12 +290,14 @@ export default function ProfileScreen() {
 
         {/* Logout Button */}
         <ThemedView style={styles.logoutSection}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.logoutButton, { borderColor: '#FF6B6B' }]}
             onPress={handleLogout}
           >
             <IconSymbol size={20} name="arrow.right.square" color="#FF6B6B" />
-            <ThemedText style={[styles.logoutText, { color: '#FF6B6B' }]}>Abmelden</ThemedText>
+            <ThemedText style={[styles.logoutText, { color: '#FF6B6B' }]}>
+              Abmelden
+            </ThemedText>
           </TouchableOpacity>
         </ThemedView>
 

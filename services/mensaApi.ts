@@ -142,7 +142,13 @@ export interface MealReviewFilter {
   ratingequal?: string;
   ratinggreaterthan?: string;
   ratinglowerthan?: string;
-  sortby?: 'rating' | 'date' | 'rating:desc' | 'date:desc' | 'rating:asc' | 'date:asc';
+  sortby?:
+    | 'rating'
+    | 'date'
+    | 'rating:desc'
+    | 'date:desc'
+    | 'rating:asc'
+    | 'date:asc';
   limit?: string; // Max 100
   page?: string;
 }
@@ -154,7 +160,13 @@ export interface CanteenReviewFilter {
   ratingequal?: string;
   ratinggreaterthan?: string;
   ratinglowerthan?: string;
-  sortby?: 'rating' | 'date' | 'rating:desc' | 'date:desc' | 'rating:asc' | 'date:asc';
+  sortby?:
+    | 'rating'
+    | 'date'
+    | 'rating:desc'
+    | 'date:desc'
+    | 'rating:asc'
+    | 'date:asc';
   limit?: string; // Max 100
   page?: string;
 }
@@ -185,7 +197,7 @@ class MensaApiService {
   constructor(apiKey?: string) {
     // Try to get API key from various sources
     let envApiKey: string | undefined;
-    
+
     try {
       // Try process.env first
       envApiKey = process.env.EXPO_PUBLIC_MENSA_API_KEY;
@@ -194,9 +206,9 @@ class MensaApiService {
       // Silent error handling to prevent console spam
       envApiKey = undefined;
     }
-    
+
     this.apiKey = apiKey || envApiKey || null;
-    
+
     // Only log on first initialization and only in development
     if (!MensaApiService.instance && __DEV__ && this.apiKey) {
       console.log('MensaApiService initialized with API key');
@@ -217,10 +229,10 @@ class MensaApiService {
    */
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<T> {
     const url = `${BASE_URL}${endpoint}`;
-    
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
@@ -248,8 +260,12 @@ class MensaApiService {
 
       // Handle rate limiting
       if (response.status === 429) {
-        const retryAfter = response.headers.get('X-RateLimit-Seconds-Till-Refill');
-        throw new Error(`Rate limit exceeded. Try again in ${retryAfter} seconds.`);
+        const retryAfter = response.headers.get(
+          'X-RateLimit-Seconds-Till-Refill',
+        );
+        throw new Error(
+          `Rate limit exceeded. Try again in ${retryAfter} seconds.`,
+        );
       }
 
       if (!response.ok) {
@@ -264,15 +280,15 @@ class MensaApiService {
         if (error.name === 'AbortError') {
           throw new Error('Request timeout - please try again');
         }
-        
+
         // Provide user-friendly error messages
         if (error.message.includes('fetch')) {
           throw new Error('Network error - check your internet connection');
         }
-        
+
         throw error;
       }
-      
+
       throw new Error('Unknown error occurred');
     }
   }
@@ -282,13 +298,13 @@ class MensaApiService {
    */
   private buildQueryString(filter: Record<string, any>): string {
     const searchParams = new URLSearchParams();
-    
+
     Object.entries(filter).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         searchParams.append(key, String(value));
       }
     });
-    
+
     const queryString = searchParams.toString();
     return queryString ? `?${queryString}` : '';
   }
@@ -299,11 +315,11 @@ class MensaApiService {
   private normalizeCanteen(raw: any): Canteen {
     // Handle different possible ID field names
     const id = raw.ID || raw.id || raw._id;
-    
+
     if (!id) {
       console.warn('Canteen without ID field:', raw);
     }
-    
+
     return {
       ...raw,
       ID: id, // Ensure ID field is always present
@@ -313,11 +329,11 @@ class MensaApiService {
   private normalizeMenu(raw: any): Menu {
     // Handle different possible canteenId field names
     const canteenId = raw.canteenId || raw.canteenID || raw.canteen_id;
-    
+
     if (!canteenId) {
       console.warn('Menu without canteenId field:', raw);
     }
-    
+
     return {
       ...raw,
       canteenId: canteenId, // Ensure canteenId field is always present
@@ -330,12 +346,15 @@ class MensaApiService {
     const defaultFilter = { clickandcollect: false, ...(filter || {}) };
     const queryString = this.buildQueryString(defaultFilter);
     console.log('API Request: /canteen' + queryString);
-    
+
     const result = await this.makeRequest<any[]>(`/canteen${queryString}`);
-    
+
     // Debug: Log the raw API response to understand the structure
-    console.log('Raw API response for canteens:', JSON.stringify(result.slice(0, 2), null, 2));
-    
+    console.log(
+      'Raw API response for canteens:',
+      JSON.stringify(result.slice(0, 2), null, 2),
+    );
+
     // Check what fields are actually available in the API response
     if (result && result.length > 0) {
       const firstItem = result[0];
@@ -344,10 +363,10 @@ class MensaApiService {
         ID: firstItem.ID,
         id: firstItem.id,
         _id: firstItem._id,
-        name: firstItem.name
+        name: firstItem.name,
       });
     }
-    
+
     return result.map(item => this.normalizeCanteen(item));
   }
 
@@ -358,34 +377,47 @@ class MensaApiService {
     try {
       // Try primary approach with clickandcollect filter
       console.log('Attempting primary canteen fetch...');
-      const primaryResult = await this.getCanteens({ clickandcollect: false });
-      
+      const primaryResult = await this.getCanteens({
+        clickandcollect: false,
+      });
+
       if (primaryResult && primaryResult.length > 0) {
-        console.log('Primary canteen fetch successful:', primaryResult.length, 'canteens');
+        console.log(
+          'Primary canteen fetch successful:',
+          primaryResult.length,
+          'canteens',
+        );
         return primaryResult;
       }
-      
+
       // Fallback 1: Try without any filters
       console.log('Primary fetch failed, trying without filters...');
       const fallbackResult = await this.getCanteens();
-      
+
       if (fallbackResult && fallbackResult.length > 0) {
-        console.log('Fallback canteen fetch successful:', fallbackResult.length, 'canteens');
+        console.log(
+          'Fallback canteen fetch successful:',
+          fallbackResult.length,
+          'canteens',
+        );
         return fallbackResult;
       }
-      
+
       // Fallback 2: Try minimal request
       console.log('Standard fetch failed, trying basic request...');
       const basicResult = await this.makeRequest<any[]>('/canteen');
-      
+
       if (basicResult && Array.isArray(basicResult)) {
-        console.log('Basic canteen fetch successful:', basicResult.length, 'canteens');
+        console.log(
+          'Basic canteen fetch successful:',
+          basicResult.length,
+          'canteens',
+        );
         return basicResult.map(item => this.normalizeCanteen(item));
       }
-      
+
       console.warn('All canteen fetch strategies failed');
       return [];
-      
     } catch (error) {
       console.error('Error in getCanteensWithFallback:', error);
       return [];
@@ -402,15 +434,15 @@ class MensaApiService {
   async getMenus(filter?: MenuFilter): Promise<Menu[]> {
     const queryString = filter ? this.buildQueryString(filter) : '';
     console.log('Menu API request: /menue' + queryString);
-    
+
     const result = await this.makeRequest<any[]>(`/menue${queryString}`);
-    
+
     // Debug: Log raw response
     console.log('Raw Menu API response length:', result?.length || 0);
     if (result && result.length > 0) {
       console.log('First menu raw structure:', Object.keys(result[0]));
     }
-    
+
     return result.map(item => this.normalizeMenu(item));
   }
 
@@ -430,7 +462,9 @@ class MensaApiService {
     return this.makeRequest<MealReview[]>(`/mealreview${queryString}`);
   }
 
-  async getCanteenReviews(filter?: CanteenReviewFilter): Promise<CanteenReview[]> {
+  async getCanteenReviews(
+    filter?: CanteenReviewFilter,
+  ): Promise<CanteenReview[]> {
     const queryString = filter ? this.buildQueryString(filter) : '';
     return this.makeRequest<CanteenReview[]>(`/canteenreview${queryString}`);
   }
@@ -442,7 +476,9 @@ class MensaApiService {
     });
   }
 
-  async createCanteenReview(review: CreateCanteenReviewRequest): Promise<CanteenReview> {
+  async createCanteenReview(
+    review: CreateCanteenReviewRequest,
+  ): Promise<CanteenReview> {
     return this.makeRequest<CanteenReview>('/canteenreview', {
       method: 'POST',
       body: JSON.stringify(review),
@@ -481,35 +517,38 @@ class MensaApiService {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
-      
+
       // Add API key if available
       if (this.apiKey) {
         headers['X-API-KEY'] = this.apiKey;
       }
-      
+
       // Try a simple GET request with longer timeout for stability
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000); // Increased timeout
-      
-      const response = await fetch(`${BASE_URL}/canteen?clickandcollect=false`, {
-        method: 'GET',
-        headers,
-        signal: controller.signal,
-        mode: 'cors',
-        credentials: 'omit',
-      });
-      
+
+      const response = await fetch(
+        `${BASE_URL}/canteen?clickandcollect=false`,
+        {
+          method: 'GET',
+          headers,
+          signal: controller.signal,
+          mode: 'cors',
+          credentials: 'omit',
+        },
+      );
+
       clearTimeout(timeoutId);
-      
+
       // Only log in development mode
       if (__DEV__) {
         console.log('API Response status:', response.status);
       }
-      
+
       if (response.status === 401) {
         return false;
       }
-      
+
       return response.ok;
     } catch (error) {
       if (__DEV__) {
@@ -524,30 +563,37 @@ class MensaApiService {
     try {
       // Get today's date in YYYY-MM-DD format
       const today = new Date().toISOString().split('T')[0];
-      
+
       console.log('getTodaysMenu called with:', { canteenId, today });
-      
+
       // Use the menue endpoint with canteenId filter
       const result = await this.getMenus({
         canteenId: canteenId,
         startdate: today,
         enddate: today,
-        loadingtype: 'complete'
+        loadingtype: 'complete',
       });
 
       console.log('Menu API result:', result);
-      console.log('Menu API result type:', typeof result, 'length:', Array.isArray(result) ? result.length : 'not array');
-      
+      console.log(
+        'Menu API result type:',
+        typeof result,
+        'length:',
+        Array.isArray(result) ? result.length : 'not array',
+      );
+
       // Debug: Check structure of menu items
       if (result && Array.isArray(result) && result.length > 0) {
         console.log('First menu item keys:', Object.keys(result[0]));
         console.log('First menu item sample:', {
           date: result[0].date,
           canteenId: result[0].canteenId,
-          meals: Array.isArray(result[0].meals) ? result[0].meals.length : 'not array'
+          meals: Array.isArray(result[0].meals)
+            ? result[0].meals.length
+            : 'not array',
         });
       }
-      
+
       // Return the menu data directly
       return result;
     } catch (error) {
@@ -559,12 +605,14 @@ class MensaApiService {
     }
   }
 
-  async getCanteenWithTodaysMenu(canteenId: string): Promise<{ canteen: Canteen; menu: Menu[] }> {
+  async getCanteenWithTodaysMenu(
+    canteenId: string,
+  ): Promise<{ canteen: Canteen; menu: Menu[] }> {
     const [canteens, menu] = await Promise.all([
       this.getCanteens({ ID: canteenId }),
-      this.getTodaysMenu(canteenId)
+      this.getTodaysMenu(canteenId),
     ]);
-    
+
     const canteen = canteens.find(c => c.ID === canteenId);
     if (!canteen) {
       throw new Error(`Canteen with ID ${canteenId} not found`);

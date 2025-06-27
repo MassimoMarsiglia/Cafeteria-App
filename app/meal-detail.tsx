@@ -6,7 +6,12 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Meal } from '@/services/mensaApi';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 
 export default function MealDetailScreen() {
   const colorScheme = useColorScheme();
@@ -34,10 +39,21 @@ export default function MealDetailScreen() {
 
   if (!meal) {
     return (
-      <ThemedView style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}>
+      <ThemedView
+        style={[
+          styles.container,
+          {
+            backgroundColor: Colors[colorScheme ?? 'light'].background,
+          },
+        ]}
+      >
         <ThemedView style={styles.header}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <IconSymbol size={24} name="chevron.left" color={Colors[colorScheme ?? 'light'].text} />
+            <IconSymbol
+              size={24}
+              name="chevron.left"
+              color={Colors[colorScheme ?? 'light'].text}
+            />
           </TouchableOpacity>
           <ThemedText type="title">Gericht nicht gefunden</ThemedText>
         </ThemedView>
@@ -50,16 +66,27 @@ export default function MealDetailScreen() {
   const displayPrice = studentPrice || meal.prices?.[0];
 
   return (
-    <ScrollView 
-      style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}
+    <ScrollView
+      style={[
+        styles.container,
+        {
+          backgroundColor: Colors[colorScheme ?? 'light'].background,
+        },
+      ]}
       showsVerticalScrollIndicator={false}
     >
       {/* Header with back button */}
       <ThemedView style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <IconSymbol size={24} name="chevron.left" color={Colors[colorScheme ?? 'light'].text} />
+          <IconSymbol
+            size={24}
+            name="chevron.left"
+            color={Colors[colorScheme ?? 'light'].text}
+          />
         </TouchableOpacity>
-        <ThemedText type="title" style={styles.headerTitle}>Gericht Details</ThemedText>
+        <ThemedText type="title" style={styles.headerTitle}>
+          Gericht Details
+        </ThemedText>
       </ThemedView>
 
       {/* Main content */}
@@ -71,20 +98,36 @@ export default function MealDetailScreen() {
           </ThemedText>
           {/* Debug info */}
           {__DEV__ && meal.ID && (
-            <ThemedText style={styles.debugId}>
-              ID: {meal.ID}
-            </ThemedText>
+            <ThemedText style={styles.debugId}>ID: {meal.ID}</ThemedText>
           )}
         </ThemedView>
 
         {/* Price section */}
         {meal.prices && meal.prices.length > 0 && (
-          <ThemedView style={[styles.priceSection, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>Preise</ThemedText>
+          <ThemedView
+            style={[
+              styles.priceSection,
+              {
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+              },
+            ]}
+          >
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Preise
+            </ThemedText>
             {meal.prices.map((price, index) => (
               <ThemedView key={index} style={styles.priceItem}>
-                <ThemedText style={styles.priceType}>{price.priceType}</ThemedText>
-                <ThemedText style={[styles.priceValue, { color: Colors[colorScheme ?? 'light'].tint }]}>
+                <ThemedText style={styles.priceType}>
+                  {price.priceType}
+                </ThemedText>
+                <ThemedText
+                  style={[
+                    styles.priceValue,
+                    {
+                      color: Colors[colorScheme ?? 'light'].tint,
+                    },
+                  ]}
+                >
                   {price.price.toFixed(2)}€
                 </ThemedText>
               </ThemedView>
@@ -94,10 +137,33 @@ export default function MealDetailScreen() {
 
         {/* Category section */}
         {meal.category && (
-          <ThemedView style={[styles.section, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>Kategorie</ThemedText>
-            <ThemedView style={[styles.categoryBadge, { backgroundColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-              <ThemedText style={[styles.categoryText, { color: Colors[colorScheme ?? 'light'].tint }]}>
+          <ThemedView
+            style={[
+              styles.section,
+              {
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+              },
+            ]}
+          >
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Kategorie
+            </ThemedText>
+            <ThemedView
+              style={[
+                styles.categoryBadge,
+                {
+                  backgroundColor: Colors[colorScheme ?? 'light'].tint + '20',
+                },
+              ]}
+            >
+              <ThemedText
+                style={[
+                  styles.categoryText,
+                  {
+                    color: Colors[colorScheme ?? 'light'].tint,
+                  },
+                ]}
+              >
                 {meal.category}
               </ThemedText>
             </ThemedView>
@@ -106,11 +172,28 @@ export default function MealDetailScreen() {
 
         {/* Badges section */}
         {meal.badges && meal.badges.length > 0 && (
-          <ThemedView style={[styles.section, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>Eigenschaften</ThemedText>
+          <ThemedView
+            style={[
+              styles.section,
+              {
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+              },
+            ]}
+          >
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Eigenschaften
+            </ThemedText>
             <ThemedView style={styles.badgesContainer}>
               {meal.badges.map((badge, index) => (
-                <ThemedView key={badge.ID || index} style={[styles.badge, { backgroundColor: '#4CAF50' + '20' }]}>
+                <ThemedView
+                  key={badge.ID || index}
+                  style={[
+                    styles.badge,
+                    {
+                      backgroundColor: '#4CAF50' + '20',
+                    },
+                  ]}
+                >
                   <ThemedText style={[styles.badgeText, { color: '#4CAF50' }]}>
                     {badge.name}
                   </ThemedText>
@@ -127,26 +210,56 @@ export default function MealDetailScreen() {
 
         {/* Additives section */}
         {meal.additives && meal.additives.length > 0 && (
-          <ThemedView style={[styles.section, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>Zusatzstoffe</ThemedText>
+          <ThemedView
+            style={[
+              styles.section,
+              {
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+              },
+            ]}
+          >
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Zusatzstoffe
+            </ThemedText>
             {meal.additives.map((additive, index) => (
-              <ThemedView key={additive.ID || index} style={styles.additiveItem}>
-                <ThemedText style={styles.additiveReference}>{additive.referenceid}</ThemedText>
-                <ThemedText style={styles.additiveText}>{additive.text}</ThemedText>
+              <ThemedView
+                key={additive.ID || index}
+                style={styles.additiveItem}
+              >
+                <ThemedText style={styles.additiveReference}>
+                  {additive.referenceid}
+                </ThemedText>
+                <ThemedText style={styles.additiveText}>
+                  {additive.text}
+                </ThemedText>
               </ThemedView>
             ))}
           </ThemedView>
         )}
 
         {/* Environmental data section */}
-        {(meal.co2Bilanz !== undefined && meal.co2Bilanz !== null) || (meal.waterBilanz !== undefined && meal.waterBilanz !== null) ? (
-          <ThemedView style={[styles.section, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>Umweltdaten</ThemedText>
+        {(meal.co2Bilanz !== undefined && meal.co2Bilanz !== null) ||
+        (meal.waterBilanz !== undefined && meal.waterBilanz !== null) ? (
+          <ThemedView
+            style={[
+              styles.section,
+              {
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+              },
+            ]}
+          >
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Umweltdaten
+            </ThemedText>
             {meal.co2Bilanz !== undefined && meal.co2Bilanz !== null && (
               <ThemedView style={styles.environmentItem}>
                 <IconSymbol size={20} name="leaf" color="#4CAF50" />
-                <ThemedText style={styles.environmentLabel}>CO₂-Bilanz:</ThemedText>
-                <ThemedText style={[styles.environmentValue, { color: '#4CAF50' }]}>
+                <ThemedText style={styles.environmentLabel}>
+                  CO₂-Bilanz:
+                </ThemedText>
+                <ThemedText
+                  style={[styles.environmentValue, { color: '#4CAF50' }]}
+                >
                   {meal.co2Bilanz} kg CO₂
                 </ThemedText>
               </ThemedView>
@@ -154,8 +267,12 @@ export default function MealDetailScreen() {
             {meal.waterBilanz !== undefined && meal.waterBilanz !== null && (
               <ThemedView style={styles.environmentItem}>
                 <IconSymbol size={20} name="drop" color="#2196F3" />
-                <ThemedText style={styles.environmentLabel}>Wasser-Bilanz:</ThemedText>
-                <ThemedText style={[styles.environmentValue, { color: '#2196F3' }]}>
+                <ThemedText style={styles.environmentLabel}>
+                  Wasser-Bilanz:
+                </ThemedText>
+                <ThemedText
+                  style={[styles.environmentValue, { color: '#2196F3' }]}
+                >
                   {meal.waterBilanz} L
                 </ThemedText>
               </ThemedView>
@@ -165,24 +282,49 @@ export default function MealDetailScreen() {
 
         {/* Reviews section */}
         {meal.mealReviews && meal.mealReviews.length > 0 && (
-          <ThemedView style={[styles.section, { borderColor: Colors[colorScheme ?? 'light'].tint + '20' }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>Bewertungen</ThemedText>
+          <ThemedView
+            style={[
+              styles.section,
+              {
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
+              },
+            ]}
+          >
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Bewertungen
+            </ThemedText>
             {meal.mealReviews.slice(0, 3).map((review, index) => (
               <ThemedView key={review.ID || index} style={styles.reviewItem}>
                 {review.averageRating && (
                   <ThemedView style={styles.ratingContainer}>
-                    <ThemedText style={[styles.rating, { color: Colors[colorScheme ?? 'light'].tint }]}>
+                    <ThemedText
+                      style={[
+                        styles.rating,
+                        {
+                          color: Colors[colorScheme ?? 'light'].tint,
+                        },
+                      ]}
+                    >
                       ⭐ {review.averageRating.toFixed(1)}
                     </ThemedText>
                   </ThemedView>
                 )}
                 {review.comment && (
-                  <ThemedText style={styles.reviewComment}>"{review.comment}"</ThemedText>
+                  <ThemedText style={styles.reviewComment}>
+                    "{review.comment}"
+                  </ThemedText>
                 )}
               </ThemedView>
             ))}
             {meal.mealReviews.length > 3 && (
-              <ThemedText style={[styles.moreReviews, { color: Colors[colorScheme ?? 'light'].tint }]}>
+              <ThemedText
+                style={[
+                  styles.moreReviews,
+                  {
+                    color: Colors[colorScheme ?? 'light'].tint,
+                  },
+                ]}
+              >
                 +{meal.mealReviews.length - 3} weitere Bewertungen
               </ThemedText>
             )}

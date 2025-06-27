@@ -6,7 +6,13 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { cacheManager, useCanteens } from '@/hooks/useMensaApi';
 import { useTabFocusEffect } from '@/hooks/useTabFocusEffect';
-import { RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function AllCafeteriasScreen() {
   const colorScheme = useColorScheme();
@@ -28,110 +34,157 @@ export default function AllCafeteriasScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors[colorScheme ?? 'light'].background }}>
-      <AppHeader 
-        title="Alle Cafeterias" 
-        subtitle={canteens ? `${canteens.length} Mensen gefunden` : 'Lade Mensen...'}
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: Colors[colorScheme ?? 'light'].background,
+      }}
+    >
+      <AppHeader
+        title="Alle Cafeterias"
+        subtitle={
+          canteens ? `${canteens.length} Mensen gefunden` : 'Lade Mensen...'
+        }
       />
-      <ScrollView 
+      <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
         }
       >
+        {loading && (
+          <ThemedView style={styles.centerContainer}>
+            <ThemedText>Lade Cafeterias...</ThemedText>
+          </ThemedView>
+        )}
 
-      {loading && (
-        <ThemedView style={styles.centerContainer}>
-          <ThemedText>Lade Cafeterias...</ThemedText>
-        </ThemedView>
-      )}
+        {error && (
+          <ThemedView style={styles.errorContainer}>
+            <IconSymbol
+              size={24}
+              name="exclamationmark.triangle"
+              color="#FF6B6B"
+            />
+            <ThemedText style={styles.errorText}>
+              Fehler beim Laden: {error}
+            </ThemedText>
+          </ThemedView>
+        )}
 
-      {error && (
-        <ThemedView style={styles.errorContainer}>
-          <IconSymbol size={24} name="exclamationmark.triangle" color="#FF6B6B" />
-          <ThemedText style={styles.errorText}>Fehler beim Laden: {error}</ThemedText>
-        </ThemedView>
-      )}
-
-      {!loading && !error && canteens && canteens.length > 0 && (
-        <ThemedView style={styles.canteensContainer}>
-          {canteens.map((canteen) => (
-            <TouchableOpacity
-              key={canteen.ID}
-              style={[styles.canteenCard, { borderColor: Colors[colorScheme ?? 'light'].tint + '30' }]}
-              onPress={() => handleCanteenPress(canteen.ID)}
-              activeOpacity={0.7}
-            >
-              <ThemedView style={styles.canteenHeader}>
-                <IconSymbol 
-                  size={24} 
-                  name="fork.knife.circle" 
-                  color={Colors[colorScheme ?? 'light'].tint} 
-                />
-                <ThemedView style={styles.canteenInfo}>
-                  <ThemedText type="subtitle" style={styles.canteenName}>
-                    {canteen.name}
-                  </ThemedText>
-                  {canteen.address && (
-                    <ThemedText style={styles.canteenAddress}>
-                      {[
-                        canteen.address.street,
-                        [canteen.address.zipcode, canteen.address.city].filter(Boolean).join(' '),
-                        canteen.address.district
-                      ].filter(Boolean).join(', ') || 'Adresse nicht verfügbar'}
+        {!loading && !error && canteens && canteens.length > 0 && (
+          <ThemedView style={styles.canteensContainer}>
+            {canteens.map(canteen => (
+              <TouchableOpacity
+                key={canteen.ID}
+                style={[
+                  styles.canteenCard,
+                  {
+                    borderColor: Colors[colorScheme ?? 'light'].tint + '30',
+                  },
+                ]}
+                onPress={() => handleCanteenPress(canteen.ID)}
+                activeOpacity={0.7}
+              >
+                <ThemedView style={styles.canteenHeader}>
+                  <IconSymbol
+                    size={24}
+                    name="fork.knife.circle"
+                    color={Colors[colorScheme ?? 'light'].tint}
+                  />
+                  <ThemedView style={styles.canteenInfo}>
+                    <ThemedText type="subtitle" style={styles.canteenName}>
+                      {canteen.name}
                     </ThemedText>
-                  )}
-                </ThemedView>
-                <IconSymbol 
-                  size={16} 
-                  name="chevron.right" 
-                  color={Colors[colorScheme ?? 'light'].text + '50'} 
-                />
-              </ThemedView>
-
-              {canteen.address?.geolocation && (
-                <ThemedView style={styles.locationContainer}>
-                  <IconSymbol size={14} name="location" color={Colors[colorScheme ?? 'light'].text + '70'} />
-                  <ThemedText style={styles.locationText}>
-                    {canteen.address.geolocation.latitude.toFixed(4)}, {canteen.address.geolocation.longitude.toFixed(4)}
-                  </ThemedText>
-                </ThemedView>
-              )}
-
-              {canteen.businessDays && canteen.businessDays.length > 0 && (
-                <ThemedView style={styles.hoursContainer}>
-                  <IconSymbol size={14} name="clock" color={Colors[colorScheme ?? 'light'].text + '70'} />
-                  <ThemedView style={styles.hoursInfo}>
-                    {canteen.businessDays.slice(0, 2).map((businessDay, index: number) => (
-                      <ThemedText key={index} style={styles.hoursText}>
-                        {businessDay.day}: {businessDay.businesshours && businessDay.businesshours.length > 0 
-                          ? `${businessDay.businesshours[0].openAt} - ${businessDay.businesshours[0].closeAt}` 
-                          : 'Geschlossen'}
-                      </ThemedText>
-                    ))}
-                    {canteen.businessDays.length > 2 && (
-                      <ThemedText style={[styles.hoursText, { opacity: 0.7 }]}>
-                        +{canteen.businessDays.length - 2} weitere Tage
+                    {canteen.address && (
+                      <ThemedText style={styles.canteenAddress}>
+                        {[
+                          canteen.address.street,
+                          [canteen.address.zipcode, canteen.address.city]
+                            .filter(Boolean)
+                            .join(' '),
+                          canteen.address.district,
+                        ]
+                          .filter(Boolean)
+                          .join(', ') || 'Adresse nicht verfügbar'}
                       </ThemedText>
                     )}
                   </ThemedView>
+                  <IconSymbol
+                    size={16}
+                    name="chevron.right"
+                    color={Colors[colorScheme ?? 'light'].text + '50'}
+                  />
                 </ThemedView>
-              )}
-            </TouchableOpacity>
-          ))}
-        </ThemedView>
-      )}
 
-      {!loading && !error && (!canteens || canteens.length === 0) && (
-        <ThemedView style={styles.centerContainer}>
-          <IconSymbol size={48} name="building.2" color={Colors[colorScheme ?? 'light'].tint + '50'} />
-          <ThemedText style={styles.noDataText}>Keine Cafeterias gefunden</ThemedText>
-          <ThemedText style={styles.noDataSubtext}>
-            Versuche es später erneut
-          </ThemedText>
-        </ThemedView>
-      )}
+                {canteen.address?.geolocation && (
+                  <ThemedView style={styles.locationContainer}>
+                    <IconSymbol
+                      size={14}
+                      name="location"
+                      color={Colors[colorScheme ?? 'light'].text + '70'}
+                    />
+                    <ThemedText style={styles.locationText}>
+                      {canteen.address.geolocation.latitude.toFixed(4)},{' '}
+                      {canteen.address.geolocation.longitude.toFixed(4)}
+                    </ThemedText>
+                  </ThemedView>
+                )}
+
+                {canteen.businessDays && canteen.businessDays.length > 0 && (
+                  <ThemedView style={styles.hoursContainer}>
+                    <IconSymbol
+                      size={14}
+                      name="clock"
+                      color={Colors[colorScheme ?? 'light'].text + '70'}
+                    />
+                    <ThemedView style={styles.hoursInfo}>
+                      {canteen.businessDays
+                        .slice(0, 2)
+                        .map((businessDay, index: number) => (
+                          <ThemedText key={index} style={styles.hoursText}>
+                            {businessDay.day}:{' '}
+                            {businessDay.businesshours &&
+                            businessDay.businesshours.length > 0
+                              ? `${businessDay.businesshours[0].openAt} - ${businessDay.businesshours[0].closeAt}`
+                              : 'Geschlossen'}
+                          </ThemedText>
+                        ))}
+                      {canteen.businessDays.length > 2 && (
+                        <ThemedText
+                          style={[
+                            styles.hoursText,
+                            {
+                              opacity: 0.7,
+                            },
+                          ]}
+                        >
+                          +{canteen.businessDays.length - 2} weitere Tage
+                        </ThemedText>
+                      )}
+                    </ThemedView>
+                  </ThemedView>
+                )}
+              </TouchableOpacity>
+            ))}
+          </ThemedView>
+        )}
+
+        {!loading && !error && (!canteens || canteens.length === 0) && (
+          <ThemedView style={styles.centerContainer}>
+            <IconSymbol
+              size={48}
+              name="building.2"
+              color={Colors[colorScheme ?? 'light'].tint + '50'}
+            />
+            <ThemedText style={styles.noDataText}>
+              Keine Cafeterias gefunden
+            </ThemedText>
+            <ThemedText style={styles.noDataSubtext}>
+              Versuche es später erneut
+            </ThemedText>
+          </ThemedView>
+        )}
       </ScrollView>
     </View>
   );

@@ -32,22 +32,24 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
 
   return (
     <>
-      <ThemedView style={[
-        styles.header, 
-        { 
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
-          borderBottomColor: Colors[colorScheme ?? 'light'].tint + '20'
-        }
-      ]}>
-        <TouchableOpacity 
-          onPress={handleMenuPress} 
+      <ThemedView
+        style={[
+          styles.header,
+          {
+            backgroundColor: Colors[colorScheme ?? 'light'].background,
+            borderBottomColor: Colors[colorScheme ?? 'light'].tint + '20',
+          },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={handleMenuPress}
           style={styles.menuButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <IconSymbol 
-            size={24} 
-            name="line.3.horizontal" 
-            color={Colors[colorScheme ?? 'light'].text} 
+          <IconSymbol
+            size={24}
+            name="line.3.horizontal"
+            color={Colors[colorScheme ?? 'light'].text}
           />
         </TouchableOpacity>
 
@@ -56,27 +58,25 @@ export function AppHeader({ title, subtitle }: AppHeaderProps) {
             {title}
           </ThemedText>
           {subtitle && (
-            <ThemedText style={styles.headerSubtitle}>
-              {subtitle}
-            </ThemedText>
+            <ThemedText style={styles.headerSubtitle}>{subtitle}</ThemedText>
           )}
         </ThemedView>
 
         {/* Profile button on the right */}
-        <TouchableOpacity 
-          onPress={handleProfilePress} 
+        <TouchableOpacity
+          onPress={handleProfilePress}
           style={styles.profileButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <IconSymbol 
-            size={24} 
-            name="person.circle" 
-            color={Colors[colorScheme ?? 'light'].text} 
+          <IconSymbol
+            size={24}
+            name="person.circle"
+            color={Colors[colorScheme ?? 'light'].text}
           />
         </TouchableOpacity>
       </ThemedView>
 
-      <BurgerMenu 
+      <BurgerMenu
         visible={menuVisible}
         onClose={handleMenuClose}
         currentRoute={pathname}

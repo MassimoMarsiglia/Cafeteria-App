@@ -15,6 +15,6 @@ export function useTabFocusEffect(cleanup?: () => void) {
           cleanup();
         }
       };
-    }, [cleanup])
+    }, [cleanup]),
   );
 }
