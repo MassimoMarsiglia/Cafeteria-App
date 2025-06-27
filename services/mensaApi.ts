@@ -190,14 +190,6 @@ class MensaApiService {
       // Try process.env first
       envApiKey = process.env.EXPO_PUBLIC_MENSA_API_KEY;
       
-      // Fallback for development - this key is from the user's request
-      if (!envApiKey && typeof global !== 'undefined') {
-        const globalWithExpo = global as any;
-        envApiKey = globalWithExpo.__DEV__ ? 
-          "MGOtdI2nLs3FJJ8+rz0gIJL4sfOboeu5UyFz4si8e2E1Y+dhx83vej5NJiD+NtTyRT1kbzd8VHwO1mNHOMzNXq4AP9hhaC40gfOqC18sMZJuVtdj4hH9viEPudz6tfy4OMLpWNwBWBUbI/eoXHteWwQsREtszVzOnqQUbYP1CZAGE/95FeKZwAn3EZowbNeDBPnRVfXMPzeTZxQm88fX1fD/m9sL5FPlrZ6J4FFB8XUIEQMsk9I261LZWx2TzlFGaG5qeHWsNbjL9XiBWFaOtIwMT5v83PG8meZDRQ713vz2s1JXy3MR0PDIIyUrydpPUnxKxkZ8RtqxZu7E0YPPXg==" : 
-          undefined;
-      }
-      
     } catch (e) {
       // Silent error handling to prevent console spam
       envApiKey = undefined;
