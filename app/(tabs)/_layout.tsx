@@ -20,6 +20,12 @@ export default function TabLayout() {
           title: 'All Cafeterias',
         }}
       />
+      <Stack.Screen
+        name="Menu/[canteenId]"
+        options={{
+          title: 'Menu',
+        }}
+      />
     </Stack>
   );
 }

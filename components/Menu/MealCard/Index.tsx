@@ -1,7 +1,7 @@
+import { Card } from '@/components/ui/card';
+import { Text } from '@/components/ui/text';
 import { Meal } from '@/services/mensaApi';
 import { TouchableOpacity } from 'react-native';
-import { Card } from '../ui/card';
-import { Text } from '../ui/text';
 
 export const MealCard = ({
   item: meal,
@@ -11,10 +11,10 @@ export const MealCard = ({
   index: number;
 }) => {
   return (
-    <TouchableOpacity>
-      <Card variant="elevated" className="bg-background-100 p-4 mb-4">
+    <TouchableOpacity className="flex-1 mx-2 last:flex">
+      <Card variant="elevated" className="outline outline-1 p-4 mb-4 flex-1">
         {/* Meal name */}
-        <Text>{meal.name}</Text>
+        <Text className="font-roboto text-sm">{meal.name.trim()}</Text>
         {/* Price */}
         {/* <Text>{meal.prices ? `${meal.prices} €` : 'Preis nicht verfügbar'}</Text> */}
       </Card>

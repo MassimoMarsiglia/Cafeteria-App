@@ -1,5 +1,5 @@
 import { AppHeader } from '@/components/AppHeader';
-import { MealCard } from '@/components/MealCard/Index';
+import { MealCard } from '@/components/Menu/MealCard/Index';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Box } from '@/components/ui/box';

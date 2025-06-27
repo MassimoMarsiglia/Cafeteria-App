@@ -201,7 +201,6 @@ class MensaApiService {
     try {
       // Try process.env first
       envApiKey = process.env.EXPO_PUBLIC_MENSA_API_KEY;
-      
     } catch (e) {
       // Silent error handling to prevent console spam
       envApiKey = undefined;

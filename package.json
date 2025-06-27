@@ -7,6 +7,7 @@
     "android": "DARK_MODE=media expo start --android",
     "ios": "DARK_MODE=media expo start --ios",
     "web": "DARK_MODE=media expo start --web",
+    "web:dev": "expo start --web --localhost --dev-client",
     "lint": "expo lint",
     "format": "prettier --write ."
   },
@@ -86,6 +87,7 @@
     "eslint-plugin-prettier": "^5.5.1",
     "jscodeshift": "^0.15.2",
     "prettier": "^3.6.1",
+    "react-refresh": "^0.17.0",
     "typescript": "~5.8.3"
   },
   "private": true
