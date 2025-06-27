@@ -1,17 +1,17 @@
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Meal } from "@/services/mensaApi";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Meal } from '@/services/mensaApi';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import {
   Dimensions,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-} from "react-native";
+} from 'react-native';
 
 export default function MealDetailScreen() {
   const colorScheme = useColorScheme();
@@ -19,16 +19,16 @@ export default function MealDetailScreen() {
   const [meal, setMeal] = useState<Meal | null>(null);
 
   // Get screen dimensions for responsive layout
-  const { width: screenWidth } = Dimensions.get("window");
+  const { width: screenWidth } = Dimensions.get('window');
 
   useEffect(() => {
     // Parse meal data from route params
-    if (params.mealData && typeof params.mealData === "string") {
+    if (params.mealData && typeof params.mealData === 'string') {
       try {
         const parsedMeal = JSON.parse(params.mealData) as Meal;
         setMeal(parsedMeal);
       } catch (error) {
-        console.error("Error parsing meal data:", error);
+        console.error('Error parsing meal data:', error);
       }
     }
   }, [params.mealData]);
@@ -43,7 +43,7 @@ export default function MealDetailScreen() {
         style={[
           styles.container,
           {
-            backgroundColor: Colors[colorScheme ?? "light"].background,
+            backgroundColor: Colors[colorScheme ?? 'light'].background,
           },
         ]}
       >
@@ -52,7 +52,7 @@ export default function MealDetailScreen() {
             <IconSymbol
               size={24}
               name="chevron.left"
-              color={Colors[colorScheme ?? "light"].text}
+              color={Colors[colorScheme ?? 'light'].text}
             />
           </TouchableOpacity>
           <ThemedText type="title">Gericht nicht gefunden</ThemedText>
@@ -62,7 +62,7 @@ export default function MealDetailScreen() {
   }
 
   // Get student price or first available price
-  const studentPrice = meal.prices?.find((p) => p.priceType === "Student");
+  const studentPrice = meal.prices?.find(p => p.priceType === 'Student');
   const displayPrice = studentPrice || meal.prices?.[0];
 
   return (
@@ -70,7 +70,7 @@ export default function MealDetailScreen() {
       style={[
         styles.container,
         {
-          backgroundColor: Colors[colorScheme ?? "light"].background,
+          backgroundColor: Colors[colorScheme ?? 'light'].background,
         },
       ]}
       showsVerticalScrollIndicator={false}
@@ -81,7 +81,7 @@ export default function MealDetailScreen() {
           <IconSymbol
             size={24}
             name="chevron.left"
-            color={Colors[colorScheme ?? "light"].text}
+            color={Colors[colorScheme ?? 'light'].text}
           />
         </TouchableOpacity>
         <ThemedText type="title" style={styles.headerTitle}>
@@ -108,7 +108,7 @@ export default function MealDetailScreen() {
             style={[
               styles.priceSection,
               {
-                borderColor: Colors[colorScheme ?? "light"].tint + "20",
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
               },
             ]}
           >
@@ -124,7 +124,7 @@ export default function MealDetailScreen() {
                   style={[
                     styles.priceValue,
                     {
-                      color: Colors[colorScheme ?? "light"].tint,
+                      color: Colors[colorScheme ?? 'light'].tint,
                     },
                   ]}
                 >
@@ -141,7 +141,7 @@ export default function MealDetailScreen() {
             style={[
               styles.section,
               {
-                borderColor: Colors[colorScheme ?? "light"].tint + "20",
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
               },
             ]}
           >
@@ -152,7 +152,7 @@ export default function MealDetailScreen() {
               style={[
                 styles.categoryBadge,
                 {
-                  backgroundColor: Colors[colorScheme ?? "light"].tint + "20",
+                  backgroundColor: Colors[colorScheme ?? 'light'].tint + '20',
                 },
               ]}
             >
@@ -160,7 +160,7 @@ export default function MealDetailScreen() {
                 style={[
                   styles.categoryText,
                   {
-                    color: Colors[colorScheme ?? "light"].tint,
+                    color: Colors[colorScheme ?? 'light'].tint,
                   },
                 ]}
               >
@@ -176,7 +176,7 @@ export default function MealDetailScreen() {
             style={[
               styles.section,
               {
-                borderColor: Colors[colorScheme ?? "light"].tint + "20",
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
               },
             ]}
           >
@@ -190,11 +190,11 @@ export default function MealDetailScreen() {
                   style={[
                     styles.badge,
                     {
-                      backgroundColor: "#4CAF50" + "20",
+                      backgroundColor: '#4CAF50' + '20',
                     },
                   ]}
                 >
-                  <ThemedText style={[styles.badgeText, { color: "#4CAF50" }]}>
+                  <ThemedText style={[styles.badgeText, { color: '#4CAF50' }]}>
                     {badge.name}
                   </ThemedText>
                   {badge.description && (
@@ -214,7 +214,7 @@ export default function MealDetailScreen() {
             style={[
               styles.section,
               {
-                borderColor: Colors[colorScheme ?? "light"].tint + "20",
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
               },
             ]}
           >
@@ -244,7 +244,7 @@ export default function MealDetailScreen() {
             style={[
               styles.section,
               {
-                borderColor: Colors[colorScheme ?? "light"].tint + "20",
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
               },
             ]}
           >
@@ -258,7 +258,7 @@ export default function MealDetailScreen() {
                   CO₂-Bilanz:
                 </ThemedText>
                 <ThemedText
-                  style={[styles.environmentValue, { color: "#4CAF50" }]}
+                  style={[styles.environmentValue, { color: '#4CAF50' }]}
                 >
                   {meal.co2Bilanz} kg CO₂
                 </ThemedText>
@@ -271,7 +271,7 @@ export default function MealDetailScreen() {
                   Wasser-Bilanz:
                 </ThemedText>
                 <ThemedText
-                  style={[styles.environmentValue, { color: "#2196F3" }]}
+                  style={[styles.environmentValue, { color: '#2196F3' }]}
                 >
                   {meal.waterBilanz} L
                 </ThemedText>
@@ -286,7 +286,7 @@ export default function MealDetailScreen() {
             style={[
               styles.section,
               {
-                borderColor: Colors[colorScheme ?? "light"].tint + "20",
+                borderColor: Colors[colorScheme ?? 'light'].tint + '20',
               },
             ]}
           >
@@ -301,7 +301,7 @@ export default function MealDetailScreen() {
                       style={[
                         styles.rating,
                         {
-                          color: Colors[colorScheme ?? "light"].tint,
+                          color: Colors[colorScheme ?? 'light'].tint,
                         },
                       ]}
                     >
@@ -321,7 +321,7 @@ export default function MealDetailScreen() {
                 style={[
                   styles.moreReviews,
                   {
-                    color: Colors[colorScheme ?? "light"].tint,
+                    color: Colors[colorScheme ?? 'light'].tint,
                   },
                 ]}
               >
@@ -343,13 +343,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
+    borderBottomColor: '#E0E0E0',
   },
   backButton: {
     padding: 8,
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    textAlign: "center",
+    textAlign: 'center',
     marginRight: 40, // Compensate for back button
   },
   content: {
@@ -368,14 +368,14 @@ const styles = StyleSheet.create({
   },
   mealTitle: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 34,
-    textAlign: "center",
+    textAlign: 'center',
   },
   debugId: {
     fontSize: 12,
     opacity: 0.5,
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 4,
   },
   section: {
@@ -392,36 +392,36 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 12,
   },
   priceItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 8,
   },
   priceType: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   priceValue: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   categoryBadge: {
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
   },
   categoryText: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   badgesContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   badge: {
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   badgeDescription: {
     fontSize: 10,
@@ -440,12 +440,12 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   additiveItem: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: 8,
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
   },
   additiveReference: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginRight: 8,
     minWidth: 30,
   },
@@ -454,8 +454,8 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   environmentItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 8,
   },
   environmentLabel: {
@@ -464,12 +464,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   environmentValue: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   reviewItem: {
     marginBottom: 12,
     padding: 12,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: '#F5F5F5',
     borderRadius: 8,
   },
   ratingContainer: {
@@ -477,16 +477,16 @@ const styles = StyleSheet.create({
   },
   rating: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   reviewComment: {
     fontSize: 14,
-    fontStyle: "italic",
+    fontStyle: 'italic',
     opacity: 0.8,
   },
   moreReviews: {
-    textAlign: "center",
-    fontWeight: "500",
+    textAlign: 'center',
+    fontWeight: '500',
     marginTop: 8,
   },
 });
