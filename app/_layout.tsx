@@ -10,10 +10,12 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { Navbar } from '@/components/Navbar/Index';
 import { useAppStateCleanup } from '@/hooks/useAppStateCleanup';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Navbar } from '@/components/Navbar/Index';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Provider } from 'react-redux';
+import { store } from '../store';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -38,16 +40,20 @@ export default function RootLayout() {
   }
 
   return (
-    <GluestackUIProvider mode={colorScheme === 'dark' ? 'dark' : 'light'}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Navbar />
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="profile" options={{ headerShown: false }} />
-          {/* <Stack.Screen name="+not-found" /> */}
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </GluestackUIProvider>
+    <Provider store={store}>
+      <GluestackUIProvider mode={colorScheme === 'dark' ? 'dark' : 'light'}>
+        <ThemeProvider
+          value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+        >
+          <Navbar />
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="profile" options={{ headerShown: false }} />
+            {/* <Stack.Screen name="+not-found" /> */}
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </Provider>
   );
 }

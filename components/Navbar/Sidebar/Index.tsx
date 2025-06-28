@@ -1,4 +1,3 @@
-import { Box } from '@/components/ui/box';
 import { Divider } from '@/components/ui/divider';
 import {
   Drawer,
@@ -9,20 +8,20 @@ import {
 } from '@/components/ui/drawer';
 import { Heading } from '@/components/ui/heading';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAppDispatch } from '@/hooks/redux';
+import { closeSidebar } from '@/store/slices/sidebarSlice';
+import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { SidebarItem } from './SidebarItem/Index';
+import { useSidebar } from '@/hooks/redux/useSidebar';
 
-interface SidebarProps {
-  isOpen?: boolean;
-  onClose?: () => void;
-}
-
-export const Sidebar = (props: SidebarProps) => {
+export const Sidebar = () => {
+  const { toggleSidebar, sidebarState } = useSidebar();
   return (
     <SafeAreaView>
       <Drawer
-        isOpen={props.isOpen}
-        onClose={props.onClose}
+        isOpen={sidebarState.isOpen}
+        onClose={toggleSidebar}
         size="lg"
         anchor="left"
       >
@@ -34,6 +33,7 @@ export const Sidebar = (props: SidebarProps) => {
           </DrawerHeader>
           <DrawerBody>
             <Gerichte />
+            <Mensen />
           </DrawerBody>
         </DrawerContent>
       </Drawer>
@@ -41,7 +41,40 @@ export const Sidebar = (props: SidebarProps) => {
   );
 };
 
+const Mensen = () => {
+  const { toggleSidebar } = useSidebar();
+
+  const handlePress = () => {
+    toggleSidebar();
+    // router.replace({
+    //      pathname: '/(tabs)/mensen',
+    // });
+  };
+  return (
+    <SidebarItem
+      title="Mensen"
+      description="Alle Mensen in deiner Nähe"
+      icon={FontAwesome5}
+      iconProps={{
+        name: 'building',
+        size: 45,
+        className: 'text-primary-500',
+      }}
+      onPress={handlePress}
+    />
+  );
+};
+
 const Gerichte = () => {
+  const dispatch = useAppDispatch();
+
+  const handlePress = () => {
+    dispatch(closeSidebar());
+    router.replace({
+      pathname: '/(tabs)/menu/[canteenId]',
+      params: { canteenId: '655ff175136d3b580c970f80' },
+    });
+  };
   return (
     <SidebarItem
       title="Heutige Gerichte"
@@ -52,6 +85,7 @@ const Gerichte = () => {
         size: 45,
         className: 'text-primary-500',
       }}
+      onPress={handlePress}
     />
   );
 };

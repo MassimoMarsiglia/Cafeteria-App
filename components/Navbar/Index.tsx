@@ -8,18 +8,17 @@ import { Sidebar } from './Sidebar/Index';
 import { SidebarButton } from './Sidebar/SidebarButton/Index';
 
 export const Navbar = () => {
-  const [showDrawer, setShowDrawer] = useState(false);
   return (
     <SafeAreaView className="bg-background-0">
       <Box className="flex-row items-center justify-between p-4 bg-background-0">
         <Box className="w-8 items-start">
-          <SidebarButton onPress={() => setShowDrawer(!showDrawer)} />
+          <SidebarButton />
         </Box>
         <Text className="text-lg font-bold flex-1 text-center">Schmausa</Text>
         <Box className="w-8 items-end">
           <Icon as={SettingsIcon} size="md" />
         </Box>
-        <Sidebar onClose={() => setShowDrawer(false)} isOpen={showDrawer} />
+        <Sidebar />
       </Box>
       <Divider className="mt-2" />
     </SafeAreaView>
