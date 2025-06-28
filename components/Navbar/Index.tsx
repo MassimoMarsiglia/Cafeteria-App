@@ -1,16 +1,15 @@
-import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Box } from '../ui/box';
 import { Divider } from '../ui/divider';
 import { Icon, SettingsIcon } from '../ui/icon';
 import { Text } from '../ui/text';
-import { Sidebar } from './Sidebar/Index';
-import { SidebarButton } from './Sidebar/SidebarButton/Index';
+import { Sidebar } from '../Sidebar/Index';
+import { SidebarButton } from './SidebarButton/Index';
 
 export const Navbar = () => {
   return (
-    <SafeAreaView className="bg-background-0">
-      <Box className="flex-row items-center justify-between p-4 bg-background-0">
+    <SafeAreaView edges={['top']} className="bg-background-0">
+      <Box className="flex-row items-center justify-between px-4 py-1 bg-background-0">
         <Box className="w-8 items-start">
           <SidebarButton />
         </Box>
@@ -20,7 +19,7 @@ export const Navbar = () => {
         </Box>
         <Sidebar />
       </Box>
-      <Divider className="mt-2" />
+      <Divider />
     </SafeAreaView>
   );
 };
