@@ -7,11 +7,10 @@ import {
   Alert,
   FlatList,
   Image,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 // Keyword-based image map
@@ -157,106 +156,58 @@ export default function MensenListScreen() {
 };
 
  if (loading || !location) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007bff" />
-        <Text style={styles.text}>Lade Mensen und Standort...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.centered}>
-        <Text style={[styles.text, { color: 'red' }]}>Fehler: {error}</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Suche nach Mensa"
-        style={styles.search}
-        value={search}
-        onChangeText={setSearch}
-        placeholderTextColor="#666"
-      />
-
-      <FlatList
-        data={filteredSortedCanteens}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => handlePress(item)}>
-            <Image
-              source={getImageForCanteen(item.name)}
-              style={styles.image}
-              resizeMode="cover"
-            />
-            <Text style={styles.title}>{item.name}</Text>
-            <Text style={styles.subtitle}>
-              {item.city} – {(item.distance / 1000).toFixed(2)} km entfernt
-            </Text>
-            <Text style={styles.address}>
-              {item.address
-                ? `${item.address.street}, ${item.address.zipcode} ${item.address.city}`
-                : 'Adresse nicht verfügbar'}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
+    <View className="flex-1 justify-center items-center">
+      <ActivityIndicator size="large" color="#007bff" />
+      <Text className="text-white mt-2">Lade Mensen und Standort...</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#121212',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  search: {
-    backgroundColor: '#ffffff',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 12,
-  },
-  card: {
-    backgroundColor: '#1f1f1f',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  image: {
-    width: '100%',
-    height: 150,
-    borderRadius: 10,
-    marginBottom: 10,
-    backgroundColor: '#333',
-  },
-  title: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  subtitle: {
-    color: '#cccccc',
-    fontSize: 14,
-  },
-  address: {
-    color: '#999999',
-    fontSize: 12,
-    marginTop: 4,
-  },
-  text: {
-    color: '#ffffff',
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+if (error) {
+  return (
+    <View className="flex-1 justify-center items-center">
+      <Text className="text-red-500">Fehler: {error}</Text>
+    </View>
+  );
+}
+
+  return (
+  <View className="flex-1 bg-[#121212] px-4 pt-4">
+    <TextInput
+      placeholder="Suche nach Mensa"
+      className="bg-white p-2.5 rounded-lg mb-3 text-black"
+      value={search}
+      onChangeText={setSearch}
+      placeholderTextColor="#666"
+    />
+
+    <FlatList
+      data={filteredSortedCanteens}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          className="bg-[#1f1f1f] p-4 rounded-xl mb-2.5 border border-[#333]"
+          onPress={() => handlePress(item)}
+        >
+          <Image
+            source={getImageForCanteen(item.name)}
+            className="w-full h-[150px] rounded-lg mb-2.5 bg-[#333]"
+            resizeMode="cover"
+          />
+          <Text className="text-white text-base font-semibold">{item.name}</Text>
+          <Text className="text-[#cccccc] text-sm">
+            {item.city} – {(item.distance / 1000).toFixed(2)} km entfernt
+          </Text>
+          <Text className="text-[#999999] text-xs mt-1">
+            {item.address
+              ? `${item.address.street}, ${item.address.zipcode} ${item.address.city}`
+              : 'Adresse nicht verfügbar'}
+          </Text>
+        </TouchableOpacity>
+      )}
+    />
+  </View>
+);
+}
+

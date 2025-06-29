@@ -2,12 +2,11 @@ import { useCanteens } from '@/hooks/useMensaApi';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
-    ActivityIndicator,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  View
 } from 'react-native';
 
 export default function MensaDetail() {
@@ -54,189 +53,92 @@ export default function MensaDetail() {
   };
 
   if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007bff" />
-        <Text style={styles.text}>Loading canteen details...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.text}>Failed to load canteen data.</Text>
-      </View>
-    );
-  }
-
-  const canteen = canteens.find(c => c.id === canteenId);
-  if (!canteen) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.text}>Canteen not found.</Text>
-      </View>
-    );
-  }
-
-  const imageSource = imageKey ? images[imageKey as string] : null;
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {imageSource && (
-        <Image source={imageSource} style={styles.image} resizeMode="cover" />
-      )}
-
-      <Text style={styles.title}>{canteen.name}</Text>
-      <Text style={styles.address}>
-        {canteen.address?.street}, {canteen.address?.zipcode}{' '}
-        {canteen.address?.city}
-      </Text>
-
-      {canteen.description && (
-        <Text style={styles.description}>{canteen.description}</Text>
-      )}
-
-      {/* Contact Section */}
-      {canteen.contactInfo && (
-        <View style={styles.contactContainer}>
-          <Text style={styles.sectionTitle}>Contact Information:</Text>
-
-          {/* Phone box */}
-          {canteen.contactInfo.phone && (
-            <View style={styles.contactBox}>
-              <Text style={styles.contactText}>
-                📞 {canteen.contactInfo.phone}
-              </Text>
-            </View>
-          )}
-
-          {/* Email box */}
-          {canteen.contactInfo.email && (
-            <View style={styles.contactBox}>
-              <Text style={styles.contactText}>
-                📧 {canteen.contactInfo.email}
-              </Text>
-            </View>
-          )}
-        </View>
-      )}
-
-      {/* Business Hours Section */}
-      {canteen.businessDays?.length > 0 && (
-        <View style={styles.businessDaysContainer}>
-          <Text style={styles.sectionTitle}>Business Hours:</Text>
-          {canteen.businessDays.map(dayObj => (
-            <View key={dayObj.day} style={styles.dayContainer}>
-              <View style={styles.dayRow}>
-                <Text style={styles.dayTitle}>{dayObj.day}:</Text>
-                <View style={styles.hoursWrapper}>
-                  {dayObj.businessHours.length > 0 ? (
-                    dayObj.businessHours.map((hours, idx) => (
-                      <Text key={idx} style={styles.hoursText}>
-                        {hours.businessHourType}: {hours.openAt} -{' '}
-                        {hours.closeAt}
-                      </Text>
-                    ))
-                  ) : (
-                    <Text style={styles.hoursText}>Closed</Text>
-                  )}
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
-      )}
-    </ScrollView>
+    <View className="flex-1 justify-center items-center bg-black">
+      <ActivityIndicator size="large" color="#007bff" />
+      <Text className="text-white mt-2">Loading canteen details...</Text>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000',
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    marginBottom: 20,
-    borderRadius: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  address: {
-    fontSize: 16,
-    marginTop: 4,
-    color: '#ccc',
-  },
-  description: {
-    marginTop: 12,
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#eee',
-  },
-  text: {
-    color: '#fff',
-  },
-  contactContainer: {
-    marginTop: 20,
-    width: '100%',
-  },
-  businessDaysContainer: {
-    marginTop: 20,
-    width: '100%',
-  },
-  sectionTitle: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 8,
-    color: '#fff',
-  },
-  dayContainer: {
-    marginBottom: 10,
-  },
-  dayRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    flexWrap: 'wrap',
-    marginBottom: 10,
-  },
-  dayTitle: {
-    fontWeight: '600',
-    fontSize: 16,
-    width: 90,
-    color: '#fff',
-  },
-  hoursWrapper: {
-    flex: 1,
-    flexDirection: 'column',
-    gap: 2,
-  },
-  hoursText: {
-    fontSize: 14,
-    color: '#ccc',
-  },
-  contactBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#222', // almost black but lighter than pure black
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 10, // rounded corners
-    marginBottom: 10,
-  },
-  contactText: {
-    color: '#ddd', // light gray text to contrast dark bg
-    fontSize: 16,
-  },
-});
+if (error) {
+  return (
+    <View className="flex-1 justify-center items-center bg-black">
+      <Text className="text-white mt-2">Failed to load canteen data.</Text>
+    </View>
+  );
+}
+
+const canteen = canteens.find(c => c.id === canteenId);
+if (!canteen) {
+  return (
+    <View className="flex-1 justify-center items-center bg-black">
+      <Text className="text-white mt-2">Canteen not found.</Text>
+    </View>
+  );
+}
+
+const imageSource = imageKey ? images[imageKey as string] : null;
+
+return (
+  <ScrollView contentContainerStyle={{ alignItems: 'center' }} className="bg-black p-5">
+    {imageSource && (
+      <Image source={imageSource} resizeMode="cover" className="w-full h-52 mb-5 rounded-lg" />
+    )}
+
+    <Text className="text-white text-2xl font-bold">{canteen.name}</Text>
+    <Text className="text-gray-300 text-base mt-1">
+      {canteen.address?.street}, {canteen.address?.zipcode} {canteen.address?.city}
+    </Text>
+
+    {canteen.description && (
+      <Text className="text-gray-200 text-base leading-6 mt-3">{canteen.description}</Text>
+    )}
+
+    {/* Contact Info */}
+    {canteen.contactInfo && (
+      <View className="w-full mt-5">
+        <Text className="text-white text-lg font-bold mb-2">Contact Information:</Text>
+
+        {canteen.contactInfo.phone && (
+          <View className="flex-row items-center bg-neutral-800 px-4 py-2 rounded-lg mb-2">
+            <Text className="text-gray-200 text-base">📞 {canteen.contactInfo.phone}</Text>
+          </View>
+        )}
+
+        {canteen.contactInfo.email && (
+          <View className="flex-row items-center bg-neutral-800 px-4 py-2 rounded-lg mb-2">
+            <Text className="text-gray-200 text-base">📧 {canteen.contactInfo.email}</Text>
+          </View>
+        )}
+      </View>
+    )}
+
+    {/* Business Hours */}
+    {canteen.businessDays?.length > 0 && (
+      <View className="w-full mt-5">
+        <Text className="text-white text-lg font-bold mb-2">Business Hours:</Text>
+
+        {canteen.businessDays.map(dayObj => (
+          <View key={dayObj.day} className="mb-3">
+            <View className="flex-row flex-wrap items-start mb-2">
+              <Text className="text-white font-semibold text-base w-24">{dayObj.day}:</Text>
+              <View className="flex-1">
+                {dayObj.businessHours.length > 0 ? (
+                  dayObj.businessHours.map((hours, idx) => (
+                    <Text key={idx} className="text-gray-300 text-sm">
+                      {hours.businessHourType}: {hours.openAt} - {hours.closeAt}
+                    </Text>
+                  ))
+                ) : (
+                  <Text className="text-gray-300 text-sm">Closed</Text>
+                )}
+              </View>
+            </View>
+          </View>
+        ))}
+      </View>
+    )}
+  </ScrollView>
+);
+}
