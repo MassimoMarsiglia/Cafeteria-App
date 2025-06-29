@@ -1,13 +1,10 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
-import { TopSection } from '@/components/Menu/TopSection/Index';
-import { Box } from '@/components/ui/box';
-import { Grid } from '@/components/ui/grid';
 import { Text } from '@/components/ui/text';
 import { useTodaysMenu } from '@/hooks/useMensaApi';
-import { useLocalSearchParams } from 'expo-router';
-import { FlatList, RefreshControl, ScrollView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
+import { FlatList, RefreshControl, ScrollView } from 'react-native';
 // import TopSection from './TopSection/Index';
 
 const Menu = () => {
@@ -47,18 +44,18 @@ const Menu = () => {
       }
     >
       <DateTimePicker
-      value={date}
-      mode="date"
-      display="calendar"
-      onChange={(event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShow(false);
-        setDate(currentDate);
-        // Optionally, you can refetch the menu for the selected date here
-        // refetchMenu(currentDate);
-      }}
-      style={{ width: '100%' }}
-    />
+        value={date}
+        mode="date"
+        display="calendar"
+        onChange={(event, selectedDate) => {
+          const currentDate = selectedDate || date;
+          setShow(false);
+          setDate(currentDate);
+          // Optionally, you can refetch the menu for the selected date here
+          // refetchMenu(currentDate);
+        }}
+        style={{ width: '100%' }}
+      />
       {!menuLoading ? (
         // Render menu content here, e.g.:
         <FlatList
