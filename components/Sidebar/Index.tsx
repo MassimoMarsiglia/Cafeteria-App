@@ -45,7 +45,7 @@ const Mensen = () => {
   const handlePress = () => {
     toggleSidebar();
     router.replace({
-         pathname: '/(tabs)/mensen/mensenList',
+      pathname: '/(tabs)/mensen/mensenList',
     });
   };
   return (

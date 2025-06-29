@@ -30,9 +30,9 @@ export const SidebarItem = (props: SidebarItemProps) => {
             <Text className="text-sm text-gray-500">{props.description}</Text>
           )}
         </Box>
-        <Icon as={ChevronRightIcon}/>
+        <Icon as={ChevronRightIcon} />
       </Box>
-      <Divider className='mt-5'/>
+      <Divider className="mt-5" />
     </Pressable>
   );
 };

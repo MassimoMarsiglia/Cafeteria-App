@@ -32,7 +32,7 @@ export default function TabLayout() {
           title: 'Mensen List',
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="mensen/mensenDetail/[canteenId]"
         options={{
           title: 'Menu',

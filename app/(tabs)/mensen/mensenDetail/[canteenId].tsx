@@ -70,7 +70,7 @@ export default function MensaDetail() {
     );
   }
 
-  const canteen = canteens.find((c) => c.id === canteenId);
+  const canteen = canteens.find(c => c.id === canteenId);
   if (!canteen) {
     return (
       <View style={styles.centered}>
@@ -82,67 +82,73 @@ export default function MensaDetail() {
   const imageSource = imageKey ? images[imageKey as string] : null;
 
   return (
-  <ScrollView contentContainerStyle={styles.container}>
-    {imageSource && (
-      <Image source={imageSource} style={styles.image} resizeMode="cover" />
-    )}
+    <ScrollView contentContainerStyle={styles.container}>
+      {imageSource && (
+        <Image source={imageSource} style={styles.image} resizeMode="cover" />
+      )}
 
-    <Text style={styles.title}>{canteen.name}</Text>
-    <Text style={styles.address}>
-      {canteen.address?.street}, {canteen.address?.zipcode} {canteen.address?.city}
-    </Text>
+      <Text style={styles.title}>{canteen.name}</Text>
+      <Text style={styles.address}>
+        {canteen.address?.street}, {canteen.address?.zipcode}{' '}
+        {canteen.address?.city}
+      </Text>
 
-    {canteen.description && (
-      <Text style={styles.description}>{canteen.description}</Text>
-    )}
+      {canteen.description && (
+        <Text style={styles.description}>{canteen.description}</Text>
+      )}
 
-    {/* Contact Section */}
-    {canteen.contactInfo && (
-      <View style={styles.contactContainer}>
-        <Text style={styles.sectionTitle}>Contact Information:</Text>
+      {/* Contact Section */}
+      {canteen.contactInfo && (
+        <View style={styles.contactContainer}>
+          <Text style={styles.sectionTitle}>Contact Information:</Text>
 
-        {/* Phone box */}
-        {canteen.contactInfo.phone && (
-          <View style={styles.contactBox}>
-            <Text style={styles.contactText}>📞 {canteen.contactInfo.phone}</Text>
-          </View>
-        )}
+          {/* Phone box */}
+          {canteen.contactInfo.phone && (
+            <View style={styles.contactBox}>
+              <Text style={styles.contactText}>
+                📞 {canteen.contactInfo.phone}
+              </Text>
+            </View>
+          )}
 
-        {/* Email box */}
-        {canteen.contactInfo.email && (
-          <View style={styles.contactBox}>
-            <Text style={styles.contactText}>📧 {canteen.contactInfo.email}</Text>
-          </View>
-        )}
-      </View>
-    )}
+          {/* Email box */}
+          {canteen.contactInfo.email && (
+            <View style={styles.contactBox}>
+              <Text style={styles.contactText}>
+                📧 {canteen.contactInfo.email}
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
 
-    {/* Business Hours Section */}
-    {canteen.businessDays?.length > 0 && (
-      <View style={styles.businessDaysContainer}>
-        <Text style={styles.sectionTitle}>Business Hours:</Text>
-        {canteen.businessDays.map((dayObj) => (
-          <View key={dayObj.day} style={styles.dayContainer}>
-            <View style={styles.dayRow}>
-              <Text style={styles.dayTitle}>{dayObj.day}:</Text>
-              <View style={styles.hoursWrapper}>
-                {dayObj.businessHours.length > 0 ? (
-                  dayObj.businessHours.map((hours, idx) => (
-                    <Text key={idx} style={styles.hoursText}>
-                      {hours.businessHourType}: {hours.openAt} - {hours.closeAt}
-                    </Text>
-                  ))
-                ) : (
-                  <Text style={styles.hoursText}>Closed</Text>
-                )}
+      {/* Business Hours Section */}
+      {canteen.businessDays?.length > 0 && (
+        <View style={styles.businessDaysContainer}>
+          <Text style={styles.sectionTitle}>Business Hours:</Text>
+          {canteen.businessDays.map(dayObj => (
+            <View key={dayObj.day} style={styles.dayContainer}>
+              <View style={styles.dayRow}>
+                <Text style={styles.dayTitle}>{dayObj.day}:</Text>
+                <View style={styles.hoursWrapper}>
+                  {dayObj.businessHours.length > 0 ? (
+                    dayObj.businessHours.map((hours, idx) => (
+                      <Text key={idx} style={styles.hoursText}>
+                        {hours.businessHourType}: {hours.openAt} -{' '}
+                        {hours.closeAt}
+                      </Text>
+                    ))
+                  ) : (
+                    <Text style={styles.hoursText}>Closed</Text>
+                  )}
+                </View>
               </View>
             </View>
-          </View>
-        ))}
-      </View>
-    )}
-  </ScrollView>
-);
+          ))}
+        </View>
+      )}
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
