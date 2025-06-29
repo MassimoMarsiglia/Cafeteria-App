@@ -1,7 +1,4 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
-import { TopSection } from '@/components/Menu/TopSection/Index';
-import { Box } from '@/components/ui/box';
-import { Grid } from '@/components/ui/grid';
 import { Text } from '@/components/ui/text';
 import { useTodaysMenu } from '@/hooks/useMensaApi';
 import { useLocalSearchParams } from 'expo-router';

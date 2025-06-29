@@ -26,6 +26,18 @@ export default function TabLayout() {
           title: 'Menu',
         }}
       />
+      <Stack.Screen
+        name="mensen/mensenList"
+        options={{
+          title: 'Mensen List',
+        }}
+      />
+       <Stack.Screen
+        name="mensen/mensenDetail/[canteenId]"
+        options={{
+          title: 'Menu',
+        }}
+      />
     </Stack>
   );
 }
