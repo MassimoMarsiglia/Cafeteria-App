@@ -1,12 +1,14 @@
 import { useCanteens } from '@/hooks/useMensaApi';
+import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Image,
+  Pressable,
   ScrollView,
   Text,
-  View
+  View,
 } from 'react-native';
 
 export default function MensaDetail() {
@@ -80,65 +82,90 @@ if (!canteen) {
 
 const imageSource = imageKey ? images[imageKey as string] : null;
 
+const CollapsibleDay = ({ dayObj }: { dayObj: any }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Pressable
+      onPress={() => setExpanded(!expanded)}
+      className="mb-4 bg-neutral-300 dark:bg-neutral-800 rounded-lg px-6 py-4"
+    >
+      <View className="flex-row justify-between items-center">
+        <View className="flex-row items-center space-x-2">
+          <Text className="text-black dark:text-white font-semibold text-xl">{dayObj.day} </Text>
+          {expanded && <Feather name="calendar" size={24} color="green" />}
+        </View>
+
+        <View className="flex-row items-center space-x-2">
+          {expanded ? (
+            <Feather name="chevron-up" color="white" size={24} />
+          ) : (
+            <Feather name="chevron-down" color="white" size={24} />
+          )}
+        </View>
+      </View>
+
+      {expanded && (
+        <View className="mt-4">
+          {dayObj.businessHours.length > 0 ? (
+            dayObj.businessHours.map((hours: any, idx: number) => (
+              <Text key={idx} className="text-gray-800 dark:text-gray-300 text-base mb-1">
+                {hours.businessHourType}: {hours.openAt} - {hours.closeAt}
+              </Text>
+            ))
+          ) : (
+            <Text className="text-gray-800 dark:text-gray-300">Closed</Text>
+          )}
+        </View>
+      )}
+    </Pressable>
+  );
+};
+
+
 return (
-  <ScrollView contentContainerStyle={{ alignItems: 'center' }} className="bg-black p-5">
+  <ScrollView contentContainerStyle={{ alignItems: 'center' }} className="bg-background p-5">
     {imageSource && (
       <Image source={imageSource} resizeMode="cover" className="w-full h-52 mb-5 rounded-lg" />
     )}
 
-    <Text className="text-white text-2xl font-bold">{canteen.name}</Text>
-    <Text className="text-gray-300 text-base mt-1">
+    <Text className="text-black dark:text-white text-2xl font-bold">{canteen.name}</Text>
+    <Text className="text-gray-700 dark:text-gray-300 text-base mt-1">
       {canteen.address?.street}, {canteen.address?.zipcode} {canteen.address?.city}
     </Text>
 
     {canteen.description && (
-      <Text className="text-gray-200 text-base leading-6 mt-3">{canteen.description}</Text>
+      <Text className="text-gray-800 dark:text-gray-200 text-base leading-6 mt-3">{canteen.description}</Text>
     )}
 
     {/* Contact Info */}
     {canteen.contactInfo && (
       <View className="w-full mt-5">
-        <Text className="text-white text-lg font-bold mb-2">Contact Information:</Text>
+        <Text className="text-black dark:text-white text-lg font-bold mb-2">Contact Information:</Text>
 
         {canteen.contactInfo.phone && (
-          <View className="flex-row items-center bg-neutral-800 px-4 py-2 rounded-lg mb-2">
-            <Text className="text-gray-200 text-base">📞 {canteen.contactInfo.phone}</Text>
+          <View className="flex-row items-center bg-green-300 dark:bg-green-800 px-4 py-2 rounded-lg mb-3">
+            <Text className="text-gray-800 dark:text-gray-200 text-lg">📞 {canteen.contactInfo.phone}</Text>
           </View>
         )}
 
         {canteen.contactInfo.email && (
-          <View className="flex-row items-center bg-neutral-800 px-4 py-2 rounded-lg mb-2">
-            <Text className="text-gray-200 text-base">📧 {canteen.contactInfo.email}</Text>
+          <View className="flex-row items-center bg-blue-300 dark:bg-blue-800 px-4 py-2 rounded-lg mb-3">
+            <Text className="text-gray-800 dark:text-gray-200 text-lg">📧 {canteen.contactInfo.email}</Text>
           </View>
         )}
       </View>
     )}
 
-    {/* Business Hours */}
     {canteen.businessDays?.length > 0 && (
-      <View className="w-full mt-5">
-        <Text className="text-white text-lg font-bold mb-2">Business Hours:</Text>
+  <View className="w-full mt-5">
+    <Text className="text-black dark:text-white text-lg font-bold mb-2">Business Hours:</Text>
 
-        {canteen.businessDays.map(dayObj => (
-          <View key={dayObj.day} className="mb-3">
-            <View className="flex-row flex-wrap items-start mb-2">
-              <Text className="text-white font-semibold text-base w-24">{dayObj.day}:</Text>
-              <View className="flex-1">
-                {dayObj.businessHours.length > 0 ? (
-                  dayObj.businessHours.map((hours, idx) => (
-                    <Text key={idx} className="text-gray-300 text-sm">
-                      {hours.businessHourType}: {hours.openAt} - {hours.closeAt}
-                    </Text>
-                  ))
-                ) : (
-                  <Text className="text-gray-300 text-sm">Closed</Text>
-                )}
-              </View>
-            </View>
-          </View>
-        ))}
-      </View>
-    )}
+    {canteen.businessDays.map((dayObj: any) => (
+      <CollapsibleDay key={dayObj.day} dayObj={dayObj} />
+    ))}
+  </View>
+)}
   </ScrollView>
 );
 }

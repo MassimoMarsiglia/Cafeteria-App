@@ -173,10 +173,10 @@ if (error) {
 }
 
   return (
-  <View className="flex-1 bg-[#121212] px-4 pt-4">
+  <View className="flex-1 bg-background px-4 pt-4">
     <TextInput
       placeholder="Suche nach Mensa"
-      className="bg-white p-2.5 rounded-lg mb-3 text-black"
+      className=" bg-white p-2.5 rounded-lg mb-3 text-black"
       value={search}
       onChangeText={setSearch}
       placeholderTextColor="#666"
@@ -187,7 +187,7 @@ if (error) {
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <TouchableOpacity
-          className="bg-[#1f1f1f] p-4 rounded-xl mb-2.5 border border-[#333]"
+          className=" bg-slate-600 dark:bg-[#1f1f1f] p-4 rounded-xl mb-2.5 border border-[#333]"
           onPress={() => handlePress(item)}
         >
           <Image
