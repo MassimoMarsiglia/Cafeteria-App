@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '../redux';
+import { useAppDispatch } from './redux';
 import { AppDispatch, RootState } from '@/store';
 import {
   openSidebar as open,
