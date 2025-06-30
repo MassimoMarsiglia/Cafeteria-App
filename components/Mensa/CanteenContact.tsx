@@ -6,7 +6,7 @@ export default function CanteenContact({ contactInfo }: { contactInfo: any }) {
   return (
     <View className="w-full mt-5">
       <Text className="text-black dark:text-white text-lg font-bold mb-2">
-        Contact Information:
+        Kontaktinformationen:
       </Text>
 
       {contactInfo.phone && (

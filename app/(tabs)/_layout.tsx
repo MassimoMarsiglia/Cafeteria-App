@@ -38,6 +38,7 @@ export default function TabLayout() {
           title: 'Menu',
         }}
       />
+      <Stack screenOptions={{ gestureEnabled: true }} />;
     </Stack>
   );
 }

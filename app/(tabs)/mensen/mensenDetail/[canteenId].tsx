@@ -6,14 +6,21 @@ import LoadingView from '@/components/Mensa/LoadingView';
 import NotFoundView from '@/components/Mensa/NotFoundView';
 import { useCanteens } from '@/hooks/useMensaApi';
 import images from '@/utils/mensaImage';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-
-import { Image, ScrollView, Text, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
   const { data: canteens, loading, error } = useCanteens();
+  const router = useRouter();
 
   if (loading) return <LoadingView />;
   if (error) return <ErrorView />;
@@ -30,6 +37,12 @@ export default function MensaDetail() {
       contentContainerStyle={{ alignItems: 'center' }}
       className="bg-background p-5"
     >
+      {Platform.OS === 'android' && (
+        <Pressable onPress={() => router.back()} className="self-start mb-3">
+          <Text className="text-black dark:text-white text-base">← Zurück</Text>
+        </Pressable>
+      )}
+
       {imageSource && (
         <Image
           source={imageSource}
@@ -51,7 +64,7 @@ export default function MensaDetail() {
       {canteen.businessDays?.length > 0 && (
         <View className="w-full mt-5">
           <Text className="text-black dark:text-white text-lg font-bold mb-2">
-            Business Hours:
+            Geschäftszeiten:
           </Text>
           {canteen.businessDays.map((dayObj: any) => (
             <CollapsibleDay key={dayObj.day} dayObj={dayObj} />
