@@ -63,7 +63,8 @@ export function useCanteens() {
 
       try {
         console.log('Starting to fetch canteens...');
-        const result = await mensaApi.getCanteensWithFallback();
+        const result = await mensaApi.getCanteens();
+        console.log(result);
         console.log('Canteens loaded:', result.length);
 
         if (!isCancelled) {
@@ -103,7 +104,7 @@ export function useCanteens() {
       setError(null);
 
       try {
-        const result = await mensaApi.getCanteensWithFallback();
+        const result = await mensaApi.getCanteens();
         cache.canteens = {
           data: result,
           timestamp: Date.now(),

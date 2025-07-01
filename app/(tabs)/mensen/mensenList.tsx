@@ -39,7 +39,6 @@ export default function MensenListScreen() {
 
       return { ...canteen, distance };
     });
-
     setSortedCanteens(withDistance.sort((a, b) => a.distance - b.distance));
   }, [location, canteens]);
 
