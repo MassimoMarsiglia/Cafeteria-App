@@ -10,7 +10,7 @@ export default function CanteenContact({ contactInfo }: { contactInfo: any }) {
       </Text>
 
       {contactInfo.phone && (
-        <View className="flex-row items-center bg-green-300 dark:bg-green-800 px-4 py-2 rounded-lg mb-3">
+        <View className="flex-row items-center bg-[#DEE4E7] dark:bg-gray-900 px-4 py-2 rounded-lg mb-3 ">
           <Text className="text-gray-800 dark:text-gray-200 text-lg">
             📞 {contactInfo.phone}
           </Text>
@@ -18,7 +18,7 @@ export default function CanteenContact({ contactInfo }: { contactInfo: any }) {
       )}
 
       {contactInfo.email && (
-        <View className="flex-row items-center bg-blue-300 dark:bg-blue-800 px-4 py-2 rounded-lg mb-3">
+        <View className="flex-row items-center bg-[#DEE4E7] dark:bg-gray-900 px-4 py-2 rounded-lg mb-3 ">
           <Text className="text-gray-800 dark:text-gray-200 text-lg">
             📧 {contactInfo.email}
           </Text>

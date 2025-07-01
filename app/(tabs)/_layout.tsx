@@ -38,6 +38,12 @@ export default function TabLayout() {
           title: 'Menu',
         }}
       />
+      <Stack.Screen
+        name="screen/settings"
+        options={{
+          title: 'Setting Screen',
+        }}
+      />
       <Stack screenOptions={{ gestureEnabled: true }} />;
     </Stack>
   );

@@ -15,6 +15,7 @@ export function useUserLocation() {
           'Standort nicht erlaubt',
           'Bitte erlaube den Zugriff auf deinen Standort.',
         );
+        setLocation(null);
         return;
       }
 

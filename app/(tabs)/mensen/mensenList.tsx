@@ -20,11 +20,16 @@ export default function MensenListScreen() {
 
   // imageMap
   // getUserLocation
-
-  // Sort canteens by distance
   useEffect(() => {
-    if (!location || !canteens) return;
+    if (!canteens) return;
 
+    // If no location, show canteens without sorting
+    if (!location) {
+      setSortedCanteens(canteens); // no sorting
+      return;
+    }
+
+    // Sort canteen base on location
     const withDistance = canteens.map(canteen => {
       const geo = canteen.address?.geoLocation;
       const distance =
@@ -64,7 +69,7 @@ export default function MensenListScreen() {
     });
   };
 
-  if (loading || !location) {
+  if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#007bff" />
@@ -84,10 +89,10 @@ export default function MensenListScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background px-4 pt-4">
+    <View className="flex-1 bg-[#FFFFF] dark:bg-background px-4 pt-4">
       <TextInput
         placeholder="Suche nach Mensa"
-        className=" bg-white p-2.5 rounded-lg mb-3 text-black"
+        className=" bg-[#FDFAF6] dark:bg-[#DEE4E7] p-2.5 rounded-lg mb-3 text-black border border-gray-600"
         value={search}
         onChangeText={setSearch}
         placeholderTextColor="#666"

@@ -1,9 +1,11 @@
+import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Sidebar } from '../Sidebar/Index';
 import { Box } from '../ui/box';
 import { Divider } from '../ui/divider';
 import { Icon, SettingsIcon } from '../ui/icon';
+import { Pressable } from '../ui/pressable';
 import { Text } from '../ui/text';
-import { Sidebar } from '../Sidebar/Index';
 import { SidebarButton } from './SidebarButton/Index';
 
 export const Navbar = () => {
@@ -13,10 +15,17 @@ export const Navbar = () => {
         <Box className="w-8 items-start">
           <SidebarButton />
         </Box>
+
         <Text className="text-lg font-bold flex-1 text-center">Schmausa</Text>
+
         <Box className="w-8 items-end">
-          <Icon as={SettingsIcon} size="md" />
+          <Pressable
+            onPress={() => router.push({ pathname: '/(tabs)/screen/settings' })}
+          >
+            <Icon as={SettingsIcon} size="md" />
+          </Pressable>
         </Box>
+
         <Sidebar />
       </Box>
       <Divider />
