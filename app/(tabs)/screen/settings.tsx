@@ -1,6 +1,8 @@
+import { Switch } from '@/components/ui/switch';
+import { Text } from '@/components/ui/text';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
-import { Switch, Text, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function SettingsScreen() {
   const { colorScheme, setColorScheme } = useColorScheme();

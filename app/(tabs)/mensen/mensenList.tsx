@@ -1,16 +1,11 @@
 import CanteenCard from '@/components/Mensa/MensaCard';
+import { Text } from '@/components/ui/text';
 import { useUserLocation } from '@/hooks/Mensa/useUserLocation';
 import { useCanteens } from '@/hooks/useMensaApi';
 import { getDistanceFromLatLonInMeters } from '@/utils/distance';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, TextInput, View } from 'react-native';
 
 export default function MensenListScreen() {
   const { data: canteens, loading, error } = useCanteens();

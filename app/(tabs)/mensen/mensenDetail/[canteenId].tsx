@@ -4,18 +4,14 @@ import { formatBusinessHours } from '@/components/Mensa/CollapsibleDay';
 import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
 import NotFoundView from '@/components/Mensa/NotFoundView';
+import { Image } from '@/components/ui/image';
+import { Pressable } from '@/components/ui/pressable';
+import { Text } from '@/components/ui/text';
 import { useCanteens } from '@/hooks/useMensaApi';
 import images from '@/utils/mensaImage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import {
-  Image,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
@@ -48,6 +44,7 @@ export default function MensaDetail() {
           source={imageSource}
           resizeMode="cover"
           className="w-full h-52 mb-5 rounded-lg"
+          alt="Canteen Image"
         />
       )}
 

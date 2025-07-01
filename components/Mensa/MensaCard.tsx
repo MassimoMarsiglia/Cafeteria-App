@@ -1,5 +1,7 @@
+import { Image } from '@/components/ui/image';
+import { Text } from '@/components/ui/text';
 import { getImageForCanteen } from '@/utils/imageMap';
-import { Image, Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 export default function CanteenCard({
   canteen,
@@ -17,6 +19,7 @@ export default function CanteenCard({
         source={getImageForCanteen(canteen.name)}
         className="w-full h-[150px] rounded-lg mb-2.5 bg-[#333]"
         resizeMode="cover"
+        alt="All canteen images"
       />
       <Text className="text-black dark:text-white text-base font-semibold">
         {canteen.name}
