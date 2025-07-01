@@ -8,10 +8,10 @@ import {
 } from '@/components/ui/drawer';
 import { Heading } from '@/components/ui/heading';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
+import { useSidebar } from '@/hooks/redux/useSidebar';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { SidebarItem } from './SidebarItem/Index';
-import { useSidebar } from '@/hooks/redux/useSidebar';
 
 export const Sidebar = () => {
   const { toggleSidebar, sidebarState } = useSidebar();
@@ -44,9 +44,9 @@ const Mensen = () => {
 
   const handlePress = () => {
     toggleSidebar();
-    // router.replace({
-    //      pathname: '/(tabs)/mensen',
-    // });
+    router.replace({
+      pathname: '/(tabs)/mensen/mensenList',
+    });
   };
   return (
     <SidebarItem

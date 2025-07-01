@@ -3,7 +3,7 @@ import { Text } from '@/components/ui/text';
 import { useTodaysMenu } from '@/hooks/useMensaApi';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import React from 'react';
 import { FlatList, RefreshControl, ScrollView } from 'react-native';
 // import TopSection from './TopSection/Index';
 
@@ -18,6 +18,8 @@ const Menu = () => {
     error: menuError,
     refetch: refetchMenu,
   } = useTodaysMenu(canteenId.canteenId);
+
+  console.log('TodaysMenu (outside useEffect):', todaysMenu);
 
   // Handle error state
   if (menuError) {
@@ -57,11 +59,10 @@ const Menu = () => {
         style={{ width: '100%' }}
       />
       {!menuLoading ? (
-        // Render menu content here, e.g.:
         <FlatList
           data={todaysMenu[0]?.meals || []}
           renderItem={MealCard}
-          keyExtractor={item => item.ID}
+          keyExtractor={(item, index) => `${item.ID}-${index}`}
           numColumns={2}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
