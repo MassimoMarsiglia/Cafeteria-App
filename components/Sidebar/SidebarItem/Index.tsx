@@ -1,11 +1,9 @@
 import { Box } from '@/components/ui/box';
+import { Divider } from '@/components/ui/divider';
 import { Heading } from '@/components/ui/heading';
 import { ChevronRightIcon, Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { Pressable } from 'react-native';
-import { toggleSidebar } from '@/store/slices/sidebarSlice';
-import { useSidebar } from '@/hooks/redux/useSidebar';
-import { Divider } from '@/components/ui/divider';
 
 interface SidebarItemProps {
   title: string;
