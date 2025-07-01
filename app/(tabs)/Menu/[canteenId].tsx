@@ -1,11 +1,15 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
 import { Text } from '@/components/ui/text';
 import { useTodaysMenu } from '@/hooks/useMensaApi';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { FlatList, RefreshControl, ScrollView } from 'react-native';
 // import TopSection from './TopSection/Index';
 
 const Menu = () => {
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
   const canteenId = useLocalSearchParams<{ canteenId: string }>();
 
   const {
@@ -39,6 +43,19 @@ const Menu = () => {
         <RefreshControl refreshing={menuLoading} onRefresh={refetchMenu} />
       }
     >
+      <DateTimePicker
+        value={date}
+        mode="date"
+        display="calendar"
+        onChange={(event, selectedDate) => {
+          const currentDate = selectedDate || date;
+          setShow(false);
+          setDate(currentDate);
+          // Optionally, you can refetch the menu for the selected date here
+          // refetchMenu(currentDate);
+        }}
+        style={{ width: '100%' }}
+      />
       {!menuLoading ? (
         // Render menu content here, e.g.:
         <FlatList
