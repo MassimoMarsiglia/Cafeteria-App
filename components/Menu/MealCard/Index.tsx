@@ -25,7 +25,7 @@ export const MealCard = ({
         ellipsizeMode="tail">
         {meal.name.trim()}</Text>
         {/* Price */}
-        {<Text> {meal.prices && meal.prices.length > 0
+        {<Text>{meal.prices && meal.prices.length > 0
             ? `${(meal.prices[preis_einstellung[0]]).price.toFixed(2)}€`
             : 'Kein Preis'}</Text> }
         {/* Category */}
