@@ -1,3 +1,5 @@
+import { RadioGroup } from '@/components/ui/radio';
+import { RadioButton } from '@/components/Menu/RadioButton';
 import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
 import { useColorScheme } from 'nativewind';
@@ -17,6 +19,14 @@ export default function SettingsScreen() {
       <Text className="text-black dark:text-white text-xl font-bold mb-4">
         Einstellungen
       </Text>
+      <View>
+        <Text>Wähle deine Preisklasse</Text>
+        <RadioGroup>
+          <RadioButton label="Student"/>
+          <RadioButton label="Angestellte"/>
+          <RadioButton label="Gäste"/>
+        </RadioGroup>
+      </View>
       <View className="flex-row items-center justify-between w-full max-w-md">
         <Text className="text-black dark:text-white text-base">
           🌗 Dark Mode
