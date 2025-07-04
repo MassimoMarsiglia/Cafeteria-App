@@ -1,17 +1,19 @@
 import { Radio, RadioGroup, RadioIndicator, RadioLabel, RadioIcon } from "@/components/ui/radio";
 import { CircleIcon } from "@/components/ui/icon";
-	
-export const RadioButton = ({
-  label,
-}: {
+
+interface RadioButtonProps {
   label: string;
-}) => {
+  value: string;
+  isInvalid?: boolean;
+}
+
+export const RadioButton = (props : RadioButtonProps) => {
   return (
-    <Radio value="change" size="md" isInvalid={false} isDisabled={false}>
+    <Radio value={props.value} size="md" isInvalid={false} isDisabled={false}>
       <RadioIndicator>
         <RadioIcon as={CircleIcon} />
       </RadioIndicator>
-      <RadioLabel>{label}</RadioLabel>
+      <RadioLabel>{props.label}</RadioLabel>
     </Radio>
   );
 };

@@ -11,6 +11,7 @@ import { cacheManager, useCanteens, useTodaysMenu } from '@/hooks/useMensaApi';
 import { useTabFocusEffect } from '@/hooks/useTabFocusEffect';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { setPriceCategory } from '@/store/slices/settingsSlice';
 import {
   Dimensions,
   FlatList,
@@ -19,6 +20,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import { useSettings } from '@/hooks/redux/useSettings';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -148,6 +150,8 @@ export default function HomeScreen() {
     }
   };
 
+  const { priceCategory } = useSettings();
+
   return (
     <View
       style={{
@@ -240,7 +244,9 @@ export default function HomeScreen() {
           <ThemedView style={styles.gridContainer}>
             <FlatList
               data={allMeals}
-              renderItem={MealCard}
+              renderItem={({ item, index }) => (
+                <MealCard item={item} index={index} priceCategory={Number(priceCategory)} />
+              )}
               keyExtractor={item => item.ID}
               numColumns={2}
               scrollEnabled={false}

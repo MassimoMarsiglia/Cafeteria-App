@@ -1,9 +1,10 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
 import { Text } from '@/components/ui/text';
+import { useSettings } from '@/hooks/redux/useSettings';
 import { useTodaysMenu } from '@/hooks/useMensaApi';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { FlatList, RefreshControl, ScrollView } from 'react-native';
 // import TopSection from './TopSection/Index';
 
@@ -11,6 +12,7 @@ const Menu = () => {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const canteenId = useLocalSearchParams<{ canteenId: string }>();
+  const { priceCategory } = useSettings();
 
   const {
     data: todaysMenu,
@@ -61,7 +63,9 @@ const Menu = () => {
       {!menuLoading ? (
         <FlatList
           data={todaysMenu[0]?.meals || []}
-          renderItem={MealCard}
+          renderItem={({ item, index }) => (
+            <MealCard item={item} index={index} priceCategory={Number(priceCategory)} />
+          )}
           keyExtractor={(item, index) => `${item.ID}-${index}`}
           numColumns={2}
           scrollEnabled={false}

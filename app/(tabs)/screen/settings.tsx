@@ -5,14 +5,15 @@ import { Text } from '@/components/ui/text';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { useSettings } from '@/hooks/redux/useSettings';
 
 export default function SettingsScreen() {
   const { colorScheme, setColorScheme } = useColorScheme();
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === 'dark');
-
+  const { setPriceCategory, priceCategory } = useSettings();
   useEffect(() => {
     setColorScheme(isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
+  }, [isDarkMode, setColorScheme]);
 
   return (
     <View className="flex-1 items-center justify-center bg-white dark:bg-black px-4">
@@ -21,10 +22,10 @@ export default function SettingsScreen() {
       </Text>
       <View>
         <Text>Wähle deine Preisklasse</Text>
-        <RadioGroup>
-          <RadioButton label="Student"/>
-          <RadioButton label="Angestellte"/>
-          <RadioButton label="Gäste"/>
+        <RadioGroup onChange={setPriceCategory} value={priceCategory}>
+          <RadioButton value="0" label="Student"/>
+          <RadioButton value="1" label="Angestellte"/>
+          <RadioButton value="2" label="Gäste"/>
         </RadioGroup>
       </View>
       <View className="flex-row items-center justify-between w-full max-w-md">

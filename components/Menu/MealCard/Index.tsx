@@ -1,20 +1,18 @@
 import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
+import { useSettings } from '@/hooks/redux/useSettings';
 import { Meal } from '@/services/mensaApi';
 import { TouchableOpacity } from 'react-native';
 
 export const MealCard = ({
   item: meal,
   index,
+  priceCategory,
 }: {
   item: Meal;
   index: number;
+  priceCategory: number;
 }) => {
-  /*
-  "Student = 0, Angestellte = 1, Gäste = 2.
-  TODO: Später durch die in Einstellungen gespeicherte Einstellung für Preise ersetzen. 
-  */
-  const preis_einstellung = [0,1,2]
 
   return (
     <TouchableOpacity className="flex-1 mx-2 last:flex">
@@ -26,7 +24,7 @@ export const MealCard = ({
         {meal.name.trim()}</Text>
         {/* Price */}
         {<Text>{meal.prices && meal.prices.length > 0
-            ? `${(meal.prices[preis_einstellung[0]]).price.toFixed(2)}€`
+            ? `${(meal.prices[Number(priceCategory)]).price.toFixed(2)}€`
             : 'Kein Preis'}</Text> }
         {/* Category */}
         <Text>{meal.category}</Text>
