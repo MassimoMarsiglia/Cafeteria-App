@@ -1,17 +1,18 @@
-import { configureStore } from '@reduxjs/toolkit';
-import sidebarReducer from './slices/sidebarSlice';
 import { mensaApi } from '@/services/mensaApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { configureStore } from '@reduxjs/toolkit';
 import {
-  persistStore,
-  persistReducer,
   FLUSH,
-  REHYDRATE,
   PAUSE,
   PERSIST,
+  persistReducer,
+  persistStore,
   PURGE,
   REGISTER,
+  REHYDRATE,
 } from 'redux-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import settingsReducer from './slices/settingsSlice';
+import sidebarReducer from './slices/sidebarSlice';
 
 const persistConfig = {
   key: 'schmausa-v1',
@@ -28,6 +29,7 @@ const persistedMensaApiReducer = persistReducer(
 export const store = configureStore({
   reducer: {
     sidebar: sidebarReducer,
+    settings: settingsReducer,
     [mensaApi.reducerPath]: persistedMensaApiReducer,
   },
   middleware: getDefaultMiddleware =>
