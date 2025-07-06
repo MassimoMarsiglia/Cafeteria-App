@@ -15,6 +15,8 @@ import type {
   Menu,
   MenuFilter,
 } from './mensaTypes';
+import { Action } from '@reduxjs/toolkit';
+import { REHYDRATE } from 'redux-persist';
 
 const BASE_URL = 'https://mensa.gregorflachs.de/api/v1';
 
@@ -27,6 +29,10 @@ type Tag =
   | 'Additive'
   | 'MealReview'
   | 'CanteenReview';
+
+function isRehydrate(action: Action): action is Action<typeof REHYDRATE> {
+  return action.type === REHYDRATE;
+}
 
 export const mensaApi = createApi({
   reducerPath: 'mensaApi',
@@ -41,6 +47,14 @@ export const mensaApi = createApi({
       return headers;
     },
   }),
+  extractRehydrationInfo(action, { reducerPath }) {
+    if (isRehydrate(action)) {
+      // if you persisted only the api slice:
+      return (action as any).payload?.[reducerPath];
+      // …or, if you persisted the whole root state with a custom key:
+      // return action.payload
+    }
+  },
 
   tagTypes: [
     'Canteen',

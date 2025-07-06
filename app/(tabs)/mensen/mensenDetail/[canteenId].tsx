@@ -20,6 +20,7 @@ export default function MensaDetail() {
     data: canteens,
     isLoading,
     error,
+    refetch,
   } = useGetCanteensQuery({
     ID: canteenId as string,
   });
