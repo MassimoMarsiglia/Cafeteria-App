@@ -69,7 +69,7 @@ const Gerichte = () => {
   const handlePress = () => {
     toggleSidebar();
     router.replace({
-      pathname: '/', // Später ersetzen durch /(tabs)/menu/[canteenId] wenn Massimo die Page fertig programmiert hat
+      pathname: '/(tabs)/menu/[canteenId]',
       params: { canteenId: '655ff175136d3b580c970f80' },
     });
   };

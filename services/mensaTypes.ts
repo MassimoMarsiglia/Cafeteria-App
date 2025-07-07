@@ -33,7 +33,7 @@ export interface BusinessHour {
 }
 
 export interface Meal {
-  ID: string; // MongoDB ObjectID string
+  id: string; // MongoDB ObjectID string
   name: string;
   prices?: Price[];
   category?: string;

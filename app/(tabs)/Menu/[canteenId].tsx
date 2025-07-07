@@ -48,7 +48,7 @@ const Menu = () => {
         <RefreshControl refreshing={isLoading} onRefresh={refetch} />
       }
     >
-      <DateTimePicker
+      {/* <DateTimePicker
         value={date}
         mode="date"
         display="calendar"
@@ -60,7 +60,7 @@ const Menu = () => {
           // refetchMenu(currentDate);
         }}
         style={{ width: '100%' }}
-      />
+      /> */}
       {!isLoading ? (
         <FlatList
           data={menu[0]?.meals || []}
@@ -71,7 +71,7 @@ const Menu = () => {
               priceCategory={Number(priceCategory)}
             />
           )}
-          keyExtractor={(item, index) => `${item.ID}-${index}`}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
           numColumns={2}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}

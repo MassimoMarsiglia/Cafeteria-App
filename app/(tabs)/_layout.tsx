@@ -15,12 +15,6 @@ export default function TabLayout() {
         }}
       />
       <Stack.Screen
-        name="all_cafeterias"
-        options={{
-          title: 'All Cafeterias',
-        }}
-      />
-      <Stack.Screen
         name="menu/[canteenId]"
         options={{
           title: 'Menu',
