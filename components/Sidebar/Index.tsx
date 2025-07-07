@@ -69,14 +69,14 @@ const Gerichte = () => {
   const handlePress = () => {
     toggleSidebar();
     router.replace({
-      pathname: '/(tabs)/menu/[canteenId]',
+      pathname: '/', // Später ersetzen durch /(tabs)/menu/[canteenId] wenn Massimo die Page fertig programmiert hat
       params: { canteenId: '655ff175136d3b580c970f80' },
     });
   };
   return (
     <SidebarItem
       title="Heutige Gerichte"
-      description="Aktuelle Speisen der Mensa"
+      description="Aktuelle Speisen deiner Mensa"
       icon={MaterialCommunityIcons}
       iconProps={{
         name: 'food-fork-drink',
