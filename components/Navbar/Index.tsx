@@ -20,7 +20,7 @@ export const Navbar = () => {
 
         <Box className="w-8 items-end">
           <Pressable
-            onPress={() => router.push({ pathname: '/(tabs)/screen/settings' })}
+            onPress={() => router.push({ pathname: '/(tabs)/settings' })}
           >
             <Icon as={SettingsIcon} size="md" />
           </Pressable>
