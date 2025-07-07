@@ -66,7 +66,7 @@ export const SetDefaultCanteenButton = (props: CanteenSelectionProps) => {
         numberOfLines={1}
         ellipsizeMode="tail"
       >
-        Als Default Mensa setzen
+        🩷Lieblingsmensa
       </Text>
     </Button>
   );

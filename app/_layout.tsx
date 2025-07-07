@@ -11,10 +11,14 @@ import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '../store';
+import { useColorScheme } from 'nativewind';
+
 
 // Create a wrapper component that has access to Redux
 function AppContent() {
   const { isDarkMode } = useSettings();
+  const colorscheme = useColorScheme();
+  colorscheme.setColorScheme(isDarkMode)
 
   return (
     <GluestackUIProvider mode={isDarkMode ? 'dark' : 'light'}>

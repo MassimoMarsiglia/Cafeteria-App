@@ -25,7 +25,7 @@ export const NavigateToMenuButton = (props: NavigateToMenuButtonProps) => {
         numberOfLines={1}
         ellipsizeMode="tail"
       >
-        View Menu
+        🗒 Menü angucken
       </Text>
     </Button>
   );

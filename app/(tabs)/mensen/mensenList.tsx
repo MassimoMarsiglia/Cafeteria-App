@@ -2,6 +2,7 @@ import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
 import CanteenCard from '@/components/Mensa/MensaCard';
 import NotFoundView from '@/components/Mensa/NotFoundView';
+import { Searchbar } from '@/components/Mensa/Searchbar';
 import { useUserLocation } from '@/hooks/Mensa/useUserLocation';
 import { useGetCanteensQuery } from '@/services/mensaApi';
 import { getDistanceFromLatLonInMeters } from '@/utils/distance';
@@ -71,13 +72,7 @@ export default function MensenListScreen() {
 
   return (
     <View className="flex-1 bg-background-0 px-4 pt-4">
-      <TextInput
-        placeholder="Suche nach Mensa"
-        className=" bg-[#FDFAF6] dark:bg-[#DEE4E7] p-2.5 rounded-lg mb-3 text-black border border-gray-600"
-        value={search}
-        onChangeText={setSearch}
-        placeholderTextColor="#666"
-      />
+      <Searchbar placeholder='Suche nach Mensen' value={search} onChangeText={setSearch} />
 
       <FlatList
         refreshControl={
