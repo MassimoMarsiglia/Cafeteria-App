@@ -1,6 +1,6 @@
 import { mensaApi } from '@/services/mensaApi';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { configureStore } from '@reduxjs/toolkit';
+import Storage from 'expo-sqlite/kv-store';
 import {
   FLUSH,
   PAUSE,
@@ -14,9 +14,11 @@ import {
 import settingsReducer from './slices/settingsSlice';
 import sidebarReducer from './slices/sidebarSlice';
 
+const storage = Storage;
+
 const persistConfig = {
   key: 'schmausa-v1',
-  storage: AsyncStorage,
+  storage: storage,
   blacklist: [],
   version: 1,
 };
