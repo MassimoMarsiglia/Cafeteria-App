@@ -26,7 +26,7 @@ export const Sidebar = () => {
         <DrawerBackdrop />
         <DrawerContent>
           <DrawerHeader className="flex flex-col items-start justify-center mt-4">
-            <Heading size="lg">Schmausa App</Heading>
+            <Heading size="lg">Schmausa</Heading>
             <Divider className="mt-2 divide-secondary-0" />
           </DrawerHeader>
           <DrawerBody>
