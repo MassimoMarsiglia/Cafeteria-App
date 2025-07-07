@@ -1,15 +1,12 @@
+import { BusinessDay } from '@/services/mensaTypes';
+
 type BusinessHour = {
   businessHourType: string;
   openAt: string;
   closeAt: string;
 };
 
-type DayObj = {
-  day: string;
-  businessHours: BusinessHour[];
-};
-
-export function formatBusinessHours(businessDays: DayObj[]) {
+export function formatBusinessHours(businessDays: BusinessDay[]) {
   const monThuDays = ['Mo', 'Di', 'Mi', 'Do'];
   const fridayDay = 'Fr';
   const weekendDays = ['Sa', 'So'];
@@ -18,7 +15,7 @@ export function formatBusinessHours(businessDays: DayObj[]) {
   const fri = businessDays.find(d => d.day === fridayDay);
   const satSun = businessDays.filter(d => weekendDays.includes(d.day));
 
-  const formatHours = (dayObj: DayObj) =>
+  const formatHours = (dayObj: BusinessDay) =>
     dayObj.businessHours.map(
       h => `${h.openAt} – ${h.closeAt} (${h.businessHourType})`,
     );

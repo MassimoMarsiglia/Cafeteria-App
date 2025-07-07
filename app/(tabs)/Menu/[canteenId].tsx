@@ -1,42 +1,43 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
 import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
-import { useTodaysMenu } from '@/hooks/useMensaApi';
+import { useGetMenusQuery } from '@/services/mensaApi';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { FlatList, RefreshControl, ScrollView } from 'react-native';
-// import TopSection from './TopSection/Index';
 
 const Menu = () => {
   const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const canteenId = useLocalSearchParams<{ canteenId: string }>();
   const { priceCategory } = useSettings();
 
   const {
-    data: todaysMenu,
-    loading: menuLoading,
-    error: menuError,
-    refetch: refetchMenu,
-  } = useTodaysMenu(canteenId.canteenId);
+    data: menu,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetMenusQuery({
+    canteenId: canteenId.canteenId,
+    startdate: date.toISOString().split('T')[0], // Format date to YYYY-MM-DD
+    enddate: date.toISOString().split('T')[0], // Use the same date for single day menu
+  });
 
-  console.log('TodaysMenu (outside useEffect):', todaysMenu);
+  console.log('TodaysMenu (outside useEffect):', menu);
 
   // Handle error state
-  if (menuError) {
-    return (
-      <Text style={{ color: 'red' }}>Error loading menu: {menuError}</Text>
-    );
+  if (isError) {
+    return <Text style={{ color: 'red' }}>Error loading menu: {isError}</Text>;
   }
 
   // Handle loading state
-  if (menuLoading) {
+  if (isLoading) {
     return <Text>Loading today menu...</Text>;
   }
 
   // Handle empty data state
-  if (!todaysMenu || todaysMenu.length === 0) {
+  if (!menu || menu.length === 0) {
     return <Text>No menu available for today</Text>;
   }
 
@@ -44,7 +45,7 @@ const Menu = () => {
     <ScrollView
       className="flex-1 px-4"
       refreshControl={
-        <RefreshControl refreshing={menuLoading} onRefresh={refetchMenu} />
+        <RefreshControl refreshing={isLoading} onRefresh={refetch} />
       }
     >
       <DateTimePicker
@@ -60,11 +61,15 @@ const Menu = () => {
         }}
         style={{ width: '100%' }}
       />
-      {!menuLoading ? (
+      {!isLoading ? (
         <FlatList
-          data={todaysMenu[0]?.meals || []}
+          data={menu[0]?.meals || []}
           renderItem={({ item, index }) => (
-            <MealCard item={item} index={index} priceCategory={Number(priceCategory)} />
+            <MealCard
+              item={item}
+              index={index}
+              priceCategory={Number(priceCategory)}
+            />
           )}
           keyExtractor={(item, index) => `${item.ID}-${index}`}
           numColumns={2}

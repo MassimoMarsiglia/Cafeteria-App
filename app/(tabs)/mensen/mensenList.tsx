@@ -1,14 +1,16 @@
+import ErrorView from '@/components/Mensa/ErrorView';
+import LoadingView from '@/components/Mensa/LoadingView';
 import CanteenCard from '@/components/Mensa/MensaCard';
-import { Text } from '@/components/ui/text';
+import NotFoundView from '@/components/Mensa/NotFoundView';
 import { useUserLocation } from '@/hooks/Mensa/useUserLocation';
-import { useCanteens } from '@/hooks/useMensaApi';
+import { useGetCanteensQuery } from '@/services/mensaApi';
 import { getDistanceFromLatLonInMeters } from '@/utils/distance';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, TextInput, View } from 'react-native';
+import { FlatList, RefreshControl, TextInput, View } from 'react-native';
 
 export default function MensenListScreen() {
-  const { data: canteens, loading, error } = useCanteens();
+  const { data: canteens, isLoading, error, refetch } = useGetCanteensQuery();
   const [search, setSearch] = useState('');
   const location = useUserLocation();
   const [sortedCanteens, setSortedCanteens] = useState<any[]>([]);
@@ -39,7 +41,6 @@ export default function MensenListScreen() {
 
       return { ...canteen, distance };
     });
-
     setSortedCanteens(withDistance.sort((a, b) => a.distance - b.distance));
   }, [location, canteens]);
 
@@ -64,24 +65,9 @@ export default function MensenListScreen() {
     });
   };
 
-  if (loading) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#007bff" />
-        <Text className="text-black dark:text-white mt-2">
-          Lade Mensen und Standort...
-        </Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-red-500">Fehler: {error}</Text>
-      </View>
-    );
-  }
+  if (isLoading) return <LoadingView />;
+  if (error) return <ErrorView />;
+  if (!canteens || canteens.length === 0) return <NotFoundView />;
 
   return (
     <View className="flex-1 bg-[#FFFFF] dark:bg-background px-4 pt-4">
@@ -94,6 +80,9 @@ export default function MensenListScreen() {
       />
 
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+        }
         data={filtered}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
