@@ -7,7 +7,7 @@ import NotFoundView from '@/components/Mensa/NotFoundView';
 import { Image } from '@/components/ui/image';
 import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
-import { useCanteens } from '@/hooks/useMensaApi';
+import { useGetCanteensQuery } from '@/services/mensaApi';
 import images from '@/utils/mensaImage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -15,16 +15,28 @@ import { Platform, ScrollView, View } from 'react-native';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
-  const { data: canteens, loading, error } = useCanteens();
+
+  const {
+    data: canteens,
+    isLoading,
+    error,
+    refetch,
+  } = useGetCanteensQuery({
+    ID: canteenId as string,
+  });
+
   const router = useRouter();
 
-  if (loading) return <LoadingView />;
-  if (error) return <ErrorView />;
+  const canteen = canteens?.[0];
 
-  const canteen = canteens.find(c => c.id === canteenId);
+  if (isLoading) return <LoadingView />;
+  if (error) return <ErrorView />;
   if (!canteen) return <NotFoundView />;
 
-  const imageSource = imageKey ? images[imageKey as string] : null;
+  const imageSource =
+    imageKey && typeof imageKey === 'string' && imageKey in images
+      ? images[imageKey as keyof typeof images]
+      : null;
 
   // Define collapsable day section
 
@@ -50,21 +62,15 @@ export default function MensaDetail() {
 
       <CanteenHeader name={canteen.name} address={canteen.address} />
 
-      {canteen.description && (
-        <Text className="text-gray-800 dark:text-gray-200 text-base leading-6 mt-3">
-          {canteen.description}
-        </Text>
-      )}
-
       <CanteenContact contactInfo={canteen.contactInfo} />
 
-      {canteen.businessDays?.length > 0 && (
+      {canteen.businessDays!.length > 0 && (
         <View className="w-full mt-5">
           <Text className="text-black dark:text-white text-lg font-bold mb-3">
             Business Hours
           </Text>
 
-          {Object.entries(formatBusinessHours(canteen.businessDays)).map(
+          {Object.entries(formatBusinessHours(canteen.businessDays!)).map(
             ([label, times]) => (
               <View
                 key={label}
