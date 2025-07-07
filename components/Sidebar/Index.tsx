@@ -8,9 +8,13 @@ import {
 } from '@/components/ui/drawer';
 import { Heading } from '@/components/ui/heading';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
+import { useSettings } from '@/hooks/redux/useSettings';
 import { useSidebar } from '@/hooks/redux/useSidebar';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { Alert, AlertIcon, AlertText } from '../ui/alert';
+import { InfoIcon } from '../ui/icon';
+import { Toast, ToastDescription, ToastTitle, useToast } from '../ui/toast';
 import { SidebarItem } from './SidebarItem/Index';
 
 export const Sidebar = () => {
@@ -64,13 +68,21 @@ const Mensen = () => {
 };
 
 const Gerichte = () => {
+  const { favoriteCanteen } = useSettings();
   const { toggleSidebar } = useSidebar();
+  const toast = useToast();
 
   const handlePress = () => {
     toggleSidebar();
+    if (!favoriteCanteen) {
+      router.replace({
+        pathname: '/(tabs)/mensen/mensenList',
+      });
+      return;
+    }
     router.replace({
       pathname: '/(tabs)/menu/[canteenId]',
-      params: { canteenId: '655ff175136d3b580c970f80' },
+      params: { canteenId: favoriteCanteen.id },
     });
   };
   return (
