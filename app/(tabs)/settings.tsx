@@ -16,7 +16,7 @@ export default function SettingsScreen() {
   }, [isDarkMode, setColorScheme]);
 
   return (
-    <View className="flex-1 items-center justify-center bg-white dark:bg-black px-4">
+    <View className="flex-1 items-center justify-center bg-background-0 px-4">
       <Text className="text-black dark:text-white text-xl font-bold mb-4">
         Einstellungen
       </Text>

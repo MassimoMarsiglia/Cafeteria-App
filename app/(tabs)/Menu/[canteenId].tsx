@@ -43,7 +43,7 @@ const Menu = () => {
 
   return (
     <ScrollView
-      className="flex-1 px-4"
+      className="flex-1 px-4 bg-background-0"
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={refetch} />
       }

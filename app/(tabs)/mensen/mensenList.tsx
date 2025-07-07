@@ -70,7 +70,7 @@ export default function MensenListScreen() {
   if (!canteens || canteens.length === 0) return <NotFoundView />;
 
   return (
-    <View className="flex-1 bg-[#FFFFF] dark:bg-background px-4 pt-4">
+    <View className="flex-1 bg-background-0 px-4 pt-4">
       <TextInput
         placeholder="Suche nach Mensa"
         className=" bg-[#FDFAF6] dark:bg-[#DEE4E7] p-2.5 rounded-lg mb-3 text-black border border-gray-600"

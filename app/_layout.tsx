@@ -6,26 +6,40 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { Navbar } from '@/components/Navbar/Index';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useSettings } from '@/hooks/redux/useSettings';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '../store';
 
+// Create a wrapper component that has access to Redux
+function AppContent() {
+  const { isDarkMode } = useSettings();
+
+  return (
+    <GluestackUIProvider mode={isDarkMode ? 'dark' : 'light'}>
+      <Navbar />
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="+not-found" /> */}
+      </Stack>
+      <StatusBar style="auto" />
+    </GluestackUIProvider>
+  );
+}
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [isReady, setIsReady] = useState(false);
 
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  // Wait for color scheme to be ready
   useEffect(() => {
-    if (colorScheme !== null && loaded) {
+    if (loaded) {
       setIsReady(true);
     }
-  }, [colorScheme, loaded]);
+  }, [loaded]);
 
   if (!isReady) {
     return null;
@@ -34,14 +48,7 @@ export default function RootLayout() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <GluestackUIProvider mode={colorScheme === 'dark' ? 'dark' : 'light'}>
-          <Navbar />
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            {/* <Stack.Screen name="+not-found" /> */}
-          </Stack>
-          <StatusBar style="auto" />
-        </GluestackUIProvider>
+        <AppContent />
       </PersistGate>
     </Provider>
   );
