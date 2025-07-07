@@ -1,4 +1,3 @@
-import { AppHeader } from '@/components/AppHeader';
 import { MealCard } from '@/components/Menu/MealCard/Index';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -159,10 +158,7 @@ export default function HomeScreen() {
         backgroundColor: Colors[colorScheme ?? 'light'].background,
       }}
     >
-      <AppHeader
-        title="Heutige Gerichte"
-        subtitle={selectedCanteen?.name || 'HTW Mensa'}
-      />
+   
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
