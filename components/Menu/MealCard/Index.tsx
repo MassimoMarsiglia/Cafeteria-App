@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
-import { Meal } from '@/services/mensaApi';
+import { Meal } from '@/services/mensaTypes';
 import { TouchableOpacity, Image } from 'react-native';
 
 export const MealCard = ({
