@@ -71,7 +71,7 @@ const Menu = () => {
               priceCategory={Number(priceCategory)}
             />
           )}
-          keyExtractor={(item, index) => `${item.ID}-${index}`}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
           numColumns={2}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}

@@ -3,6 +3,7 @@ import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { Meal } from '@/services/mensaTypes';
 import { TouchableOpacity, Image } from 'react-native';
+import { router } from 'expo-router';
 
 export const MealCard = ({
   item: meal,
@@ -31,8 +32,18 @@ export const MealCard = ({
     }
   };
 
+  const routeToItem = () => {
+    router.push({
+      pathname: '/Menu/MenuItem/[mealId]',
+      params: { 
+        mealData: JSON.stringify(meal),
+        mealId: meal.id,
+      },
+    }); 
+  }
+
   return (
-    <TouchableOpacity className="flex-1 mx-2 last:flex">
+    <TouchableOpacity className="flex-1 mx-2 last:flex" onPress={routeToItem}>
       <Card variant="elevated" className="outline outline-1 p-2 mb-4 flex-1">
         <Image
           source={getCategoryImage(meal.category)}

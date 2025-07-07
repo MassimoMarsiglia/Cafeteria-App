@@ -33,7 +33,7 @@ export interface BusinessHour {
 }
 
 export interface Meal {
-  ID: string; // MongoDB ObjectID string
+  id: string; // MongoDB ObjectID string
   name: string;
   prices?: Price[];
   category?: string;
@@ -56,19 +56,19 @@ export interface Menu {
 }
 
 export interface Badge {
-  ID: string;
+  id: string;
   name: string;
   description?: string;
 }
 
 export interface Additive {
-  ID: string;
+  id: string;
   text: string;
   referenceid: string;
 }
 
 export interface MealReview {
-  ID: string;
+  id: string;
   mealID: string;
   userID: string;
   averageRating?: number;
@@ -79,7 +79,7 @@ export interface MealReview {
 }
 
 export interface CanteenReview {
-  ID: string;
+  id: string;
   canteenID: string;
   userID: string;
   averageRating?: number;
@@ -96,7 +96,7 @@ export interface DetailRating {
 
 // Filter interfaces based on Swagger documentation
 export interface CanteenFilter {
-  ID?: string;
+  id?: string;
   loadingtype?: 'lazy' | 'complete';
   name?: string;
   zipcode?: string;
@@ -108,7 +108,7 @@ export interface CanteenFilter {
 }
 
 export interface MealFilter {
-  ID?: string;
+  id?: string;
   loadingtype?: 'lazy' | 'complete' | 'mealonly';
   category?: string;
   name?: string;
@@ -127,7 +127,7 @@ export interface MenuFilter {
 }
 
 export interface MealReviewFilter {
-  ID?: string;
+  id?: string;
   mealId?: string;
   usderId?: string; // Note: API has typo "usderId" instead of "userId"
   ratingequal?: string;
@@ -145,7 +145,7 @@ export interface MealReviewFilter {
 }
 
 export interface CanteenReviewFilter {
-  ID?: string;
+  id?: string;
   canteenId?: string;
   usderId?: string; // Note: API has typo "usderId" instead of "userId"
   ratingequal?: string;
