@@ -1,15 +1,17 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
 import { Text } from '@/components/ui/text';
+import { Fab, FabIcon } from '@/components/ui/fab';
+import { CalendarDaysIcon } from '@/components/ui/icon';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMenusQuery } from '@/services/mensaApi';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { FlatList, RefreshControl, ScrollView } from 'react-native';
+import { FlatList, RefreshControl, ScrollView, View } from 'react-native';
 
 const Menu = () => {
   const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   const canteenId = useLocalSearchParams<{ canteenId: string }>();
   const { priceCategory } = useSettings();
 
@@ -42,47 +44,57 @@ const Menu = () => {
   }
 
   return (
-    <ScrollView
-      className="flex-1 px-4"
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-      }
-    >
-      <DateTimePicker
-        value={date}
-        mode="date"
-        display="calendar"
-        onChange={(event, selectedDate) => {
-          const currentDate = selectedDate || date;
-          setShow(false);
-          setDate(currentDate);
-          // Optionally, you can refetch the menu for the selected date here
-          // refetchMenu(currentDate);
-        }}
-        style={{ width: '100%' }}
-      />
-      {!isLoading ? (
-        <FlatList
-          data={menu[0]?.meals || []}
-          renderItem={({ item, index }) => (
-            <MealCard
-              item={item}
-              index={index}
-              priceCategory={Number(priceCategory)}
-            />
-          )}
-          keyExtractor={(item, index) => `${item.ID}-${index}`}
-          numColumns={2}
-          scrollEnabled={false}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          columnWrapperClassName="justify-between px-2"
-          className="py-2"
-        />
-      ) : (
-        <Text>Loading...</Text>
-      )}
-    </ScrollView>
+    <View className="flex-1">
+      <ScrollView
+        className="flex-1 px-4"
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+        }
+      >
+        {show && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="calendar"
+            onChange={(event, selectedDate) => {
+              const currentDate = selectedDate || date;
+              setShow(false);
+              setDate(currentDate);
+              // refetchMenu(currentDate);
+            }}
+            style={{ width: '100%' }}
+          />
+        )}
+        {!isLoading ? (
+          <FlatList
+            data={menu[0]?.meals || []}
+            renderItem={({ item, index }) => (
+              <MealCard
+                item={item}
+                index={index}
+                priceCategory={Number(priceCategory)}
+              />
+            )}
+            keyExtractor={(item, index) => `${item.ID}-${index}`}
+            numColumns={2}
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            columnWrapperClassName="justify-between px-2"
+            className="py-2"
+          />
+        ) : (
+          <Text>Loading...</Text>
+        )}
+      </ScrollView>
+      <Fab
+        size="lg"
+        placement="bottom right"
+        onPress={() => setShow(true)}
+      >
+        <FabIcon as={CalendarDaysIcon} />
+      </Fab>
+    </View>
   );
 };
 
