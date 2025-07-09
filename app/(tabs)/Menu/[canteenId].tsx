@@ -76,22 +76,17 @@ const Menu = () => {
               />
             )}
             keyExtractor={(item, index) => `${item.ID}-${index}`}
-            numColumns={2}
+            numColumns={1}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
-            columnWrapperClassName="justify-between px-2"
             className="py-2"
           />
         ) : (
           <Text>Loading...</Text>
         )}
       </ScrollView>
-      <Fab
-        size="lg"
-        placement="bottom right"
-        onPress={() => setShow(true)}
-      >
+      <Fab size="lg" placement="bottom right" onPress={() => setShow(true)}>
         <FabIcon as={CalendarDaysIcon} />
       </Fab>
     </View>
