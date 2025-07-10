@@ -53,7 +53,7 @@ export default function MealView() {
       {/* Preise */}
       <Card variant="elevated" className="p-4 mb-4">
         <View className="flex-row items-center mb-3">
-          <Ionicons name="cash" size={30} color="#666" style={{ marginRight: 8 }} />
+          <Ionicons name="cash" size={30} color="#FBC02D" style={{ marginRight: 8 }} />
           <Text className="text-lg font-semibold">Preise</Text>
         </View>
         {meal.prices?.map((price: { priceType: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; price: number; }, index: Key | null | undefined) => (
@@ -72,7 +72,7 @@ export default function MealView() {
             <AccordionHeader>
               <AccordionTrigger>
                 <View className="flex-row items-center flex-1">
-                  <Ionicons name="information-circle" size={30} color="#666" style={{ marginRight: 8 }} />
+                  <Ionicons name="information-circle" size={30} color="#1565C0" style={{ marginRight: 8 }} />
                   <AccordionTitleText>Generelle-Infos</AccordionTitleText>
                 </View>
                 <AccordionIcon as={ChevronDownIcon} />
@@ -95,7 +95,7 @@ export default function MealView() {
             <AccordionHeader>
               <AccordionTrigger>
                 <View className="flex-row items-center flex-1">
-                  <Ionicons name="leaf" size={30} color="#666" style={{ marginRight: 8 }} />
+                  <Ionicons name="leaf" size={30} color="#43A047" style={{ marginRight: 8 }} />
                   <AccordionTitleText>Umwelt-Info</AccordionTitleText>
                 </View>
                 <AccordionIcon as={ChevronDownIcon} />
@@ -124,7 +124,7 @@ export default function MealView() {
             <AccordionHeader>
               <AccordionTrigger>
                 <View className="flex-row items-center flex-1">
-                  <Ionicons name="warning" size={30} color="#666" style={{ marginRight: 8 }} />
+                  <Ionicons name="warning" size={30} color="yellow" style={{ marginRight: 8 }} />
                   <AccordionTitleText>Zusatzstoffe</AccordionTitleText>
                 </View>
                 <AccordionIcon as={ChevronDownIcon} />
@@ -145,10 +145,10 @@ export default function MealView() {
     </ScrollView>
     <View className="flex-row justify-between items-center p-4">
       <Button size="lg" className="rounded-full p-8" onPress={() => console.log('zuFavoriten hinzufügen geklickt')}>
-        <Ionicons name="heart" size={45}/>
+        <Ionicons name="heart" size={45} color="red"/>
       </Button>
       <Button size="lg" className="rounded-full p-8" onPress={() => console.log('Rezept generieren geklickt')}>
-        <Ionicons name="sparkles" size={45}/>
+        <Ionicons name="sparkles" size={45} color="#FBC02D"/>
       </Button>
     </View>
     </View>
