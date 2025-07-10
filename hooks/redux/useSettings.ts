@@ -1,5 +1,7 @@
+import { Canteen } from '@/services/mensaTypes';
 import { AppDispatch, RootState } from '@/store';
 import {
+  setFavoriteCanteen as setCanteen,
   setPriceCategory as setPriceCat,
   toggleDarkMode as toggleDark,
 } from '@/store/slices/settingsSlice';
@@ -14,6 +16,10 @@ export const useSettings = () => {
     dispatch(setPriceCat(category));
   };
 
+  const setFavoriteCanteen = (canteen: Canteen) => {
+    dispatch(setCanteen(canteen));
+  };
+
   const toggleDarkMode = () => {
     dispatch(toggleDark());
   };
@@ -22,6 +28,8 @@ export const useSettings = () => {
     setPriceCategory,
     isDarkMode: settingsState.isDarkMode,
     toggleDarkMode,
+    setFavoriteCanteen,
+    favoriteCanteen: settingsState.favoriteCanteen,
     priceCategory: settingsState.priceCategory,
   };
 };

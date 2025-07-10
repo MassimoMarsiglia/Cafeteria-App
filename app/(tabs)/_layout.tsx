@@ -1,23 +1,26 @@
+import { useSettings } from '@/hooks/redux/useSettings';
 import { Stack } from 'expo-router';
 import React from 'react';
+import { NativeStackNavigationOptions } from 'react-native-screens/lib/typescript/native-stack/types';
 
 export default function TabLayout() {
+  const { isDarkMode } = useSettings();
+
+  const backgroundColor = isDarkMode ? '#18181b' : '#ffffff';
+
+  const defaultScreenOptions = {
+    headerShown: false,
+    gestureEnabled: true,
+    contentStyle: { backgroundColor },
+    cardStyle: { backgroundColor },
+  } as const;
+
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <Stack screenOptions={defaultScreenOptions}>
       <Stack.Screen
         name="index"
         options={{
           title: 'Dishes',
-        }}
-      />
-      <Stack.Screen
-        name="all_cafeterias"
-        options={{
-          title: 'All Cafeterias',
         }}
       />
       <Stack.Screen
@@ -44,7 +47,12 @@ export default function TabLayout() {
           title: 'Settings Screen',
         }}
       />
-      <Stack screenOptions={{ gestureEnabled: true }} />;
+      <Stack.Screen
+        name="settings/pricecategory"
+        options={{
+          title: 'Price Category Settings',
+        }}
+      />
     </Stack>
   );
 }

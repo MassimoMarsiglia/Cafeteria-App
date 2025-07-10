@@ -1,16 +1,16 @@
+import { Canteen } from '@/services/mensaTypes';
 import { createSlice } from '@reduxjs/toolkit';
-import sidebarSlice from './sidebarSlice';
-
-type colourTheme = 'light' | 'dark';
 
 interface SettingsState {
-  isDarkMode: colourTheme;
+  isDarkMode: boolean;
   priceCategory: string;
+  favoriteCanteen?: Canteen;
 }
 
 const initialState: SettingsState = {
-  isDarkMode: "dark",
+  isDarkMode: true, // Start with dark mode
   priceCategory: '0',
+  favoriteCanteen: undefined,
 };
 
 const settingsSlice = createSlice({
@@ -18,13 +18,17 @@ const settingsSlice = createSlice({
   initialState,
   reducers: {
     toggleDarkMode(state) {
-      state.isDarkMode = state.isDarkMode === 'dark' ? 'light' : 'dark';
+      state.isDarkMode = !state.isDarkMode;
     },
     setPriceCategory(state, action) {
       state.priceCategory = action.payload;
     },
+    setFavoriteCanteen(state, action) {
+      state.favoriteCanteen = action.payload;
+    },
   },
 });
 
-export const { toggleDarkMode, setPriceCategory } = settingsSlice.actions;
+export const { toggleDarkMode, setPriceCategory, setFavoriteCanteen } =
+  settingsSlice.actions;
 export default settingsSlice.reducer;

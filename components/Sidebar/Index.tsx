@@ -8,13 +8,18 @@ import {
 } from '@/components/ui/drawer';
 import { Heading } from '@/components/ui/heading';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
+import { useSettings } from '@/hooks/redux/useSettings';
 import { useSidebar } from '@/hooks/redux/useSidebar';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { Alert, AlertIcon, AlertText } from '../ui/alert';
+import { InfoIcon } from '../ui/icon';
+import { Toast, ToastDescription, ToastTitle, useToast } from '../ui/toast';
 import { SidebarItem } from './SidebarItem/Index';
 
 export const Sidebar = () => {
   const { toggleSidebar, sidebarState } = useSidebar();
+  const { isDarkMode } = useSettings();
   return (
     <SafeAreaView>
       <Drawer
@@ -30,8 +35,8 @@ export const Sidebar = () => {
             <Divider className="mt-2 divide-secondary-0" />
           </DrawerHeader>
           <DrawerBody>
-            <Gerichte />
-            <Mensen />
+            <Gerichte isDarkMode={isDarkMode} />
+            <Mensen isDarkMode={isDarkMode} />
           </DrawerBody>
         </DrawerContent>
       </Drawer>
@@ -39,7 +44,7 @@ export const Sidebar = () => {
   );
 };
 
-const Mensen = () => {
+const Mensen = ({ isDarkMode }: { isDarkMode: boolean }) => {
   const { toggleSidebar } = useSidebar();
 
   const handlePress = () => {
@@ -56,21 +61,28 @@ const Mensen = () => {
       iconProps={{
         name: 'building',
         size: 45,
-        className: 'text-primary-500',
+        color: isDarkMode ? 'white' : 'black'
       }}
       onPress={handlePress}
     />
   );
 };
 
-const Gerichte = () => {
+const Gerichte = ({ isDarkMode }: { isDarkMode: boolean }) => {
+  const { favoriteCanteen } = useSettings();
   const { toggleSidebar } = useSidebar();
 
   const handlePress = () => {
     toggleSidebar();
-    router.push({
-      pathname: '/(tabs)/Menu/[canteenId]',
-      params: { canteenId: '655ff175136d3b580c970f80' },
+    if (!favoriteCanteen) {
+      router.replace({
+        pathname: '/(tabs)/mensen/mensenList',
+      });
+      return;
+    }
+    router.replace({
+      pathname: '/(tabs)/menu/[canteenId]',
+      params: { canteenId: favoriteCanteen.id },
     });
   };
   return (
@@ -81,7 +93,7 @@ const Gerichte = () => {
       iconProps={{
         name: 'food-fork-drink',
         size: 45,
-        className: 'text-primary-500',
+        color: isDarkMode ? 'white' : 'black'
       }}
       onPress={handlePress}
     />

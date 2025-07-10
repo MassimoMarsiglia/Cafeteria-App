@@ -2,12 +2,13 @@ import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
 import CanteenCard from '@/components/Mensa/MensaCard';
 import NotFoundView from '@/components/Mensa/NotFoundView';
+import { Searchbar } from '@/components/Mensa/Searchbar';
 import { useUserLocation } from '@/hooks/Mensa/useUserLocation';
 import { useGetCanteensQuery } from '@/services/mensaApi';
 import { getDistanceFromLatLonInMeters } from '@/utils/distance';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, TextInput, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 
 export default function MensenListScreen() {
   const { data: canteens, isLoading, error, refetch } = useGetCanteensQuery();
@@ -56,7 +57,7 @@ export default function MensenListScreen() {
       .replace(/\s+/g, '_')
       .replace(/[^\w_]/g, '');
 
-    router.push({
+    router.navigate({
       pathname: '/mensen/mensenDetail/[canteenId]',
       params: {
         canteenId: canteen.id,
@@ -70,13 +71,11 @@ export default function MensenListScreen() {
   if (!canteens || canteens.length === 0) return <NotFoundView />;
 
   return (
-    <View className="flex-1 bg-[#FFFFF] dark:bg-background px-4 pt-4">
-      <TextInput
-        placeholder="Suche nach Mensa"
-        className=" bg-[#FDFAF6] dark:bg-[#DEE4E7] p-2.5 rounded-lg mb-3 text-black border border-gray-600"
+    <View className="flex-1 bg-background-0 px-4 pt-4">
+      <Searchbar
+        placeholder="Suche nach Mensen"
         value={search}
         onChangeText={setSearch}
-        placeholderTextColor="#666"
       />
 
       <FlatList

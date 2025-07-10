@@ -43,12 +43,12 @@ const Menu = () => {
 
   return (
     <ScrollView
-      className="flex-1 px-4"
+      className="flex-1 px-4 bg-background-0"
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={refetch} />
       }
     >
-      <DateTimePicker
+      {/* <DateTimePicker
         value={date}
         mode="date"
         display="calendar"
@@ -60,7 +60,7 @@ const Menu = () => {
           // refetchMenu(currentDate);
         }}
         style={{ width: '100%' }}
-      />
+      /> */}
       {!isLoading ? (
         <FlatList
           data={menu[0]?.meals || []}
