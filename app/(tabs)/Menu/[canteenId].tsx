@@ -1,19 +1,19 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
-import { Text } from '@/components/ui/text';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { CalendarDaysIcon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMenusQuery } from '@/services/mensaApi';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
+  Dimensions,
   FlatList,
   RefreshControl,
   ScrollView,
-  View,
   TouchableOpacity,
-  Dimensions,
+  View,
 } from 'react-native';
 
 const Menu = () => {
@@ -158,7 +158,7 @@ const Menu = () => {
 
       {/* Scrollable Content */}
       <ScrollView
-        className="flex-1 px-4"
+        className="flex-1"
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }
@@ -174,7 +174,7 @@ const Menu = () => {
             onMomentumScrollEnd={handleScroll}
             keyExtractor={item => item.category}
             renderItem={({ item }) => (
-              <View style={{ width: width - 32 }}>
+              <View className='px-4' style={{ width: width }}>
                 <FlatList
                   data={item.meals}
                   renderItem={({ item: meal, index }) => (
