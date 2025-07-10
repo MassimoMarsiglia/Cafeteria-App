@@ -57,7 +57,7 @@ export default function MensenListScreen() {
       .replace(/\s+/g, '_')
       .replace(/[^\w_]/g, '');
 
-    router.push({
+    router.navigate({
       pathname: '/mensen/mensenDetail/[canteenId]',
       params: {
         canteenId: canteen.id,
