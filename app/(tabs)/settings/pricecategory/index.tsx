@@ -110,7 +110,7 @@ const PriceCategory = () => {
 
   return (
     <View className="bg-background-0 h-full px-4 pt-4">
-      <Box className="bg-secondary-100 pt-4 px-4">
+      <Box className="bg-secondary-100 rounded-3xl pt-4 px-4">
         {categories.map(category => (
           <SettingsCard key={category.id} setting={category} />
         ))}

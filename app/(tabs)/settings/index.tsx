@@ -23,9 +23,9 @@ export default function SettingsScreen() {
   const themeIcon = useMemo(
     () =>
       !isDarkMode ? (
-        <Icon as={MoonIcon} className="text-typography-900" />
+        <Icon as={MoonIcon} className="text-typography-900" size="xl" />
       ) : (
-        <Icon as={SunIcon} className="text-typography-900" />
+        <Icon as={SunIcon} className="text-typography-900" size="xl" />
       ),
     [isDarkMode],
   );
@@ -34,7 +34,7 @@ export default function SettingsScreen() {
     () => (
       <FontAwesome5
         name="money-bill"
-        size={24}
+        size={20}
         color={isDarkMode ? 'white' : 'black'}
       />
     ),
@@ -92,7 +92,7 @@ export default function SettingsScreen() {
           placeholder="Suche nach Einstellungen."
         />
 
-        <Box className="rounded-md">
+        <Box className="rounded-3xl overflow-hidden">
           {filteredSettings.map(setting => (
             <SettingsCard key={setting.id} setting={setting} />
           ))}
