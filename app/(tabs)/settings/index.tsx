@@ -27,16 +27,14 @@ export default function SettingsScreen() {
         imageKey: imageKey || '',
       },
     });
-  }, []);
+  }, [favoriteCanteen?.id, favoriteCanteen?.name]);
 
-  // Memoize the navigation handler
   const handlePriceCategoryPress = useCallback(() => {
     router.push({
       pathname: '/settings/pricecategory',
     });
   }, []);
 
-  // Memoize the icons to prevent recreation
   const themeIcon = useMemo(
     () =>
       !isDarkMode ? (
@@ -51,6 +49,17 @@ export default function SettingsScreen() {
     () => (
       <FontAwesome5
         name="money-bill"
+        size={20}
+        color={isDarkMode ? 'white' : 'black'}
+      />
+    ),
+    [isDarkMode],
+  );
+
+  const mensaIcon = useMemo(
+    () => (
+      <FontAwesome5
+        name="building"
         size={20}
         color={isDarkMode ? 'white' : 'black'}
       />
@@ -86,8 +95,8 @@ export default function SettingsScreen() {
         title: 'Lieblings Mensa',
         description: 'Deine Lieblingsmensa anzeigen',
         category: 'Mensa',
-        icon: <></>,
-        value: '',
+        icon: mensaIcon,
+        value: favoriteCanteen,
         hasToggle: false,
         onPress: handleFavoriteCanteenPress,
       },
@@ -100,10 +109,11 @@ export default function SettingsScreen() {
       toggleDarkMode,
       handlePriceCategoryPress,
       handleFavoriteCanteenPress,
+      mensaIcon,
+      favoriteCanteen,
     ],
   );
 
-  // Filter settings based on search
   const filteredSettings = allSettings.filter(
     setting =>
       setting.title.toLowerCase().includes(search.toLowerCase()) ||
