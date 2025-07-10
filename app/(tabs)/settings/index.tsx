@@ -9,8 +9,25 @@ import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 export default function SettingsScreen() {
-  const { isDarkMode, toggleDarkMode, priceCategory } = useSettings();
+  const { isDarkMode, toggleDarkMode, priceCategory, favoriteCanteen } =
+    useSettings();
   const [search, setSearch] = useState('');
+
+  const handleFavoriteCanteenPress = useCallback(() => {
+    const imageKey = favoriteCanteen?.name
+      .replace(/^mensa/i, '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '_')
+      .replace(/[^\w_]/g, '');
+    router.push({
+      pathname: '/mensen/mensenDetail/[canteenId]',
+      params: {
+        canteenId: favoriteCanteen?.id || '',
+        imageKey: imageKey || '',
+      },
+    });
+  }, []);
 
   // Memoize the navigation handler
   const handlePriceCategoryPress = useCallback(() => {
@@ -64,6 +81,16 @@ export default function SettingsScreen() {
         onPress: handlePriceCategoryPress,
         hasToggle: false,
       },
+      {
+        id: 'favorite canteen',
+        title: 'Lieblings Mensa',
+        description: 'Deine Lieblingsmensa anzeigen',
+        category: 'Mensa',
+        icon: <></>,
+        value: '',
+        hasToggle: false,
+        onPress: handleFavoriteCanteenPress,
+      },
     ],
     [
       isDarkMode,
@@ -72,6 +99,7 @@ export default function SettingsScreen() {
       priceIcon,
       toggleDarkMode,
       handlePriceCategoryPress,
+      handleFavoriteCanteenPress,
     ],
   );
 
