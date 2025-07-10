@@ -2,7 +2,6 @@ import { MealCard } from '@/components/Menu/MealCard/Index';
 import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMenusQuery } from '@/services/mensaApi';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { FlatList, RefreshControl, ScrollView } from 'react-native';
@@ -24,7 +23,7 @@ const Menu = () => {
     enddate: date.toISOString().split('T')[0], // Use the same date for single day menu
   });
 
-  console.log('TodaysMenu (outside useEffect):', menu);
+  // console.log('TodaysMenu (outside useEffect):', menu);
 
   // Handle error state
   if (isError) {
@@ -40,6 +39,17 @@ const Menu = () => {
   if (!menu || menu.length === 0) {
     return <Text>No menu available for today</Text>;
   }
+
+  // if (menu && menu[0]?.meals) {
+  //   console.log('Meals array:', menu[0].meals);
+  // }
+
+  // const handleMealSelect = meal => {
+  //   console.log('Selected meal id:', meal.id);
+  //   console.log('Selected meal name:', meal.name);
+  //   // For example, navigate to Chatbot and send this meal id/name,
+  //   // or set it in state, or trigger API call here.
+  // };
 
   return (
     <ScrollView
@@ -69,6 +79,7 @@ const Menu = () => {
               item={item}
               index={index}
               priceCategory={Number(priceCategory)}
+              // onPress={() => handleMealSelect(item)}
             />
           )}
           keyExtractor={(item, index) => `${item.id}-${index}`}

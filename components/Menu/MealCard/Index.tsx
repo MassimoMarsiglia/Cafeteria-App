@@ -2,16 +2,19 @@ import { Card } from '@/components/ui/card';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { Meal } from '@/services/mensaTypes';
+import { useRouter } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 
 export const MealCard = ({
   item: meal,
   index,
   priceCategory,
+  onPress,
 }: {
   item: Meal;
   index: number;
   priceCategory: number;
+  onPress?: () => void;
 }) => {
   //Bildauswahl für Card // Salate Suppen Aktionen Essen Beilagen Desserts
   const getCategoryImage = (category: string | undefined) => {
@@ -31,8 +34,20 @@ export const MealCard = ({
     }
   };
 
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push({
+      pathname: '/(tabs)/chatbot/[mealId]',
+      params: {
+        mealId: meal.id,
+        mealName: meal.name,
+      },
+    });
+  };
+
   return (
-    <TouchableOpacity className="mx-2 mb-4">
+    <TouchableOpacity className="mx-2 mb-4" onPress={handlePress}>
       <Card variant="elevated" className="outline outline-1 p-2">
         <Image
           source={require('@/assets/categorys/essen.png')}

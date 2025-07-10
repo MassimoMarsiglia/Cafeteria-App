@@ -38,6 +38,12 @@ export default function TabLayout() {
           title: 'Settings Screen',
         }}
       />
+      <Stack.Screen
+        name="chatbot/[mealId]"
+        options={{
+          title: 'Chat Bot',
+        }}
+      />
       <Stack screenOptions={{ gestureEnabled: true }} />;
     </Stack>
   );
