@@ -1,5 +1,5 @@
 import { Searchbar } from '@/components/Mensa/Searchbar';
-import { SettingsCard } from '@/components/Settings/SettingsCard';
+import { Setting, SettingsCard } from '@/components/Settings/SettingsCard';
 import { Box } from '@/components/ui/box';
 import { Icon, MoonIcon, SunIcon } from '@/components/ui/icon';
 import { useSettings } from '@/hooks/redux/useSettings';
@@ -101,7 +101,7 @@ export default function SettingsScreen() {
   );
 
   // Define settings items with memoization
-  const allSettings = useMemo(
+  const allSettings: Setting[] = useMemo(
     () => [
       {
         id: 'theme',
@@ -119,6 +119,7 @@ export default function SettingsScreen() {
         title: 'Benachrichtigungen',
         description: 'Benachrichtigungseinstellungen verwalten',
         category: 'Benachrichtigungen',
+        value: undefined,
         hasToggle: false,
         onPress: () => console.log('Not implemented yet'),
       },
@@ -175,6 +176,7 @@ export default function SettingsScreen() {
       favoriteCanteen,
       favoriteMealsIcon,
       savedRecipesIcon,
+      notificationsIcon,
     ],
   );
 
