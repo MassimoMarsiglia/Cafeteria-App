@@ -15,15 +15,28 @@ import {
 } from 'redux-persist';
 import settingsReducer from './slices/settingsSlice';
 import sidebarReducer from './slices/sidebarSlice';
+import { version } from 'react';
 
 const storage = () => (Platform.OS === 'web' ? AsyncStorage : Storage);
 
 const persistConfig = {
-  key: 'schmausa-v1',
+  key: 'schmausa-cache/v1',
   storage: storage(),
   blacklist: [],
   version: 1,
 };
+
+const settingsPersistConfig = {
+  key: 'schmausa-settings/v1',
+  storage: storage(),
+  blacklist: [],
+  version: 1,
+};
+
+const persistedSettingsReducer = persistReducer(
+  settingsPersistConfig,
+  settingsReducer,
+);
 
 const persistedMensaApiReducer = persistReducer(
   persistConfig,
@@ -33,7 +46,7 @@ const persistedMensaApiReducer = persistReducer(
 export const store = configureStore({
   reducer: {
     sidebar: sidebarReducer,
-    settings: settingsReducer,
+    settings: persistedSettingsReducer,
     [mensaApi.reducerPath]: persistedMensaApiReducer,
   },
   middleware: getDefaultMiddleware =>

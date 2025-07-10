@@ -1,5 +1,6 @@
 import CanteenContact from '@/components/Mensa/CanteenContact';
 import CanteenHeader from '@/components/Mensa/CanteenHeader';
+import { CanteenSelection } from '@/components/Mensa/CanteenSelection';
 import { formatBusinessHours } from '@/components/Mensa/CollapsibleDay';
 import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
@@ -43,7 +44,7 @@ export default function MensaDetail() {
   return (
     <ScrollView
       contentContainerStyle={{ alignItems: 'center' }}
-      className="bg-[#FFFFF] dark:bg-background p-5"
+      className="bg-background-0 p-5"
     >
       {Platform.OS === 'android' && (
         <Pressable onPress={() => router.back()} className="self-start mb-3">
@@ -63,6 +64,8 @@ export default function MensaDetail() {
       <CanteenHeader name={canteen.name} address={canteen.address} />
 
       <CanteenContact contactInfo={canteen.contactInfo} />
+
+      <CanteenSelection canteen={canteen} />
 
       {canteen.businessDays!.length > 0 && (
         <View className="w-full mt-5">

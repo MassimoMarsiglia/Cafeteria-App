@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Ensure consistent background colors for navigation */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Dark mode background fixes */
+.dark {
+  background-color: #18181b;
+  color: #ffffff;
+}
+
+/* Light mode background fixes */
+html:not(.dark) {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Navigation background fix */
+.navigation-container {
+  background-color: inherit;
+}
