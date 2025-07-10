@@ -2,7 +2,8 @@ import { Card } from '@/components/ui/card';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { Meal } from '@/services/mensaTypes';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Image } from 'react-native';
+import { router } from 'expo-router';
 
 export const MealCard = ({
   item: meal,
@@ -31,9 +32,19 @@ export const MealCard = ({
     }
   };
 
+  const routeToItem = () => {
+    router.push({
+      pathname: '/Menu/MenuItem/[mealId]',
+      params: { 
+        mealData: JSON.stringify(meal),
+        mealId: meal.id,
+      },
+    }); 
+  }
+
   return (
-    <TouchableOpacity className="mx-2 mb-4">
-      <Card variant="elevated" className="outline outline-1 p-2">
+    <TouchableOpacity className="flex-1 mx-2 last:flex" onPress={routeToItem}>
+      <Card variant="elevated" className="outline outline-1 p-2 mb-4 flex-1">
         <Image
           source={require('@/assets/categorys/essen.png')}
           className="w-full h-48 mb-2 rounded-lg"
