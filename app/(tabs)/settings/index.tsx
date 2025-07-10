@@ -3,7 +3,7 @@ import { SettingsCard } from '@/components/Settings/SettingsCard';
 import { Box } from '@/components/ui/box';
 import { Icon, MoonIcon, SunIcon } from '@/components/ui/icon';
 import { useSettings } from '@/hooks/redux/useSettings';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -56,10 +56,32 @@ export default function SettingsScreen() {
     [isDarkMode],
   );
 
+  const favoriteMealsIcon = useMemo(
+    () => (
+      <MaterialIcons
+        name="fastfood"
+        size={20}
+        color={isDarkMode ? 'white' : 'black'}
+      />
+    ),
+    [isDarkMode],
+  );
+
   const mensaIcon = useMemo(
     () => (
       <FontAwesome5
         name="building"
+        size={20}
+        color={isDarkMode ? 'white' : 'black'}
+      />
+    ),
+    [isDarkMode],
+  );
+
+  const savedRecipesIcon = useMemo(
+    () => (
+      <FontAwesome
+        name="book"
         size={20}
         color={isDarkMode ? 'white' : 'black'}
       />
@@ -100,6 +122,26 @@ export default function SettingsScreen() {
         hasToggle: false,
         onPress: handleFavoriteCanteenPress,
       },
+      {
+        id: 'favorite meals',
+        title: 'Lieblingsgerichte',
+        description: 'Deine Lieblingsgerichte verwalten',
+        category: 'Gerichte',
+        icon: favoriteMealsIcon,
+        value: undefined,
+        hasToggle: false,
+        onPress: () => console.log('Not implemented yet'),
+      },
+      {
+        id: 'saved recipes',
+        title: 'Gespeicherte Rezepte',
+        description: 'Deine gespeicherten Rezepte verwalten',
+        category: 'Gerichte',
+        icon: savedRecipesIcon,
+        value: undefined,
+        hasToggle: false,
+        onPress: () => console.log('Not implemented yet'),
+      },
     ],
     [
       isDarkMode,
@@ -111,6 +153,8 @@ export default function SettingsScreen() {
       handleFavoriteCanteenPress,
       mensaIcon,
       favoriteCanteen,
+      favoriteMealsIcon,
+      savedRecipesIcon,
     ],
   );
 
