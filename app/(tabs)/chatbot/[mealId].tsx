@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
+import OpenAI from 'openai';
 import { useEffect, useRef, useState } from 'react';
 import {
   FlatList,
@@ -26,12 +27,12 @@ const ChatBotScreen = () => {
     if (mealName) {
       const introMessage = {
         id: Date.now().toString(),
-        text: `The meal is called "${mealName}". Let me help you generate a receipe for it...`,
+        text: `Das Gericht heißt "${mealName}". Ich helfe dir dabei, ein Rezept dafür zu erstellen …`,
         sender: 'bot',
       };
       setMessages([introMessage]);
 
-      const systemPrompt = `The meal is called "${mealName}". Can you explain what this meal is or suggest a recipe for it?`;
+      const systemPrompt = `Du wirst ein Rezept erstellen, das auf den meal "${mealName}" basiert. Das Rezept soll alle notwendigen Schritte, Zutaten und Kochtechniken enthalten. Es soll so strukturiert sein, dass es leicht verständlich und umsetzbar ist – unabhängig vom kulinarischen Können der Leserinnen und Leser.`;
       callAIWithPrompt(systemPrompt);
     } else {
       setMessages([
@@ -42,23 +43,31 @@ const ChatBotScreen = () => {
         },
       ]);
     }
-  }, [mealName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function callAIWithPrompt(prompt: string) {
     try {
-      const response = await fetch('YOUR_AI_API_ENDPOINT', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer YOUR_API_TOKEN',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          inputs: prompt,
-        }),
+      const openAi = new OpenAI({
+        baseURL: 'https://openrouter.ai/api/v1',
+        // I already have an account on OpenRouter so u guys can use my API Key or create one in OpenRouter
+        // There are also another free API with limited requests, u guys can check here: https://chatgpt.com/share/686ffe71-6634-8009-b10f-06000e1e797a
+        // The ChatBot only works when u guys put the API_KEY here and please don't push API_KEY to github public
+        apiKey: 'API_KEY',
       });
-
-      const data = await response.json();
-      const aiReply = data[0]?.generated_text || 'Sorry, no response from AI.';
+      const response = await openAi.chat.completions.create({
+        model: 'openai/gpt-4o',
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        max_completion_tokens: 1000,
+      });
+      const data = response.choices[0].message.content;
+      console.log('HuggingFace AI response:', data);
+      const aiReply = data!;
 
       const botMessage = {
         id: Date.now().toString(),
@@ -67,6 +76,7 @@ const ChatBotScreen = () => {
       };
       setMessages(prev => [...prev, botMessage]);
     } catch (err) {
+      console.log(err);
       const errorMessage = {
         id: Date.now().toString(),
         text: 'Error calling AI service',
@@ -86,7 +96,7 @@ const ChatBotScreen = () => {
     };
     setMessages(prev => [...prev, userMessage]);
 
-    const promptForAI = `User is asking about "${mealName}". Their message: "${inputText}". Please respond helpfully.`;
+    const promptForAI = `Der Benutzer fragt nach „${mealName}“. Seine Nachricht lautet: „${inputText}“. Bitte antworte hilfreich.`;
 
     callAIWithPrompt(promptForAI);
 
@@ -123,7 +133,7 @@ const ChatBotScreen = () => {
               data={messages}
               keyExtractor={item => item.id}
               renderItem={renderItem}
-              contentContainerStyle={{ padding: 16 }}
+              contentContainerStyle={{ padding: 16, flexGrow: 1 }}
               onContentSizeChange={() =>
                 flatListRef.current?.scrollToEnd({ animated: true })
               }
