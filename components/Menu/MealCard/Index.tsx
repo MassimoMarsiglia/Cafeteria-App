@@ -36,7 +36,7 @@ export const MealCard = ({
     <TouchableOpacity className="w-full mb-4">
       <Card
         variant="elevated"
-        className="outline outline-1 p-4 flex-row items-center"
+        className="outline outline-1 p-4 flex-row items-center bg-[#DDDDDD] dark:bg-[#1f1f1f]"
       >
         {/* Text Content - Links */}
         <View className="flex-1 pr-4">
