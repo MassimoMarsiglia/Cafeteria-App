@@ -7,16 +7,30 @@ import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from "expo-router";
-import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from 'react';
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useState } from 'react';
+import { Alert } from 'react-native';
 
 export default function MealView() {
   const params = useLocalSearchParams<{ mealData: string; mealId: string }>();
+  
+  // State für Favoriten-Status
+  const [isFavorite, setIsFavorite] = useState(false);
   
   // Meal-Objekt aus JSON-String parsen
   const meal = params.mealData ? JSON.parse(params.mealData) : null;
 
   console.log('=== MEAL VIEW ===');
   console.log('Received meal:', meal?.name);
+
+  // Handler für Favoriten-Button
+  const handleFavoritePress = () => {
+    setIsFavorite(!isFavorite);
+  };
+
+  // Handler für Rezept-Button
+  const handleRecipePress = () => {
+   console.log('Rezept-Button gedrückt');
+  };
 
   if (!meal) {
     return (
@@ -124,7 +138,7 @@ export default function MealView() {
             <AccordionHeader>
               <AccordionTrigger>
                 <View className="flex-row items-center flex-1">
-                  <Ionicons name="warning" size={30} color="yellow" style={{ marginRight: 8 }} />
+                  <Ionicons name="warning" size={30} color="#FFEE58" style={{ marginRight: 8 }} />
                   <AccordionTitleText>Zusatzstoffe</AccordionTitleText>
                 </View>
                 <AccordionIcon as={ChevronDownIcon} />
@@ -144,10 +158,14 @@ export default function MealView() {
       </Accordion>
     </ScrollView>
     <View className="flex-row justify-between items-center p-4">
-      <Button size="lg" className="rounded-full p-8" onPress={() => console.log('zuFavoriten hinzufügen geklickt')}>
-        <Ionicons name="heart" size={45} color="red"/>
+      <Button size="lg" className="rounded-full p-8" onPress={handleFavoritePress}>
+        <Ionicons 
+          name={isFavorite ? "heart" : "heart-outline"} 
+          size={45} 
+          color={isFavorite ? "#FF6B6B" : "#999"}
+        />
       </Button>
-      <Button size="lg" className="rounded-full p-8" onPress={() => console.log('Rezept generieren geklickt')}>
+      <Button size="lg" className="rounded-full p-8" onPress={handleRecipePress}>
         <Ionicons name="sparkles" size={45} color="#FBC02D"/>
       </Button>
     </View>
