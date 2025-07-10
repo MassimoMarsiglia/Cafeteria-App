@@ -17,7 +17,7 @@ export const SidebarItem = (props: SidebarItemProps) => {
   return (
     <Pressable onPress={props.onPress} className="mt-5 mb-5">
       <Box className="flex-row items-center">
-        <Box className="p-1 rounded mr-3 bg-secondary-400">
+        <Box className="p-1 rounded mr-3">
           <props.icon {...props.iconProps} />
         </Box>
         <Box className="flex-1 flex-col">
