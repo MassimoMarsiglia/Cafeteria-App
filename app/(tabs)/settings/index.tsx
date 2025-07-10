@@ -67,6 +67,17 @@ export default function SettingsScreen() {
     [isDarkMode],
   );
 
+  const notificationsIcon = useMemo(
+    () => (
+      <MaterialIcons
+        name="notifications"
+        size={20}
+        color={isDarkMode ? 'white' : 'black'}
+      />
+    ),
+    [isDarkMode],
+  );
+
   const mensaIcon = useMemo(
     () => (
       <FontAwesome5
@@ -101,6 +112,15 @@ export default function SettingsScreen() {
         value: isDarkMode,
         update: toggleDarkMode,
         hasToggle: true,
+      },
+      {
+        id: 'notifications',
+        icon: notificationsIcon,
+        title: 'Benachrichtigungen',
+        description: 'Benachrichtigungseinstellungen verwalten',
+        category: 'Benachrichtigungen',
+        hasToggle: false,
+        onPress: () => console.log('Not implemented yet'),
       },
       {
         id: 'price',
