@@ -1,13 +1,21 @@
+import { useSettings } from '@/hooks/redux/useSettings';
 import { Stack } from 'expo-router';
 import React from 'react';
 
 export default function TabLayout() {
+  const { isDarkMode } = useSettings();
+
+  const backgroundColor = isDarkMode ? '#18181b' : '#ffffff';
+
+  const defaultScreenOptions = {
+    headerShown: false,
+    gestureEnabled: true,
+    contentStyle: { backgroundColor },
+    cardStyle: { backgroundColor },
+  } as const;
+
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <Stack screenOptions={defaultScreenOptions}>
       <Stack.Screen
         name="index"
         options={{
@@ -44,7 +52,12 @@ export default function TabLayout() {
           title: 'Chat Bot',
         }}
       />
-      <Stack screenOptions={{ gestureEnabled: true }} />;
+      <Stack.Screen
+        name="settings/pricecategory"
+        options={{
+          title: 'Price Category Settings',
+        }}
+      />
     </Stack>
   );
 }

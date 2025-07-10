@@ -1,18 +1,20 @@
 import { Box } from '@/components/ui/box';
 import { Divider } from '@/components/ui/divider';
 import { ChevronRightIcon, Icon } from '@/components/ui/icon';
+import { Pressable } from '@/components/ui/pressable';
 import { Switch } from '@/components/ui/switch';
 import { Text } from '@/components/ui/text';
+import React from 'react';
 import { Platform } from 'react-native';
 
-interface Setting<T = any> {
+export interface Setting<T = any> {
   id: string;
   title: string;
   description: string;
   category: string;
   icon: React.ReactNode | (() => React.ReactNode);
-  update: (val: T) => void;
-  onPress: () => void;
+  update?: () => void;
+  onPress?: () => void;
   hasToggle?: boolean;
   value: T;
   Platforms?: string[];
@@ -22,16 +24,16 @@ interface SettingCardProps {
   setting: Setting;
 }
 
-export const SettingsCard = (props: SettingCardProps) => {
+export const SettingsCard = React.memo((props: SettingCardProps) => {
   // Check if the setting is applicable for the current platform
   if (
     props.setting.Platforms &&
     !props.setting.Platforms.includes(Platform.OS)
   ) {
-    return;
+    return null;
   }
-  // Render the settings card with the provided icon and setting details
-  return (
+
+  const content = (
     <Box className="bg-secondary-100 pt-4 px-4">
       <Box className="flex flex-row items-center gap-4 mb-2">
         <Box className="w-12 flex justify-center">
@@ -51,7 +53,7 @@ export const SettingsCard = (props: SettingCardProps) => {
           {props.setting.hasToggle ? (
             <Switch
               value={props.setting.value}
-              onValueChange={() => props.setting.update()}
+              onValueChange={() => props.setting.update?.()}
             />
           ) : (
             <Icon as={ChevronRightIcon} className="text-typography-500" />
@@ -61,4 +63,15 @@ export const SettingsCard = (props: SettingCardProps) => {
       <Divider orientation="horizontal" className="mt-2 mb-2" />
     </Box>
   );
-};
+
+  // Only wrap in Pressable if it's not a toggle (to avoid accessibility conflicts)
+  if (props.setting.hasToggle) {
+    return content;
+  }
+
+  return (
+    <Pressable onPress={() => props.setting.onPress?.()}>{content}</Pressable>
+  );
+});
+
+SettingsCard.displayName = 'SettingsCard';

@@ -19,6 +19,7 @@ import { SidebarItem } from './SidebarItem/Index';
 
 export const Sidebar = () => {
   const { toggleSidebar, sidebarState } = useSidebar();
+  const { isDarkMode } = useSettings();
   return (
     <SafeAreaView>
       <Drawer
@@ -34,8 +35,8 @@ export const Sidebar = () => {
             <Divider className="mt-2 divide-secondary-0" />
           </DrawerHeader>
           <DrawerBody>
-            <Gerichte />
-            <Mensen />
+            <Gerichte isDarkMode={isDarkMode} />
+            <Mensen isDarkMode={isDarkMode} />
           </DrawerBody>
         </DrawerContent>
       </Drawer>
@@ -43,7 +44,7 @@ export const Sidebar = () => {
   );
 };
 
-const Mensen = () => {
+const Mensen = ({ isDarkMode }: { isDarkMode: boolean }) => {
   const { toggleSidebar } = useSidebar();
 
   const handlePress = () => {
@@ -60,17 +61,16 @@ const Mensen = () => {
       iconProps={{
         name: 'building',
         size: 45,
-        className: 'text-primary-500',
+        color: isDarkMode ? 'white' : 'black'
       }}
       onPress={handlePress}
     />
   );
 };
 
-const Gerichte = () => {
+const Gerichte = ({ isDarkMode }: { isDarkMode: boolean }) => {
   const { favoriteCanteen } = useSettings();
   const { toggleSidebar } = useSidebar();
-  const toast = useToast();
 
   const handlePress = () => {
     toggleSidebar();
@@ -93,7 +93,7 @@ const Gerichte = () => {
       iconProps={{
         name: 'food-fork-drink',
         size: 45,
-        className: 'text-primary-500',
+        color: isDarkMode ? 'white' : 'black'
       }}
       onPress={handlePress}
     />
