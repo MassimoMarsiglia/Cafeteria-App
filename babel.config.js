@@ -25,6 +25,7 @@ module.exports = function (api) {
         },
       ],
       process.env.NODE_ENV !== 'production' && 'react-refresh/babel',
-    ],
+      'react-native-reanimated/plugin',
+    ].filter(Boolean), // ← ensures falsy plugins like false are removed
   };
 };

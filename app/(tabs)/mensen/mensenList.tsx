@@ -8,7 +8,7 @@ import { useGetCanteensQuery } from '@/services/mensaApi';
 import { getDistanceFromLatLonInMeters } from '@/utils/distance';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, TextInput, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 
 export default function MensenListScreen() {
   const { data: canteens, isLoading, error, refetch } = useGetCanteensQuery();
@@ -72,7 +72,11 @@ export default function MensenListScreen() {
 
   return (
     <View className="flex-1 bg-background-0 px-4 pt-4">
-      <Searchbar placeholder='Suche nach Mensen' value={search} onChangeText={setSearch} />
+      <Searchbar
+        placeholder="Suche nach Mensen"
+        value={search}
+        onChangeText={setSearch}
+      />
 
       <FlatList
         refreshControl={

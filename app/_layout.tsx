@@ -7,27 +7,37 @@ import 'react-native-reanimated';
 
 import { Navbar } from '@/components/Navbar/Index';
 import { useSettings } from '@/hooks/redux/useSettings';
+import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '../store';
-import { useColorScheme } from 'nativewind';
-
 
 // Create a wrapper component that has access to Redux
 function AppContent() {
   const { isDarkMode } = useSettings();
   const colorscheme = useColorScheme();
-  colorscheme.setColorScheme(isDarkMode)
+
+  const themeMode = isDarkMode ? 'dark' : 'light';
+
+  useEffect(() => {
+    colorscheme.setColorScheme(themeMode);
+  }, [themeMode, colorscheme]);
 
   return (
-    <GluestackUIProvider mode={isDarkMode ? 'dark' : 'light'}>
+    <GluestackUIProvider mode={themeMode}>
       <Navbar />
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: isDarkMode ? '#18181b' : '#ffffff',
+          },
+        }}
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        {/* <Stack.Screen name="+not-found" /> */}
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style={isDarkMode ? 'light' : 'dark'} />
     </GluestackUIProvider>
   );
 }

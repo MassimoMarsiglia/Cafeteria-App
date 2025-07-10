@@ -4,47 +4,76 @@ import { Box } from '@/components/ui/box';
 import { Icon, MoonIcon, SunIcon } from '@/components/ui/icon';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useState } from 'react';
+import { router } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 export default function SettingsScreen() {
-  const { isDarkMode, toggleDarkMode, setPriceCategory, priceCategory } =
-    useSettings();
+  const { isDarkMode, toggleDarkMode, priceCategory } = useSettings();
   const [search, setSearch] = useState('');
 
-  // Define settings items
-  const allSettings = [
-    {
-      id: 'theme',
-      icon: () => {
-        return isDarkMode !== 'dark' ? (
-          <Icon as={MoonIcon} className="text-typography-900" />
-        ) : (
-          <Icon as={SunIcon} className="text-typography-900" />
-        );
+  // Memoize the navigation handler
+  const handlePriceCategoryPress = useCallback(() => {
+    router.push({
+      pathname: '/settings/pricecategory',
+    });
+  }, []);
+
+  // Memoize the icons to prevent recreation
+  const themeIcon = useMemo(
+    () =>
+      !isDarkMode ? (
+        <Icon as={MoonIcon} className="text-typography-900" />
+      ) : (
+        <Icon as={SunIcon} className="text-typography-900" />
+      ),
+    [isDarkMode],
+  );
+
+  const priceIcon = useMemo(
+    () => (
+      <FontAwesome5
+        name="money-bill"
+        size={24}
+        color={isDarkMode ? 'white' : 'black'}
+      />
+    ),
+    [isDarkMode],
+  );
+
+  // Define settings items with memoization
+  const allSettings = useMemo(
+    () => [
+      {
+        id: 'theme',
+        icon: themeIcon,
+        title: 'Dunkler Modus',
+        description: 'Zwischen hellem und dunklem Theme wechseln',
+        category: 'Darstellung',
+        value: isDarkMode,
+        update: toggleDarkMode,
+        hasToggle: true,
       },
-      title: 'Dunkler Modus',
-      description: 'Zwischen hellem und dunklem Theme wechseln',
-      category: 'Darstellung',
-      value: isDarkMode === 'dark' ? true : false,
-      update: toggleDarkMode,
-      onPress: () => {
-        toggleDarkMode();
+      {
+        id: 'price',
+        icon: priceIcon,
+        title: 'Preiskategorie',
+        description: 'Student, Mitarbeiter oder Gast Preise',
+        category: 'Preise',
+        value: priceCategory,
+        onPress: handlePriceCategoryPress,
+        hasToggle: false,
       },
-      hasToggle: true,
-    },
-    {
-      id: 'price',
-      icon: () => <FontAwesome5 name="money-bill" size={24} color={isDarkMode === "dark" ? "white" : "black"} />,
-      title: 'Preiskategorie',
-      description: 'Student, Mitarbeiter oder Gast Preise',
-      category: 'Preise',
-      value: priceCategory,
-      update: setPriceCategory,
-      onPress: () => {},
-      hasToggle: false,
-    },
-  ];
+    ],
+    [
+      isDarkMode,
+      priceCategory,
+      themeIcon,
+      priceIcon,
+      toggleDarkMode,
+      handlePriceCategoryPress,
+    ],
+  );
 
   // Filter settings based on search
   const filteredSettings = allSettings.filter(
