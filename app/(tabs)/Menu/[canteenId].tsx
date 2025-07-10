@@ -1,17 +1,30 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
+import { Fab, FabIcon } from '@/components/ui/fab';
+import { CalendarDaysIcon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMenusQuery } from '@/services/mensaApi';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
-import { FlatList, RefreshControl, ScrollView } from 'react-native';
+import React, { useRef, useState } from 'react';
+import {
+  Dimensions,
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const Menu = () => {
   const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(0);
   const canteenId = useLocalSearchParams<{ canteenId: string }>();
   const { priceCategory } = useSettings();
+  const flatListRef = useRef<FlatList>(null);
+  const tabScrollRef = useRef<ScrollView>(null);
+  const { width } = Dimensions.get('window');
 
   const {
     data: menu,
@@ -20,11 +33,66 @@ const Menu = () => {
     refetch,
   } = useGetMenusQuery({
     canteenId: canteenId.canteenId,
-    startdate: date.toISOString().split('T')[0], // Format date to YYYY-MM-DD
-    enddate: date.toISOString().split('T')[0], // Use the same date for single day menu
+    startdate: date.toISOString().split('T')[0],
+    enddate: date.toISOString().split('T')[0],
   });
 
-  console.log('TodaysMenu (outside useEffect):', menu);
+  // Gerichte nach Kategorien gruppieren
+  const groupedMeals = (menu?.[0]?.meals || []).reduce(
+    (acc, meal) => {
+      const category = meal.category || 'Sonstiges';
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(meal);
+      return acc;
+    },
+    {} as Record<string, any[]>,
+  );
+
+  // Kategorien sortieren - Hauptgerichte zuerst
+  const sortedCategories = Object.keys(groupedMeals).sort((a, b) => {
+    if (a.toLowerCase().includes('essen') || a.toLowerCase().includes('haupt'))
+      return -1;
+    if (b.toLowerCase().includes('essen') || b.toLowerCase().includes('haupt'))
+      return 1;
+    return a.localeCompare(b);
+  });
+
+  // Daten für FlatList vorbereiten
+  const categoriesData = sortedCategories.map(category => ({
+    category,
+    meals: groupedMeals[category],
+  }));
+
+  const handleCategoryPress = (index: number) => {
+    setActiveCategory(index);
+    flatListRef.current?.scrollToIndex({ index, animated: true });
+
+    // Tab automatisch in den sichtbaren Bereich scrollen
+    const tabWidth = 120; // Geschätzte Breite eines Tabs
+    const scrollPosition = index * tabWidth - width / 2 + tabWidth / 2;
+    tabScrollRef.current?.scrollTo({
+      x: Math.max(0, scrollPosition),
+      animated: true,
+    });
+  };
+
+  const handleScroll = (event: any) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const currentIndex = Math.round(contentOffsetX / width);
+    if (currentIndex !== activeCategory) {
+      setActiveCategory(currentIndex);
+
+      // Tab automatisch in den sichtbaren Bereich scrollen
+      const tabWidth = 120; // Geschätzte Breite eines Tabs
+      const scrollPosition = currentIndex * tabWidth - width / 2 + tabWidth / 2;
+      tabScrollRef.current?.scrollTo({
+        x: Math.max(0, scrollPosition),
+        animated: true,
+      });
+    }
+  };
 
   // Handle error state
   if (isError) {
@@ -42,47 +110,98 @@ const Menu = () => {
   }
 
   return (
-    <ScrollView
-      className="flex-1 px-4 bg-background-0"
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-      }
-    >
-      {/* <DateTimePicker
-        value={date}
-        mode="date"
-        display="calendar"
-        onChange={(event, selectedDate) => {
-          const currentDate = selectedDate || date;
-          setShow(false);
-          setDate(currentDate);
-          // Optionally, you can refetch the menu for the selected date here
-          // refetchMenu(currentDate);
-        }}
-        style={{ width: '100%' }}
-      /> */}
-      {!isLoading ? (
-        <FlatList
-          data={menu[0]?.meals || []}
-          renderItem={({ item, index }) => (
-            <MealCard
-              item={item}
-              index={index}
-              priceCategory={Number(priceCategory)}
-            />
-          )}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
-          numColumns={2}
-          scrollEnabled={false}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          columnWrapperClassName="justify-between px-2"
-          className="py-2"
+    <View className="flex-1 bg-background-0">
+      {/* DateTimePicker außerhalb */}
+      {show && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="calendar"
+          onChange={(event, selectedDate) => {
+            const currentDate = selectedDate || date;
+            setShow(false);
+            setDate(currentDate);
+          }}
+          className="w-full"
         />
-      ) : (
-        <Text>Loading...</Text>
       )}
-    </ScrollView>
+
+      {/* Kategorie-Tabs */}
+      <View className="mb-4 mt-4 px-4">
+        <ScrollView
+          ref={tabScrollRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="max-h-12"
+        >
+          <View className="flex-row px-2">
+            {sortedCategories.map((category, index) => (
+              <TouchableOpacity
+                key={category}
+                onPress={() => handleCategoryPress(index)}
+                className={`px-4 py-2 rounded-full mr-2 ${
+                  activeCategory === index ? 'bg-blue-500' : 'bg-gray-200'
+                }`}
+              >
+                <Text
+                  className={`font-semibold ${
+                    activeCategory === index ? 'text-white' : 'text-gray-700'
+                  }`}
+                >
+                  {category} ({groupedMeals[category].length})
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+      </View>
+
+      {/* Scrollable Content */}
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+        }
+      >
+        {/* Swipeable Content */}
+        {!isLoading ? (
+          <FlatList
+            ref={flatListRef}
+            data={categoriesData}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={handleScroll}
+            keyExtractor={item => item.category}
+            renderItem={({ item }) => (
+              <View className='px-4' style={{ width: width }}>
+                <FlatList
+                  data={item.meals}
+                  renderItem={({ item: meal, index }) => (
+                    <MealCard
+                      item={meal}
+                      index={index}
+                      priceCategory={Number(priceCategory)}
+                    />
+                  )}
+                  keyExtractor={(meal, index) => `${meal.ID}-${index}`}
+                  numColumns={1}
+                  scrollEnabled={false}
+                  showsVerticalScrollIndicator={false}
+                  className="py-2"
+                />
+              </View>
+            )}
+          />
+        ) : (
+          <Text>Loading...</Text>
+        )}
+      </ScrollView>
+
+      <Fab size="lg" placement="bottom right" onPress={() => setShow(true)}>
+        <FabIcon as={CalendarDaysIcon} />
+      </Fab>
+    </View>
   );
 };
 
