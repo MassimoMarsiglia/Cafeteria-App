@@ -46,12 +46,12 @@ export const MealCard = ({
     <TouchableOpacity className="w-full mb-4" onPress={routeToItem}>
       <Card
         variant="elevated"
-        className="outline outline-1 p-4 flex-row items-center bg-[#DDDDDD] dark:bg-[#1f1f1f]"
+        className="outline outline-1 p-4 flex-row items-center bg-secondary-500 rounded-lg"
       >
         {/* Text Content - Links */}
         <View className="flex-1 pr-4">
           {/* Meal name */}
-          <Text
+          <Text 
             className="font-roboto text-lg font-semibold mb-2"
             numberOfLines={2}
             ellipsizeMode="tail"
@@ -70,7 +70,7 @@ export const MealCard = ({
 
         {/* Image - Rechts */}
         <Image
-          source={require('@/assets/categorys/essen.png')}
+          source={getCategoryImage(meal.category)}
           className="h-20 w-20 rounded-lg"
           alt="image"
         />
