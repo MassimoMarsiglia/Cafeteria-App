@@ -9,7 +9,7 @@ interface NavigateToMenuButtonProps {
 export const NavigateToMenuButton = (props: NavigateToMenuButtonProps) => {
   const handlePress = () => {
     router.navigate({
-      pathname: '/(tabs)/menu/[canteenId]',
+      pathname: '/(tabs)/Menu/[canteenId]',
       params: { canteenId: props.canteenId },
     });
   };

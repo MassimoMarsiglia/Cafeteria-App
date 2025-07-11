@@ -3,7 +3,7 @@ import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { Meal } from '@/services/mensaTypes';
 import { router } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 
 export const MealCard = ({
   item: meal,
@@ -45,37 +45,37 @@ export const MealCard = ({
   };
 
   return (
-    <TouchableOpacity className="flex-1 mx-2 last:flex" onPress={routeToItem}>
-      <Card variant="elevated" className="outline outline-1 p-2 mb-4 flex-1">
+    <TouchableOpacity className="w-full mb-4" onPress={routeToItem}>
+      <Card
+        variant="elevated"
+        className="outline outline-1 p-4 flex-row items-center bg-[#DDDDDD] dark:bg-[#1f1f1f]"
+      >
+        {/* Text Content - Links */}
+        <View className="flex-1 pr-4">
+          {/* Meal name */}
+          <Text
+            className="font-roboto text-lg font-semibold mb-2"
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {meal.name.trim()}
+          </Text>
+          {/* Price */}
+          <Text className="text-base font-medium mb-1">
+            {meal.prices && meal.prices.length > 0
+              ? `${meal.prices[Number(priceCategory)].price.toFixed(2)}€`
+              : 'Kein Preis'}
+          </Text>
+          {/* Category */}
+          <Text className="text-sm text-gray-600">{meal.category}</Text>
+        </View>
+
+        {/* Image - Rechts */}
         <Image
           source={require('@/assets/categorys/essen.png')}
-          className="w-full h-48 mb-2 rounded-lg"
+          className="h-20 w-20 rounded-lg"
           alt="image"
         />
-        {/* Meal name */}
-        <Text className="font-roboto" numberOfLines={2} ellipsizeMode="tail">
-          {meal.name.trim()}
-        </Text>
-        <Text className="font-roboto" numberOfLines={2} ellipsizeMode="tail">
-          {meal.name.trim()}
-        </Text>
-        {/* Price */}
-        {
-          <Text>
-            {meal.prices && meal.prices.length > 0
-              ? `${meal.prices[Number(priceCategory)].price.toFixed(2)}€`
-              : 'Kein Preis'}
-          </Text>
-        }
-        {
-          <Text>
-            {meal.prices && meal.prices.length > 0
-              ? `${meal.prices[Number(priceCategory)].price.toFixed(2)}€`
-              : 'Kein Preis'}
-          </Text>
-        }
-        {/* Category */}
-        <Text>{meal.category}</Text>
       </Card>
     </TouchableOpacity>
   );
