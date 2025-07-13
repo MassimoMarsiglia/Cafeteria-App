@@ -34,7 +34,7 @@ export const MealCard = ({
 
   const routeToItem = () => {
     router.push({
-      pathname: '/Menu/MenuItem/[mealId]',
+      pathname: '/menu/MenuItem/[mealId]',
       params: { 
         mealData: JSON.stringify(meal),
         mealId: meal.id,
