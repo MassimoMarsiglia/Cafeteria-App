@@ -4,10 +4,10 @@ import { CalendarDaysIcon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMenusQuery } from '@/services/mensaApi';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   RefreshControl,
@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DatePicker from 'react-native-date-picker';
 
 const Menu = () => {
   const [date, setDate] = useState(new Date());
@@ -101,7 +102,12 @@ const Menu = () => {
 
   // Handle loading state
   if (isLoading) {
-    return <Text>Loading today menu...</Text>;
+    return (
+      <View className="flex-1 justify-center items-center bg-background-0">
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text className="mt-4 text-lg">Loading menu...</Text>
+      </View>
+    );
   }
 
   // Handle empty data state
@@ -111,20 +117,24 @@ const Menu = () => {
 
   return (
     <View className="flex-1 bg-background-0">
-      {/* DateTimePicker außerhalb */}
-      {show && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="calendar"
-          onChange={(event, selectedDate) => {
-            const currentDate = selectedDate || date;
-            setShow(false);
-            setDate(currentDate);
-          }}
-          className="w-full"
-        />
-      )}
+      {/* DatePicker außerhalb */}
+      <DatePicker
+        modal
+        open={show}
+        date={date}
+        mode="date"
+        onConfirm={(selectedDate: Date) => {
+          setShow(false);
+          setDate(selectedDate);
+        }}
+        onCancel={() => {
+          setShow(false);
+        }}
+        locale="de"
+        title="Datum auswählen"
+        confirmText="Bestätigen"
+        cancelText="Abbrechen"
+      />
 
       {/* Kategorie-Tabs */}
       <View className="mb-4 mt-4 px-4">
@@ -174,7 +184,7 @@ const Menu = () => {
             onMomentumScrollEnd={handleScroll}
             keyExtractor={item => item.category}
             renderItem={({ item }) => (
-              <View className='px-4' style={{ width: width }}>
+              <View className="px-4" style={{ width: width }}>
                 <FlatList
                   data={item.meals}
                   renderItem={({ item: meal, index }) => (
@@ -198,7 +208,14 @@ const Menu = () => {
         )}
       </ScrollView>
 
-      <Fab size="lg" placement="bottom right" onPress={() => setShow(true)}>
+      <Fab
+        size="lg"
+        placement="bottom right"
+        onPress={() => {
+          console.log('Fab clicked!');
+          setShow(true);
+        }}
+      >
         <FabIcon as={CalendarDaysIcon} />
       </Fab>
     </View>
