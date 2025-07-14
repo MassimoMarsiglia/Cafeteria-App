@@ -23,7 +23,7 @@ const Menu = () => {
   const [show, setShow] = useState(false);
   const [activeCategory, setActiveCategory] = useState(0);
   const canteenId = useLocalSearchParams<{ canteenId: string }>();
-  const { priceCategory } = useSettings();
+  const { priceCategory, favoriteMeals } = useSettings();
   const flatListRef = useRef<FlatList>(null);
   const tabScrollRef = useRef<ScrollView>(null);
   const { width } = Dimensions.get('window');
@@ -53,13 +53,24 @@ const Menu = () => {
         acc[category] = [];
       }
       acc[category].push(meal);
+      if (meal.id && favoriteMeals.filter(m => m.id === meal.id).length > 0) {
+        if (!acc['Lieblingsgerichte']) {
+          acc['Lieblingsgerichte'] = [];
+        }
+        acc['Lieblingsgerichte'].push(meal);
+      }
       return acc;
     },
     {} as Record<string, any[]>,
   );
 
-  // Kategorien sortieren - Hauptgerichte zuerst
+  // Kategorien sortieren - Hauptgerichte zuerst, Lieblingsgerichte zuletzt
   const sortedCategories = Object.keys(groupedMeals).sort((a, b) => {
+    // Lieblingsgerichte immer zuletzt
+    if (a === 'Lieblingsgerichte') return 1;
+    if (b === 'Lieblingsgerichte') return -1;
+
+    // Hauptgerichte zuerst
     if (a.toLowerCase().includes('essen') || a.toLowerCase().includes('haupt'))
       return -1;
     if (b.toLowerCase().includes('essen') || b.toLowerCase().includes('haupt'))

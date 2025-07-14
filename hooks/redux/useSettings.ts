@@ -1,7 +1,8 @@
-import { Canteen } from '@/services/mensaTypes';
+import { Canteen, Meal } from '@/services/mensaTypes';
 import { AppDispatch, RootState } from '@/store';
 import {
   setFavoriteCanteen as setCanteen,
+  setFavoriteMeals,
   setPriceCategory as setPriceCat,
   toggleDarkMode as toggleDark,
 } from '@/store/slices/settingsSlice';
@@ -24,7 +25,26 @@ export const useSettings = () => {
     dispatch(toggleDark());
   };
 
+  const addFavoriteMeals = (meal: Meal) => {
+    const currentFavMeals = settingsState.favoriteMeals || [];
+    const newFavMeals = [
+      ...currentFavMeals,
+      currentFavMeals.some(m => m.id === meal.id)
+        ? meal
+        : { ...meal, id: meal.id.toString() },
+    ];
+    dispatch(setFavoriteMeals(newFavMeals));
+  };
+
+  const removeFavoriteMeals = (meal: Meal) => {
+    const favMeals = settingsState.favoriteMeals?.filter(m => m.id !== meal.id);
+    dispatch(setFavoriteMeals(favMeals || []));
+  };
+
   return {
+    addFavoriteMeals,
+    removeFavoriteMeals,
+    favoriteMeals: settingsState.favoriteMeals || [],
     setPriceCategory,
     isDarkMode: settingsState.isDarkMode,
     toggleDarkMode,
