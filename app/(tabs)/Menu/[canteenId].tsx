@@ -15,11 +15,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { PaperProvider } from 'react-native-paper';
-import { DatePickerModal } from 'react-native-paper-dates';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 const Menu = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [activeCategory, setActiveCategory] = useState(0);
   const canteenId = useLocalSearchParams<{ canteenId: string }>();
@@ -35,8 +34,8 @@ const Menu = () => {
     refetch,
   } = useGetMenusQuery({
     canteenId: canteenId.canteenId,
-    startdate: (date || new Date()).toISOString().split('T')[0],
-    enddate: (date || new Date()).toISOString().split('T')[0],
+    startdate: date.toISOString().split('T')[0],
+    enddate: date.toISOString().split('T')[0],
   });
 
   // Gerichte nach Kategorien gruppieren
@@ -96,13 +95,10 @@ const Menu = () => {
     }
   };
 
-  const onDismiss = () => {
+  const handleConfirm = (selectedDate: Date) => {
+    console.log('A date has been picked: ', selectedDate);
+    setDate(selectedDate);
     setShow(false);
-  };
-
-  const onConfirm = ({ date }: { date: Date | undefined }) => {
-    setShow(false);
-    setDate(date);
   };
 
   // Handle error state
@@ -115,7 +111,6 @@ const Menu = () => {
     return (
       <View className="flex-1 justify-center items-center bg-background-0">
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text className="mt-4 text-lg">Loading menu...</Text>
       </View>
     );
   }
@@ -126,106 +121,101 @@ const Menu = () => {
   }
 
   return (
-    <PaperProvider>
-      <View className="flex-1 bg-background-0">
-        {/* DatePicker außerhalb */}
-        <DatePickerModal
-          locale="de"
-          mode="single"
-          visible={show}
-          onDismiss={onDismiss}
-          date={date}
-          onConfirm={onConfirm}
-          label="Datum auswählen"
-          saveLabel="Bestätigen"
-          startWeekOnMonday
-          presentationStyle='pageSheet'
-        />
+    <View className="flex-1 bg-background-0">
+      {/* React Native Modal DateTime Picker */}
+      <DateTimePickerModal
+        isVisible={show}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={() => setShow(false)}
+        locale="de_DE"
+        cancelTextIOS='Abbrechen'
+        confirmTextIOS='Ok'
+      />
 
-        {/* Kategorie-Tabs */}
-        <View className="mb-4 mt-4 px-4">
-          <ScrollView
-            ref={tabScrollRef}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="max-h-12"
-          >
-            <View className="flex-row px-2">
-              {sortedCategories.map((category, index) => (
-                <TouchableOpacity
-                  key={category}
-                  onPress={() => handleCategoryPress(index)}
-                  className={`px-4 py-2 rounded-full mr-2 ${
-                    activeCategory === index ? 'bg-blue-500' : 'bg-gray-200'
+      {/* Kategorie-Tabs */}
+      <View className="mb-4 mt-4 px-4">
+        <ScrollView
+          ref={tabScrollRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="max-h-12"
+        >
+          <View className="flex-row px-2">
+            {sortedCategories.map((category, index) => (
+              <TouchableOpacity
+                key={category}
+                onPress={() => handleCategoryPress(index)}
+                className={`px-4 py-2 rounded-full mr-2 ${
+                  activeCategory === index ? 'bg-blue-500' : 'bg-gray-200'
+                }`}
+              >
+                <Text
+                  className={`font-semibold ${
+                    activeCategory === index ? 'text-white' : 'text-gray-700'
                   }`}
                 >
-                  <Text
-                    className={`font-semibold ${
-                      activeCategory === index ? 'text-white' : 'text-gray-700'
-                    }`}
-                  >
-                    {category} ({groupedMeals[category].length})
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
-        </View>
-
-        {/* Scrollable Content */}
-        <ScrollView
-          className="flex-1"
-          refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-          }
-        >
-          {/* Swipeable Content */}
-          {!isLoading ? (
-            <FlatList
-              ref={flatListRef}
-              data={categoriesData}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onMomentumScrollEnd={handleScroll}
-              keyExtractor={item => item.category}
-              renderItem={({ item }) => (
-                <View className="px-4" style={{ width: width }}>
-                  <FlatList
-                    data={item.meals}
-                    renderItem={({ item: meal, index }) => (
-                      <MealCard
-                        item={meal}
-                        index={index}
-                        priceCategory={Number(priceCategory)}
-                      />
-                    )}
-                    keyExtractor={(meal, index) => `${meal.ID}-${index}`}
-                    numColumns={1}
-                    scrollEnabled={false}
-                    showsVerticalScrollIndicator={false}
-                    className="py-2"
-                  />
-                </View>
-              )}
-            />
-          ) : (
-            <Text>Loading...</Text>
-          )}
+                  {category} ({groupedMeals[category].length})
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </ScrollView>
-
-        <Fab
-          size="lg"
-          placement="bottom right"
-          onPress={() => {
-            console.log('Fab clicked!');
-            setShow(true);
-          }}
-        >
-          <FabIcon as={CalendarDaysIcon} />
-        </Fab>
       </View>
-    </PaperProvider>
+
+      {/* Scrollable Content */}
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+        }
+      >
+        {/* Swipeable Content */}
+        {!isLoading ? (
+          <FlatList
+            ref={flatListRef}
+            data={categoriesData}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={handleScroll}
+            keyExtractor={item => item.category}
+            renderItem={({ item }) => (
+              <View className="px-4" style={{ width: width }}>
+                <FlatList
+                  data={item.meals}
+                  renderItem={({ item: meal, index }) => (
+                    <MealCard
+                      item={meal}
+                      index={index}
+                      priceCategory={Number(priceCategory)}
+                    />
+                  )}
+                  keyExtractor={(meal, index) => `${meal.ID}-${index}`}
+                  numColumns={1}
+                  scrollEnabled={false}
+                  showsVerticalScrollIndicator={false}
+                  className="py-2"
+                />
+              </View>
+            )}
+          />
+        ) : (
+          <Text>Loading...</Text>
+        )}
+      </ScrollView>
+
+      <Fab
+        size="lg"
+        placement="bottom right"
+        onPress={() => {
+          console.log('Fab clicked!');
+          setShow(true);
+        }}
+      >
+        <FabIcon as={CalendarDaysIcon} />
+      </Fab>
+    </View>
   );
 };
 
