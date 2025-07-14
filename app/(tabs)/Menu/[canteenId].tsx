@@ -4,6 +4,7 @@ import { CalendarDaysIcon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMenusQuery } from '@/services/mensaApi';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
@@ -30,6 +31,7 @@ const Menu = () => {
   const {
     data: menu,
     isLoading,
+    isFetching,
     isError,
     refetch,
   } = useGetMenusQuery({
@@ -96,82 +98,116 @@ const Menu = () => {
   };
 
   const handleConfirm = (selectedDate: Date) => {
-    console.log('A date has been picked: ', selectedDate);
     setDate(selectedDate);
     setShow(false);
   };
 
-  // Handle error state
-  if (isError) {
-    return <Text style={{ color: 'red' }}>Error loading menu: {isError}</Text>;
-  }
+  const isWeekend = (date: Date) => {
+    const day = date.getDay();
+    return day === 0 || day === 6; // Sonntag (0) oder Samstag (6)
+  };
 
-  // Handle loading state
-  if (isLoading) {
+  // Content je nach Zustand bestimmen
+  const renderContent = () => {
+    if (isLoading || isFetching) {
+      return (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      );
+    }
+
+    if (isError) {
+      return (
+        <View className="flex-1 justify-center items-center">
+          <AntDesign name="wifi" size={75} color="grey" className="mb-6" />
+          <Text className="text-base font-medium mb-4">
+            Fehler beim Laden des Menüs
+          </Text>
+          <Text className="text-base font-small mb-4">
+            Überprüfe deine Internetverbindung
+          </Text>
+        </View>
+      );
+    }
+
+    if (!menu || menu.length === 0) {
+      return (
+        <View className="flex-1 justify-center items-center">
+          <AntDesign
+            name="infocirlceo"
+            size={75}
+            color="gray"
+            className="mb-6"
+          />
+          <Text className="text-base font-medium mb-4">
+            Es gibt noch kein Menü für den {date.toLocaleDateString('de-DE')}
+          </Text>
+          <Text className="text-base font-small mb-4">
+            Wählen Sie ein anderes Datum aus
+          </Text>
+        </View>
+      );
+    }
+
+    if (!menu[0]?.meals || menu[0].meals.length === 0) {
+      return (
+        <View className="flex-1 justify-center items-center">
+          <AntDesign name="frowno" size={75} color="gray" className="mb-6" />
+          <Text className="text-base font-medium mb-4">
+            {isWeekend(date)
+              ? 'Am Wochenende ist die Mensa geschlossen'
+              : `Keine Gerichte verfügbar für den ${date.toLocaleDateString('de-DE')}`}
+          </Text>
+          <Text className="text-base font-small mb-4">
+            {isWeekend(date)
+              ? 'Wählen Sie einen Werktag aus'
+              : 'Wählen Sie ein anderes Datum aus'}
+          </Text>
+        </View>
+      );
+    }
+
+    // Normal menu display
     return (
-      <View className="flex-1 justify-center items-center bg-background-0">
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
-  // Handle empty data state
-  if (!menu || menu.length === 0) {
-    return <Text>No menu available for today</Text>;
-  }
-
-  return (
-    <View className="flex-1 bg-background-0">
-      {/* React Native Modal DateTime Picker */}
-      <DateTimePickerModal
-        isVisible={show}
-        mode="date"
-        onConfirm={handleConfirm}
-        onCancel={() => setShow(false)}
-        locale="de_DE"
-        cancelTextIOS='Abbrechen'
-        confirmTextIOS='Ok'
-      />
-
-      {/* Kategorie-Tabs */}
-      <View className="mb-4 mt-4 px-4">
-        <ScrollView
-          ref={tabScrollRef}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="max-h-12"
-        >
-          <View className="flex-row px-2">
-            {sortedCategories.map((category, index) => (
-              <TouchableOpacity
-                key={category}
-                onPress={() => handleCategoryPress(index)}
-                className={`px-4 py-2 rounded-full mr-2 ${
-                  activeCategory === index ? 'bg-blue-500' : 'bg-gray-200'
-                }`}
-              >
-                <Text
-                  className={`font-semibold ${
-                    activeCategory === index ? 'text-white' : 'text-gray-700'
+      <>
+        {/* Kategorie-Tabs */}
+        <View className="mb-4 mt-4 px-4">
+          <ScrollView
+            ref={tabScrollRef}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="max-h-12"
+          >
+            <View className="flex-row px-2">
+              {sortedCategories.map((category, index) => (
+                <TouchableOpacity
+                  key={category}
+                  onPress={() => handleCategoryPress(index)}
+                  className={`px-4 py-2 rounded-full mr-2 ${
+                    activeCategory === index ? 'bg-blue-500' : 'bg-gray-200'
                   }`}
                 >
-                  {category} ({groupedMeals[category].length})
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
-      </View>
+                  <Text
+                    className={`font-semibold ${
+                      activeCategory === index ? 'text-white' : 'text-gray-700'
+                    }`}
+                  >
+                    {category} ({groupedMeals[category].length})
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
 
-      {/* Scrollable Content */}
-      <ScrollView
-        className="flex-1"
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-        }
-      >
-        {/* Swipeable Content */}
-        {!isLoading ? (
+        {/* Scrollable Content */}
+        <ScrollView
+          className="flex-1"
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+          }
+        >
           <FlatList
             ref={flatListRef}
             data={categoriesData}
@@ -200,11 +236,29 @@ const Menu = () => {
               </View>
             )}
           />
-        ) : (
-          <Text>Loading...</Text>
-        )}
-      </ScrollView>
+        </ScrollView>
+      </>
+    );
+  };
 
+  return (
+    <View className="flex-1 bg-background-0">
+      {/* React Native Modal DateTime Picker */}
+      <DateTimePickerModal
+        isVisible={show}
+        mode="date"
+        date={date}
+        onConfirm={handleConfirm}
+        onCancel={() => setShow(false)}
+        locale="de_DE"
+        cancelTextIOS="Abbrechen"
+        confirmTextIOS="Ok"
+      />
+
+      {/* Dynamic Content */}
+      {renderContent()}
+
+      {/* Fab mit Icon */}
       <Fab
         size="lg"
         placement="bottom right"
