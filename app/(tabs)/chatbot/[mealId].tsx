@@ -1,4 +1,6 @@
+import exportDatabase from '@/utils/database';
 import { useLocalSearchParams } from 'expo-router';
+import * as SQLite from 'expo-sqlite';
 import OpenAI from 'openai';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -14,96 +16,143 @@ import {
   View,
 } from 'react-native';
 
+type Message = {
+  id: string;
+  text: string;
+  sender: string;
+  timestamp?: number;
+  meal?: string;
+};
+
 const ChatBotScreen = () => {
   const { mealName } = useLocalSearchParams();
   const flatListRef = useRef(null);
-  const [messages, setMessages] = useState([
-    { id: '1', text: 'Loading meal info...', sender: 'bot' },
-  ]);
+  const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
 
-  // First AI message based on mealName
+  // 📦 Open DB and create table
   useEffect(() => {
-    if (mealName) {
-      const introMessage = {
-        id: Date.now().toString(),
-        text: `Das Gericht heißt "${mealName}". Ich helfe dir dabei, ein Rezept dafür zu erstellen …`,
-        sender: 'bot',
-      };
-      setMessages([introMessage]);
+    const initDb = async () => {
+      const database = await SQLite.openDatabaseAsync('chat.db');
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS messages (
+          id TEXT PRIMARY KEY NOT NULL,
+          text TEXT,
+          sender TEXT,
+          timestamp INTEGER,
+          meal TEXT
+        );
+      `);
+      setDb(database);
+    };
 
-      const systemPrompt = `Du wirst ein Rezept erstellen, das auf den meal "${mealName}" basiert. Das Rezept soll alle notwendigen Schritte, Zutaten und Kochtechniken enthalten. Es soll so strukturiert sein, dass es leicht verständlich und umsetzbar ist – unabhängig vom kulinarischen Können der Leserinnen und Leser.`;
-      callAIWithPrompt(systemPrompt);
-    } else {
-      setMessages([
-        {
-          id: Date.now().toString(),
-          text: 'No meal name provided.',
-          sender: 'bot',
-        },
-      ]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    initDb();
   }, []);
 
-  async function callAIWithPrompt(prompt: string) {
+  // 🔄 Load messages when DB and mealName are ready
+  useEffect(() => {
+    const loadMessages = async () => {
+      if (!db || !mealName) return;
+      const meal = Array.isArray(mealName) ? mealName[0] : mealName;
+
+      try {
+        const rows = await db.getAllAsync(
+          `SELECT * FROM messages WHERE meal = ? ORDER BY timestamp ASC;`,
+          [meal],
+        );
+
+        if (rows.length > 0) {
+          setMessages(rows as Message[]);
+        } else {
+          const introMessage: Message = {
+            id: Date.now().toString(),
+            text: `Das Gericht heißt "${meal}". Ich helfe dir dabei, ein Rezept dafür zu erstellen …`,
+            sender: 'bot',
+          };
+          setMessages([introMessage]);
+          await saveMessageToDB(introMessage, meal);
+
+          const systemPrompt = `Du wirst ein Rezept erstellen, das auf dem Gericht "${meal}" basiert. Das Rezept soll alle notwendigen Schritte, Zutaten und Kochtechniken enthalten. Es soll so strukturiert sein, dass es leicht verständlich und umsetzbar ist – unabhängig vom kulinarischen Können der Leserinnen und Leser.`;
+          callAIWithPrompt(systemPrompt);
+        }
+      } catch (err) {
+        console.error('SQLite load error:', err);
+      }
+    };
+
+    loadMessages();
+  }, [db, mealName]);
+
+  const saveMessageToDB = async (msg: Message, meal: string) => {
+    if (!db) return;
+    await db.runAsync(
+      `INSERT INTO messages (id, text, sender, timestamp, meal) VALUES (?, ?, ?, ?, ?);`,
+      [msg.id, msg.text, msg.sender, Date.now(), meal],
+    );
+  };
+
+  const callAIWithPrompt = async (prompt: string) => {
     try {
       const openAi = new OpenAI({
         baseURL: 'https://openrouter.ai/api/v1',
-        // I already have an account on OpenRouter so u guys can use my API Key or create one in OpenRouter
-        // There are also another free API with limited requests, u guys can check here: https://chatgpt.com/share/686ffe71-6634-8009-b10f-06000e1e797a
-        // The ChatBot only works when u guys put the API_KEY here and please don't push API_KEY to github public
         apiKey: 'API_KEY',
       });
+
       const response = await openAi.chat.completions.create({
         model: 'openai/gpt-4o',
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        max_completion_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 1000,
       });
-      const data = response.choices[0].message.content;
-      console.log('HuggingFace AI response:', data);
-      const aiReply = data!;
 
-      const botMessage = {
+      const aiReply = response.choices[0].message.content;
+      console.log('AI Response:', aiReply);
+      const botMessage: Message = {
         id: Date.now().toString(),
-        text: aiReply,
+        text: aiReply || 'Keine Antwort erhalten.',
         sender: 'bot',
       };
+
       setMessages(prev => [...prev, botMessage]);
+      await saveMessageToDB(
+        botMessage,
+        Array.isArray(mealName) ? mealName[0] : mealName,
+      );
     } catch (err) {
-      console.log(err);
-      const errorMessage = {
+      console.error('AI API error:', err);
+      const errorMessage: Message = {
         id: Date.now().toString(),
-        text: 'Error calling AI service',
+        text: 'Fehler beim Abrufen der AI-Antwort.',
         sender: 'bot',
       };
       setMessages(prev => [...prev, errorMessage]);
+      await saveMessageToDB(
+        errorMessage,
+        Array.isArray(mealName) ? mealName[0] : mealName,
+      );
     }
-  }
+  };
 
-  const sendMessage = () => {
-    if (inputText.trim().length === 0) return;
+  const sendMessage = async () => {
+    if (inputText.trim().length === 0 || !mealName) return;
 
-    const userMessage = {
+    const meal = Array.isArray(mealName) ? mealName[0] : mealName;
+
+    const userMessage: Message = {
       id: Date.now().toString(),
       text: inputText,
       sender: 'user',
     };
+
     setMessages(prev => [...prev, userMessage]);
+    await saveMessageToDB(userMessage, meal);
 
-    const promptForAI = `Der Benutzer fragt nach „${mealName}“. Seine Nachricht lautet: „${inputText}“. Bitte antworte hilfreich.`;
-
+    const promptForAI = `Der Benutzer fragt nach „${meal}“. Seine Nachricht lautet: „${inputText}“. Bitte antworte hilfreich.`;
     callAIWithPrompt(promptForAI);
-
     setInputText('');
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: Message }) => (
     <View
       className={`my-1 p-3 rounded-lg max-w-4/5 ${
         item.sender === 'user'
@@ -111,9 +160,7 @@ const ChatBotScreen = () => {
           : 'bg-blue-100 self-start'
       }`}
     >
-      <Text
-        className={`${item.sender === 'user' ? 'text-white' : 'text-black'}`}
-      >
+      <Text className={item.sender === 'user' ? 'text-white' : 'text-black'}>
         {item.text}
       </Text>
     </View>
@@ -140,9 +187,34 @@ const ChatBotScreen = () => {
               keyboardShouldPersistTaps="handled"
             />
 
-            <View className="flex-row items-center border-t border-gray-300 px-4 py-3 bg-white">
+            {/* Export DB Button */}
+            <TouchableOpacity
+              onPress={exportDatabase}
+              style={{
+                position: 'absolute',
+                bottom: 90, // above input bar
+                right: 20,
+                backgroundColor: '#4f46e5',
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 30,
+                zIndex: 10,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 3,
+                elevation: 5,
+              }}
+            >
+              <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                📤 Export DB
+              </Text>
+            </TouchableOpacity>
+
+            <View className="flex-row items-center border-t border-gray-300 px-4 py-4 bg-white">
               <TextInput
-                className="flex-1 h-10 px-4 rounded-full border border-gray-300"
+                className="flex-1 min-h-12 px-4 py-2 rounded-full border border-gray-300"
+                multiline
                 value={inputText}
                 onChangeText={setInputText}
                 placeholder="Type your message..."

@@ -12,9 +12,6 @@ import { useSettings } from '@/hooks/redux/useSettings';
 import { useSidebar } from '@/hooks/redux/useSidebar';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Alert, AlertIcon, AlertText } from '../ui/alert';
-import { InfoIcon } from '../ui/icon';
-import { Toast, ToastDescription, ToastTitle, useToast } from '../ui/toast';
 import { SidebarItem } from './SidebarItem/Index';
 
 export const Sidebar = () => {
@@ -37,6 +34,7 @@ export const Sidebar = () => {
           <DrawerBody>
             <Gerichte isDarkMode={isDarkMode} />
             <Mensen isDarkMode={isDarkMode} />
+            <SavedChats isDarkMode={isDarkMode} />
           </DrawerBody>
         </DrawerContent>
       </Drawer>
@@ -61,7 +59,7 @@ const Mensen = ({ isDarkMode }: { isDarkMode: boolean }) => {
       iconProps={{
         name: 'building',
         size: 45,
-        color: isDarkMode ? 'white' : 'black'
+        color: isDarkMode ? 'white' : 'black',
       }}
       onPress={handlePress}
     />
@@ -93,7 +91,32 @@ const Gerichte = ({ isDarkMode }: { isDarkMode: boolean }) => {
       iconProps={{
         name: 'food-fork-drink',
         size: 45,
-        color: isDarkMode ? 'white' : 'black'
+        color: isDarkMode ? 'white' : 'black',
+      }}
+      onPress={handlePress}
+    />
+  );
+};
+
+const SavedChats = ({ isDarkMode }: { isDarkMode: boolean }) => {
+  const { toggleSidebar } = useSidebar();
+
+  const handlePress = () => {
+    toggleSidebar();
+    router.replace({
+      pathname: '/(tabs)/chatbot/MealListScreen',
+    });
+  };
+
+  return (
+    <SidebarItem
+      title="Gespeicherte Chats"
+      description="Lade gespeicherte Chatverläufe"
+      icon={FontAwesome5}
+      iconProps={{
+        name: 'comments',
+        size: 45,
+        color: isDarkMode ? 'white' : 'black',
       }}
       onPress={handlePress}
     />

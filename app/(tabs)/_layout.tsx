@@ -53,6 +53,12 @@ export default function TabLayout() {
         }}
       />
       <Stack.Screen
+        name="chatbot/MealListScreen"
+        options={{
+          title: 'Chat Bot Saved List',
+        }}
+      />
+      <Stack.Screen
         name="settings/pricecategory"
         options={{
           title: 'Price Category Settings',
