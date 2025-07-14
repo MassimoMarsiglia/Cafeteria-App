@@ -81,7 +81,7 @@ const Gerichte = ({ isDarkMode }: { isDarkMode: boolean }) => {
       return;
     }
     router.replace({
-      pathname: '/(tabs)/Menu/[canteenId]',
+      pathname: '/(tabs)/menu/[canteenId]',
       params: { canteenId: favoriteCanteen.id },
     });
   };
