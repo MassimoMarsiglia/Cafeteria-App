@@ -39,3 +39,13 @@ export const getSavedMeals = async (): Promise<string[]> => {
     throw error;
   }
 };
+
+export const deleteMeal = async (mealName: string): Promise<void> => {
+  try {
+    const db = await openDb();
+    await db.runAsync('DELETE FROM messages WHERE meal = ?;', [mealName]);
+  } catch (error) {
+    console.error('Error deleting meal:', error);
+    throw error;
+  }
+};

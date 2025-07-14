@@ -1,4 +1,5 @@
 import exportDatabase from '@/utils/database';
+import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import * as SQLite from 'expo-sqlite';
 import OpenAI from 'openai';
@@ -16,13 +17,14 @@ import {
   View,
 } from 'react-native';
 
+import MessageBubble from '@/components/Chatbot/MessageBubble';
+
 type Message = {
   id: string;
-  text: string;
+  text?: string;
   sender: string;
-  timestamp?: number;
-  meal?: string;
 };
+// function stripMarkdown (in stripMarkdown)
 
 const ChatBotScreen = () => {
   const { mealName } = useLocalSearchParams();
@@ -30,6 +32,7 @@ const ChatBotScreen = () => {
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
   // 📦 Open DB and create table
   useEffect(() => {
@@ -93,6 +96,8 @@ const ChatBotScreen = () => {
   };
 
   const callAIWithPrompt = async (prompt: string) => {
+    setIsTyping(true);
+
     try {
       const openAi = new OpenAI({
         baseURL: 'https://openrouter.ai/api/v1',
@@ -130,6 +135,8 @@ const ChatBotScreen = () => {
         errorMessage,
         Array.isArray(mealName) ? mealName[0] : mealName,
       );
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -153,21 +160,11 @@ const ChatBotScreen = () => {
   };
 
   const renderItem = ({ item }: { item: Message }) => (
-    <View
-      className={`my-1 p-3 rounded-lg max-w-4/5 ${
-        item.sender === 'user'
-          ? 'bg-blue-600 self-end'
-          : 'bg-blue-100 self-start'
-      }`}
-    >
-      <Text className={item.sender === 'user' ? 'text-white' : 'text-black'}>
-        {item.text}
-      </Text>
-    </View>
+    <MessageBubble message={item} />
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -177,7 +174,17 @@ const ChatBotScreen = () => {
           <View className="flex-1">
             <FlatList
               ref={flatListRef}
-              data={messages}
+              data={
+                isTyping
+                  ? [
+                      ...messages,
+                      {
+                        id: 'typing',
+                        sender: 'bot-typing',
+                      },
+                    ]
+                  : messages
+              }
               keyExtractor={item => item.id}
               renderItem={renderItem}
               contentContainerStyle={{ padding: 16, flexGrow: 1 }}
@@ -187,7 +194,7 @@ const ChatBotScreen = () => {
               keyboardShouldPersistTaps="handled"
             />
 
-            {/* Export DB Button */}
+            {/* Export DB Button, only for developing. Please uncomment when we don't need it  */}
             <TouchableOpacity
               onPress={exportDatabase}
               style={{
@@ -211,9 +218,9 @@ const ChatBotScreen = () => {
               </Text>
             </TouchableOpacity>
 
-            <View className="flex-row items-center border-t border-gray-300 px-4 py-4 bg-white">
+            <View className="flex-row items-center border-t border-gray-300 dark:border-gray-700 px-4 py-4 bg-white dark:bg-gray-900">
               <TextInput
-                className="flex-1 min-h-12 px-4 py-2 rounded-full border border-gray-300"
+                className="flex-1 min-h-12 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 multiline
                 value={inputText}
                 onChangeText={setInputText}
@@ -222,9 +229,10 @@ const ChatBotScreen = () => {
               />
               <TouchableOpacity
                 onPress={sendMessage}
-                className="ml-2 bg-blue-600 px-4 py-2 rounded-full"
+                className="ml-2 bg-blue-600 dark:bg-blue-500 rounded-full p-3 items-center justify-center"
+                accessibilityLabel="Send message"
               >
-                <Text className="text-white font-bold">Send</Text>
+                <Feather name="send" size={24} color="white" />
               </TouchableOpacity>
             </View>
           </View>
