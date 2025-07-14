@@ -23,7 +23,7 @@ const Menu = () => {
   const [show, setShow] = useState(false);
   const [activeCategory, setActiveCategory] = useState(0);
   const canteenId = useLocalSearchParams<{ canteenId: string }>();
-  const { priceCategory, favoriteMealIds } = useSettings();
+  const { priceCategory, favoriteMeals } = useSettings();
   const flatListRef = useRef<FlatList>(null);
   const tabScrollRef = useRef<ScrollView>(null);
   const { width } = Dimensions.get('window');
@@ -48,7 +48,7 @@ const Menu = () => {
         acc[category] = [];
       }
       acc[category].push(meal);
-      if (meal.id && favoriteMealIds.includes(meal.id)) {
+      if (meal.id && favoriteMeals.filter(m => m.id === meal.id).length > 0) {
         if (!acc['Lieblingsgerichte']) {
           acc['Lieblingsgerichte'] = [];
         }

@@ -34,15 +34,15 @@ export const MealCard = ({
     }
   };
 
-  const { favoriteMealIds } = useSettings();
+  const { favoriteMeals } = useSettings();
 
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     if (meal.id) {
-      setIsFavorite(favoriteMealIds.includes(meal.id));
+      setIsFavorite(favoriteMeals.filter(m => m.id === meal.id).length > 0);
     }
-  }, [meal.id, favoriteMealIds]);
+  }, [meal.id, favoriteMeals]);
 
   const routeToItem = () => {
     router.push({

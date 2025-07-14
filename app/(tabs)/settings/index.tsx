@@ -35,6 +35,12 @@ export default function SettingsScreen() {
     });
   }, []);
 
+  const handleFavoriteMealsPress = useCallback(() => {
+    router.navigate({
+      pathname: '/settings/favoritemeals',
+    });
+  }, []);
+
   const themeIcon = useMemo(
     () =>
       !isDarkMode ? (
@@ -151,7 +157,7 @@ export default function SettingsScreen() {
         icon: favoriteMealsIcon,
         value: undefined,
         hasToggle: false,
-        onPress: () => console.log('Not implemented yet'),
+        onPress: handleFavoriteMealsPress,
       },
       {
         id: 'saved recipes',

@@ -1,11 +1,11 @@
-import { Canteen } from '@/services/mensaTypes';
+import { Canteen, Meal } from '@/services/mensaTypes';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface SettingsState {
   isDarkMode: boolean;
   priceCategory: string;
   favoriteCanteen?: Canteen;
-  favoriteMeals?: string[];
+  favoriteMeals?: Meal[];
 }
 
 const initialState: SettingsState = {

@@ -14,6 +14,7 @@ import { ScrollView } from '@/components/ui/scroll-view';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { useSettings } from '@/hooks/redux/useSettings';
+import { useGetMealsQuery } from '@/services/mensaApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import {
@@ -27,19 +28,30 @@ import {
 } from 'react';
 
 export default function MealView() {
-  const params = useLocalSearchParams<{ mealData: string; mealId: string }>();
-  const { favoriteMealIds, addFavoriteMeals, removeFavoriteMeals } =
+  const params = useLocalSearchParams<{ mealId: string }>();
+  const { favoriteMeals, addFavoriteMeals, removeFavoriteMeals } =
     useSettings();
+  const { data: mealData } = useGetMealsQuery({
+    ID: params.mealId,
+    loadingtype: 'complete',
+  });
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     if (params.mealId) {
-      setIsFavorite(favoriteMealIds.includes(params.mealId));
+      setIsFavorite(favoriteMeals.some(m => m.id === params.mealId)); // Check if the meal is in favorites
     }
-  }, [params.mealId, favoriteMealIds]);
+  }, [params.mealId, favoriteMeals]);
 
-  // Meal-Objekt aus JSON-String parsen
-  const meal = params.mealData ? JSON.parse(params.mealData) : null;
+  if (!mealData || mealData.length === 0) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Fehler beim Laden der Mahlzeit</Text>
+      </View>
+    );
+  }
+
+  const meal = mealData![0];
 
   console.log('=== MEAL VIEW ===');
   console.log('Received meal:', meal?.name);
@@ -47,9 +59,9 @@ export default function MealView() {
   // Handler für Favoriten-Button
   const handleFavoritePress = () => {
     if (isFavorite) {
-      removeFavoriteMeals(params.mealId);
+      removeFavoriteMeals(meal);
     } else {
-      addFavoriteMeals([params.mealId]);
+      addFavoriteMeals(meal);
     }
   };
 
@@ -146,76 +158,16 @@ export default function MealView() {
                 </AccordionTrigger>
               </AccordionHeader>
               <AccordionContent>
-                {meal.badges.map(
-                  (
-                    badge: {
-                      name:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | Promise<
-                            | string
-                            | number
-                            | bigint
-                            | boolean
-                            | ReactPortal
-                            | ReactElement<
-                                unknown,
-                                string | JSXElementConstructor<any>
-                              >
-                            | Iterable<ReactNode>
-                            | null
-                            | undefined
-                          >
-                        | null
-                        | undefined;
-                      description:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | Promise<
-                            | string
-                            | number
-                            | bigint
-                            | boolean
-                            | ReactPortal
-                            | ReactElement<
-                                unknown,
-                                string | JSXElementConstructor<any>
-                              >
-                            | Iterable<ReactNode>
-                            | null
-                            | undefined
-                          >
-                        | null
-                        | undefined;
-                    },
-                    index: Key | null | undefined,
-                  ) => (
-                    <View key={index} className="mb-3">
-                      <Text className="text-sm font-semibold">
-                        {badge.name}
-                      </Text>
-                      <Text className="text-xs text-gray-600">
-                        {badge.description}
-                      </Text>
-                    </View>
-                  ),
-                )}
+                {meal.badges.map((badge, index) => (
+                  <View key={index} className="mb-3">
+                    <Text className="text-sm font-semibold">
+                      {badge.name}
+                    </Text>
+                    <Text className="text-xs text-gray-600">
+                      {badge.description}
+                    </Text>
+                  </View>
+                ))}
               </AccordionContent>
             </AccordionItem>
           )}

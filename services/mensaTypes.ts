@@ -108,7 +108,7 @@ export interface CanteenFilter {
 }
 
 export interface MealFilter {
-  id?: string;
+  ID?: string;
   loadingtype?: 'lazy' | 'complete' | 'mealonly';
   category?: string;
   name?: string;
