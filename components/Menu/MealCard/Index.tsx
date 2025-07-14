@@ -1,9 +1,11 @@
 import { Card } from '@/components/ui/card';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
+import { useSettings } from '@/hooks/redux/useSettings';
 import { Meal } from '@/services/mensaTypes';
-import { TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { TouchableOpacity, View } from 'react-native';
 
 export const MealCard = ({
   item: meal,
@@ -32,26 +34,38 @@ export const MealCard = ({
     }
   };
 
+  const { favoriteMealIds } = useSettings();
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    if (meal.id) {
+      setIsFavorite(favoriteMealIds.includes(meal.id));
+    }
+  }, [meal.id, favoriteMealIds]);
+
   const routeToItem = () => {
     router.push({
       pathname: '/menu/MenuItem/[mealId]',
-      params: { 
+      params: {
         mealData: JSON.stringify(meal),
         mealId: meal.id,
       },
-    }); 
-  }
+    });
+  };
 
   return (
     <TouchableOpacity className="w-full mb-4" onPress={routeToItem}>
       <Card
         variant="elevated"
-        className="outline outline-1 p-4 flex-row items-center bg-secondary-500 rounded-lg"
+        className={`p-4 flex-row items-center bg-secondary-500 rounded-lg border-2 ${
+          isFavorite ? 'border-red-500' : 'border-primary-50'
+        }`}
       >
         {/* Text Content - Links */}
         <View className="flex-1 pr-4">
           {/* Meal name */}
-          <Text 
+          <Text
             className="font-roboto text-lg font-semibold mb-2"
             numberOfLines={2}
             ellipsizeMode="tail"
@@ -65,7 +79,7 @@ export const MealCard = ({
               : 'Kein Preis'}
           </Text>
           {/* Category */}
-          <Text className="text-sm text-gray-600">{meal.category}</Text>
+          <Text className="text-sm text-primary-100">{meal.category}</Text>
         </View>
 
         {/* Image - Rechts */}
