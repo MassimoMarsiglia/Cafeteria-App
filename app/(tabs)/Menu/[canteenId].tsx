@@ -40,6 +40,11 @@ const Menu = () => {
     enddate: date.toISOString().split('T')[0],
   });
 
+  const handleRefresh = () => {
+    setActiveCategory(0);
+    refetch();
+  };
+
   // Gerichte nach Kategorien gruppieren
   const groupedMeals = (menu?.[0]?.meals || []).reduce(
     (acc, meal) => {
@@ -216,7 +221,7 @@ const Menu = () => {
         <ScrollView
           className="flex-1"
           refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+            <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
           }
         >
           <FlatList
