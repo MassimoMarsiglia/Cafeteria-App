@@ -59,7 +59,7 @@ export const MealCard = ({
       <Card
         variant="elevated"
         className={`p-4 flex-row items-center bg-secondary-500 rounded-lg border-2 ${
-          isFavorite ? 'border-red-500' : 'border-primary-50'
+          isFavorite ? 'border-yellow-400' : 'border-primary-50'
         }`}
       >
         {/* Text Content - Links */}
