@@ -120,16 +120,6 @@ export default function SettingsScreen() {
         hasToggle: true,
       },
       {
-        id: 'notifications',
-        icon: notificationsIcon,
-        title: 'Benachrichtigungen',
-        description: 'Benachrichtigungseinstellungen verwalten',
-        category: 'Benachrichtigungen',
-        value: undefined,
-        hasToggle: false,
-        onPress: () => console.log('Not implemented yet'),
-      },
-      {
         id: 'price',
         icon: priceIcon,
         title: 'Preiskategorie',
