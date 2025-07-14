@@ -58,8 +58,8 @@ export const MealCard = ({
     <TouchableOpacity className="w-full mb-4" onPress={routeToItem}>
       <Card
         variant="elevated"
-        className={`p-4 flex-row items-center bg-secondary-500 rounded-lg border-2 ${
-          isFavorite ? 'border-yellow-400' : 'border-primary-50'
+        className={`p-4 flex-row items-center bg-secondary-100 rounded-lg border-2 ${
+          isFavorite ? 'border-yellow-400' : 'border-secondary-500'
         }`}
       >
         {/* Text Content - Links */}
