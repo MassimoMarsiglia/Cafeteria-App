@@ -1,4 +1,5 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
+import { Box } from '@/components/ui/box';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { CalendarDaysIcon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -135,15 +136,21 @@ const Menu = () => {
 
     if (isError) {
       return (
-        <View className="flex-1 justify-center items-center">
-          <AntDesign name="wifi" size={75} color="grey" className="mb-6" />
-          <Text className="text-base font-medium mb-4">
-            Fehler beim Laden des Menüs
-          </Text>
-          <Text className="text-base font-small mb-4">
-            Überprüfe deine Internetverbindung
-          </Text>
-        </View>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
+          }
+        >
+          <Box className="flex-1 justify-center items-center">
+            <AntDesign name="wifi" size={75} color="grey" className="mb-6" />
+            <Text className="text-base font-medium mb-4">
+              Fehler beim Laden des Menüs
+            </Text>
+            <Text className="text-base font-small mb-4">
+              Überprüfe deine Internetverbindung
+            </Text>
+          </Box>
+        </ScrollView>
       );
     }
 
