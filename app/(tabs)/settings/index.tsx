@@ -172,7 +172,7 @@ export default function SettingsScreen() {
       favoriteCanteen,
       favoriteMealsIcon,
       savedRecipesIcon,
-      notificationsIcon,
+      handleFavoriteMealsPress,
     ],
   );
 
