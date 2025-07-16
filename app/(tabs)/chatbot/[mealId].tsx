@@ -195,7 +195,10 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
             }
             keyExtractor={item => item.id}
             renderItem={renderItem}
-            contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+            contentContainerStyle={{
+              padding: 16,
+              flexGrow: 1,
+            }}
             onContentSizeChange={() =>
               flatListRef.current?.scrollToEnd({ animated: true })
             }

@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
+  Keyboard,
   SafeAreaView,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
   useColorScheme,
 } from 'react-native';
@@ -86,78 +88,89 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
   ];
 
   return (
-    <SafeAreaView
-      className={`flex-1 p-4 ${colorScheme === 'dark' ? 'bg-bg-background' : 'bg-background'}`}
+    <TouchableWithoutFeedback
+      onPress={() => {
+        // Close delete menu if open
+        if (expandedId !== null) {
+          setExpandedId(null);
+        }
+        // Also dismiss keyboard if needed
+        Keyboard.dismiss();
+      }}
     >
-      <FlatList
-        data={meals}
-        keyExtractor={item => item}
-        renderItem={({ item, index }) => (
-          <View className="mb-3">
-            <View
-              className={`flex-row items-center rounded-xl p-4 shadow-md shadow-black/10 ${
-                colorScheme === 'dark' ? 'bg-black' : 'bg-white'
-              }`}
-            >
-              {/* Accent Strip */}
+      <SafeAreaView
+        className={`flex-1 p-4 ${colorScheme === 'dark' ? 'bg-bg-background' : 'bg-background'}`}
+      >
+        <FlatList
+          data={meals}
+          keyExtractor={item => item}
+          renderItem={({ item, index }) => (
+            <View className="mb-3 relative" style={{ overflow: 'visible' }}>
               <View
-                className={`w-2 h-full rounded-l-xl mr-3 ${cardColors[index % cardColors.length]}`}
-              />
-
-              {/* Meal Text */}
-              <TouchableOpacity
-                className="flex-1"
-                onPress={() => handleSelectMeal(item)}
-              >
-                <Text className="text-base font-medium text-black dark:text-white">
-                  {item}
-                </Text>
-              </TouchableOpacity>
-
-              {/* Menu Toggle Button */}
-              <TouchableOpacity
-                onPress={() => toggleMenu(item)}
-                className={`px-2 py-1 rounded ${
-                  colorScheme === 'dark'
-                    ? 'hover:bg-black-800'
-                    : 'hover:bg-gray-200'
+                className={`flex-row items-center rounded-xl p-4 shadow-md shadow-black/10 ${
+                  colorScheme === 'dark' ? 'bg-black' : 'bg-white'
                 }`}
               >
-                <Text className="text-xl font-bold text-black dark:text-white">
-                  ...
-                </Text>
-              </TouchableOpacity>
-            </View>
+                {/* Accent Strip */}
+                <View
+                  className={`w-2 h-full rounded-l-xl mr-3 ${cardColors[index % cardColors.length]}`}
+                />
 
-            {/* Delete section */}
-            {expandedId === item && (
-              <View
-                className={`absolute top-full right-0 mt-2 rounded-lg px-4 py-3 flex-row items-center space-x-2 shadow-xl ${
-                  colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                }`}
-                style={{ zIndex: 999, elevation: 5 }}
-              >
+                {/* Meal Text */}
                 <TouchableOpacity
-                  onPress={() => {
-                    toggleMenu(item);
-                    handleDeleteMeal(item);
-                  }}
-                  className="flex-row items-center space-x-2"
+                  className="flex-1"
+                  onPress={() => handleSelectMeal(item)}
                 >
-                  <Text
-                    className={`text-lg font-semibold ${
-                      colorScheme === 'dark' ? 'text-red-300' : 'text-red-600'
-                    }`}
-                  >
-                    🗑️ Löschen
+                  <Text className="text-base font-medium text-black dark:text-white">
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Menu Toggle Button */}
+                <TouchableOpacity
+                  onPress={() => toggleMenu(item)}
+                  className={`px-2 py-1 rounded ${
+                    colorScheme === 'dark'
+                      ? 'hover:bg-black-800'
+                      : 'hover:bg-gray-200'
+                  }`}
+                >
+                  <Text className="text-xl font-bold text-black dark:text-white">
+                    ...
                   </Text>
                 </TouchableOpacity>
               </View>
-            )}
-          </View>
-        )}
-      />
-    </SafeAreaView>
+
+              {/* Delete section */}
+              {expandedId === item && (
+                <View
+                  className={`mt-2 rounded-lg px-3 py-2 flex-row items-center justify-end shadow-xl ${
+                    colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                  }`}
+                  style={{ alignSelf: 'flex-end' }} // shrink width to content, align right
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      toggleMenu(item);
+                      handleDeleteMeal(item);
+                    }}
+                    className="flex-row items-center space-x-1"
+                  >
+                    <Text
+                      className={`text-lg font-semibold ${
+                        colorScheme === 'dark' ? 'text-red-300' : 'text-red-600'
+                      }`}
+                    >
+                      🗑️ Löschen
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          )}
+        />
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
