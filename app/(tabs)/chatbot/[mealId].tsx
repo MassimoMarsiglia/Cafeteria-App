@@ -70,14 +70,22 @@ const ChatBotScreen = () => {
         } else {
           const introMessage: Message = {
             id: Date.now().toString(),
-            text: `Das Gericht heißt "${meal}". Ich helfe dir dabei, ein Rezept dafür zu erstellen …`,
+            text: `Das Gericht heißt „${meal}“. Ich helfe dir dabei, ein Rezept dafür zu erstellen …
+
+Bitte habe einen Moment Geduld – die Antwort des Bots kann ein paar Sekunden dauern`,
             sender: 'bot',
           };
           setMessages([introMessage]);
           await saveMessageToDB(introMessage, meal);
 
-          const systemPrompt = `Du wirst ein Rezept erstellen, das auf dem Gericht "${meal}" basiert. Das Rezept soll alle notwendigen Schritte, Zutaten und Kochtechniken enthalten. Es soll so strukturiert sein, dass es leicht verständlich und umsetzbar ist – unabhängig vom kulinarischen Können der Leserinnen und Leser.`;
-          callAIWithPrompt(systemPrompt);
+          const systemPrompt = `Du bist ein freundlicher KI-Kochassistent und sprichst ausschließlich Deutsch.
+
+Deine Hauptaufgabe ist es, ein Rezept für das Gericht "${meal}" zu erstellen. Das Rezept soll alle notwendigen Schritte, Zutaten und Kochtechniken enthalten. Es soll klar, strukturiert und einfach verständlich sein – unabhängig vom kulinarischen Können der Leserinnen und Leser.
+
+Zusätzlich kannst du auch allgemeine Fragen zum Kochen beantworten oder auf Smalltalk wie "Hallo", "Danke" usw. angemessen reagieren – ebenfalls auf Deutsch.
+
+Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich und hilfreich – aber immer auf Deutsch.`;
+          callAIWithPrompt(systemPrompt, meal);
         }
       } catch (err) {
         console.error('SQLite load error:', err);
@@ -95,7 +103,7 @@ const ChatBotScreen = () => {
     );
   };
 
-  const callAIWithPrompt = async (prompt: string) => {
+  const callAIWithPrompt = async (prompt: string, meal: string) => {
     setIsTyping(true);
 
     try {
@@ -154,8 +162,8 @@ const ChatBotScreen = () => {
     setMessages(prev => [...prev, userMessage]);
     await saveMessageToDB(userMessage, meal);
 
-    const promptForAI = `Der Benutzer fragt nach „${meal}“. Seine Nachricht lautet: „${inputText}“. Bitte antworte hilfreich.`;
-    callAIWithPrompt(promptForAI);
+    // const promptForAI = `Der Benutzer fragt nach „${meal}“. Seine Nachricht lautet: „${inputText}“. Bitte antworte hilfreich.`;
+    await callAIWithPrompt(inputText, meal);
     setInputText('');
   };
 
