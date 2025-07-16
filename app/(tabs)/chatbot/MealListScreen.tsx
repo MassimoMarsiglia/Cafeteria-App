@@ -1,4 +1,6 @@
-import { deleteMeal, getSavedMeals } from '@/utils/database';
+import { Chat } from '@/database/schema';
+import { getAllChats } from '@/repository/chatRepository';
+import { useChatBotService } from '@/services/chatBotService';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -16,11 +18,12 @@ type Props = {
 };
 
 const MealListScreen: React.FC<Props> = ({ navigation }) => {
-  const [meals, setMeals] = useState<string[]>([]);
+  const [meals, setMeals] = useState<Chat[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const router = useRouter();
   const colorScheme = useColorScheme();
+  const { deleteChat } = useChatBotService();
 
   useEffect(() => {
     fetchMeals();
@@ -28,20 +31,20 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
 
   const fetchMeals = () => {
     setLoading(true);
-    getSavedMeals()
+    getAllChats()
       .then(setMeals)
       .catch(() => setMeals([]))
       .finally(() => setLoading(false));
   };
 
-  const handleSelectMeal = (meal: string) => {
+  const handleSelectMeal = (meal: Chat) => {
     router.navigate({
       pathname: '/(tabs)/chatbot/[mealId]',
-      params: { mealName: meal },
+      params: { mealId: meal.id },
     });
   };
 
-  const handleDeleteMeal = (meal: string) => {
+  const handleDeleteMeal = (meal: Chat) => {
     Alert.alert(
       'Delete Meal',
       `Are you sure you want to delete "${meal}"?`,
@@ -51,7 +54,7 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
           text: 'Delete',
           style: 'default',
           onPress: () => {
-            deleteMeal(meal)
+            deleteChat(meal.id)
               .then(() => fetchMeals())
               .catch(() => {
                 Alert.alert('Error', 'Failed to delete the meal.');
@@ -63,8 +66,8 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
     );
   };
 
-  const toggleMenu = (meal: string) => {
-    setExpandedId(expandedId === meal ? null : meal);
+  const toggleMenu = (meal: Chat) => {
+    setExpandedId(expandedId === meal.id ? null : meal.id);
   };
 
   if (loading) return <Text className="text-center mt-8">Loading...</Text>;
@@ -85,7 +88,7 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
     >
       <FlatList
         data={meals}
-        keyExtractor={item => item}
+        keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <View className="mb-3">
             <View
@@ -102,7 +105,7 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
                     colorScheme === 'dark' ? 'text-white' : 'text-gray-900'
                   }`}
                 >
-                  {item}
+                  {item.name}
                 </Text>
               </TouchableOpacity>
 
@@ -125,7 +128,7 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             {/* Delete option below the meal row */}
-            {expandedId === item && (
+            {expandedId === item.id && (
               <TouchableOpacity
                 onPress={() => {
                   toggleMenu(item);

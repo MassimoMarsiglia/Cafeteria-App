@@ -5,25 +5,38 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { Navbar } from '@/components/Navbar/Index';
+import { chatdb } from '@/database/chatdatabase';
+import migrations from '@/drizzle/migrations';
 import { useSettings } from '@/hooks/redux/useSettings';
+import { AntDesign } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '../store';
-import { AntDesign } from '@expo/vector-icons';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 
 // Create a wrapper component that has access to Redux
 function AppContent() {
+  const { success, error } = useMigrations(chatdb, migrations);
   const { isDarkMode } = useSettings();
   const colorscheme = useColorScheme();
 
   const themeMode = isDarkMode ? 'dark' : 'light';
 
   useEffect(() => {
+    if (!success) return;
     colorscheme.setColorScheme(themeMode);
-  }, [themeMode, colorscheme]);
+  }, [themeMode, colorscheme, success]);
+
+  if (error) {
+    return (
+      <View>
+        <Text>Migration error: {error.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <GluestackUIProvider mode={themeMode}>

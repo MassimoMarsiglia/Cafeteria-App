@@ -46,12 +46,6 @@ export default function MensaDetail() {
       contentContainerStyle={{ alignItems: 'center' }}
       className="bg-background-0 p-5"
     >
-      {Platform.OS === 'android' && (
-        <Pressable onPress={() => router.back()} className="self-start mb-3">
-          <Text className="text-black dark:text-white text-base">← Zurück</Text>
-        </Pressable>
-      )}
-
       {imageSource && (
         <Image
           source={imageSource}
