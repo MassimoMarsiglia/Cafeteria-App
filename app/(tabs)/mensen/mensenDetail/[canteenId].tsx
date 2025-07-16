@@ -42,66 +42,72 @@ export default function MensaDetail() {
   // Define collapsable day section
 
   return (
-    <ScrollView
-      contentContainerStyle={{ alignItems: 'center' }}
-      className="bg-background-0 p-5"
-    >
-      {Platform.OS === 'android' && (
-        <Pressable onPress={() => router.back()} className="self-start mb-3">
-          <Text className="text-black dark:text-white text-base">← Zurück</Text>
-        </Pressable>
-      )}
+    <View className="flex-1 bg-background-0">
+      <ScrollView
+        contentContainerStyle={{ alignItems: 'center' }}
+        className="p-5"
+      >
+        {Platform.OS === 'android' && (
+          <Pressable onPress={() => router.back()} className="self-start mb-3">
+            <Text className="text-black dark:text-white text-base">
+              ← Zurück
+            </Text>
+          </Pressable>
+        )}
 
-      {imageSource && (
-        <Image
-          source={imageSource}
-          resizeMode="cover"
-          className="w-full h-52 mb-5 rounded-lg"
-          alt="Canteen Image"
-        />
-      )}
+        {imageSource && (
+          <Image
+            source={imageSource}
+            resizeMode="cover"
+            className="w-full h-52 mb-5 rounded-lg"
+            alt="Canteen Image"
+          />
+        )}
 
-      <CanteenHeader name={canteen.name} address={canteen.address} />
+        <CanteenHeader name={canteen.name} address={canteen.address} />
 
-      <CanteenContact contactInfo={canteen.contactInfo} />
+        <CanteenContact contactInfo={canteen.contactInfo} />
 
-      <CanteenSelection canteen={canteen} />
+        {canteen.businessDays?.length > 0 && (
+          <View className="w-full mt-5">
+            <Text className="text-black dark:text-white text-lg font-bold mb-3">
+              Business Hours
+            </Text>
 
-      {canteen.businessDays!.length > 0 && (
-        <View className="w-full mt-5">
-          <Text className="text-black dark:text-white text-lg font-bold mb-3">
-            Business Hours
-          </Text>
-
-          {Object.entries(formatBusinessHours(canteen.businessDays!)).map(
-            ([label, times]) => (
-              <View
-                key={label}
-                className="mb-4 px-4 py-3 rounded-xl bg-[#FDFAF6] dark:bg-gray-950 border border-gray-600"
-              >
-                <Text className="text-blue-800 dark:text-blue-300 font-semibold text-base mb-2">
-                  📅 {label}
-                </Text>
-
-                {times.length > 0 ? (
-                  times.map((entry, idx) => (
-                    <Text
-                      key={idx}
-                      className="text-gray-800 dark:text-gray-200 text-sm mb-1"
-                    >
-                      {entry}
-                    </Text>
-                  ))
-                ) : (
-                  <Text className="text-gray-500 italic dark:text-gray-400">
-                    Closed
+            {Object.entries(formatBusinessHours(canteen.businessDays)).map(
+              ([label, times]) => (
+                <View
+                  key={label}
+                  className="mb-4 px-4 py-3 rounded-xl bg-[#FDFAF6] dark:bg-gray-950 border border-gray-600"
+                >
+                  <Text className="text-blue-800 dark:text-blue-300 font-semibold text-base mb-2">
+                    📅 {label}
                   </Text>
-                )}
-              </View>
-            ),
-          )}
-        </View>
-      )}
-    </ScrollView>
+
+                  {times.length > 0 ? (
+                    times.map((entry, idx) => (
+                      <Text
+                        key={idx}
+                        className="text-gray-800 dark:text-gray-200 text-sm mb-1"
+                      >
+                        {entry}
+                      </Text>
+                    ))
+                  ) : (
+                    <Text className="text-gray-500 italic dark:text-gray-400">
+                      Closed
+                    </Text>
+                  )}
+                </View>
+              ),
+            )}
+          </View>
+        )}
+      </ScrollView>
+
+      <View className="absolute bottom-6 right-6 z-50">
+        <CanteenSelection canteen={canteen} />
+      </View>
+    </View>
   );
 }

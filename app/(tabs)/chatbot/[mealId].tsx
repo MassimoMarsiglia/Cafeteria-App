@@ -53,7 +53,7 @@ const ChatBotScreen = () => {
     initDb();
   }, []);
 
-  // 🔄 Load messages when DB and mealName are ready
+  // Load messages when DB and mealName are ready
   useEffect(() => {
     const loadMessages = async () => {
       if (!db || !mealName) return;
@@ -176,7 +176,7 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 40}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 80}
       >
         <View className="flex-1">
           <FlatList

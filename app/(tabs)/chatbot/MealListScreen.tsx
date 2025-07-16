@@ -45,12 +45,12 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleDeleteMeal = (meal: string) => {
     Alert.alert(
-      'Delete Meal',
-      `Are you sure you want to delete "${meal}"?`,
+      'Meal löschen',
+      `Möchtest du „${meal}“ wirklich löschen?`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Abbrechen', style: 'cancel' },
         {
-          text: 'Delete',
+          text: 'Löschen',
           style: 'default',
           onPress: () => {
             deleteMeal(meal)
@@ -74,7 +74,7 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
   if (meals.length === 0) {
     return (
       <Text className="text-center mt-8 text-gray-500 dark:text-gray-400">
-        No saved meals found.
+        Keine gespeicherten Gerichte gefunden!
       </Text>
     );
   }
