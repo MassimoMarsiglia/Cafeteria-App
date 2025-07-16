@@ -6,13 +6,12 @@ import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
 import NotFoundView from '@/components/Mensa/NotFoundView';
 import { Image } from '@/components/ui/image';
-import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { useGetCanteensQuery } from '@/services/mensaApi';
 import images from '@/utils/mensaImage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
@@ -45,16 +44,8 @@ export default function MensaDetail() {
     <View className="flex-1 bg-background-0">
       <ScrollView
         contentContainerStyle={{ alignItems: 'center' }}
-        className="p-5"
+        className="bg-background-0 p-5"
       >
-        {Platform.OS === 'android' && (
-          <Pressable onPress={() => router.back()} className="self-start mb-3">
-            <Text className="text-black dark:text-white text-base">
-              ← Zurück
-            </Text>
-          </Pressable>
-        )}
-
         {imageSource && (
           <Image
             source={imageSource}

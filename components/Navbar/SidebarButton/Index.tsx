@@ -7,10 +7,10 @@ export const SidebarButton = () => {
   return (
     <Pressable
       onPress={toggleSidebar}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       style={{ padding: 8 }}
     >
-      <Icon as={MenuIcon} size="md" />
+      <Icon as={MenuIcon} size="xl" />
     </Pressable>
   );
 };

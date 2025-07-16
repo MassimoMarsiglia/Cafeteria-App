@@ -3,7 +3,7 @@ const { withNativeWind } = require('nativewind/metro');
 
 const config = getDefaultConfig(__dirname);
 
-config.resolver.assetExts.push('wasm');
+config.resolver.sourceExts.push('sql');
 
 config.server.enhanceMiddleware = middleware => {
   return (req, res, next) => {

@@ -1,4 +1,6 @@
-import { deleteMeal, getSavedMeals } from '@/utils/database';
+import { Chat } from '@/database/schema';
+import { getAllChats } from '@/repository/chatRepository';
+import { useChatBotService } from '@/services/chatBotService';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -18,11 +20,12 @@ type Props = {
 };
 
 const MealListScreen: React.FC<Props> = ({ navigation }) => {
-  const [meals, setMeals] = useState<string[]>([]);
+  const [meals, setMeals] = useState<Chat[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const router = useRouter();
   const colorScheme = useColorScheme();
+  const { deleteChat } = useChatBotService();
 
   useEffect(() => {
     fetchMeals();
@@ -30,20 +33,20 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
 
   const fetchMeals = () => {
     setLoading(true);
-    getSavedMeals()
+    getAllChats()
       .then(setMeals)
       .catch(() => setMeals([]))
       .finally(() => setLoading(false));
   };
 
-  const handleSelectMeal = (meal: string) => {
+  const handleSelectMeal = (meal: Chat) => {
     router.navigate({
       pathname: '/(tabs)/chatbot/[mealId]',
-      params: { mealName: meal },
+      params: { mealId: meal.id },
     });
   };
 
-  const handleDeleteMeal = (meal: string) => {
+  const handleDeleteMeal = (meal: Chat) => {
     Alert.alert(
       'Meal löschen',
       `Möchtest du „${meal}“ wirklich löschen?`,
@@ -53,7 +56,7 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
           text: 'Löschen',
           style: 'default',
           onPress: () => {
-            deleteMeal(meal)
+            deleteChat(meal.id)
               .then(() => fetchMeals())
               .catch(() => {
                 Alert.alert('Error', 'Failed to delete the meal.');
@@ -65,8 +68,8 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
     );
   };
 
-  const toggleMenu = (meal: string) => {
-    setExpandedId(expandedId === meal ? null : meal);
+  const toggleMenu = (meal: Chat) => {
+    setExpandedId(expandedId === meal.id ? null : meal.id);
   };
 
   if (loading) return <Text className="text-center mt-8">Loading...</Text>;
@@ -99,30 +102,35 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
       }}
     >
       <SafeAreaView
-        className={`flex-1 p-4 ${colorScheme === 'dark' ? 'bg-bg-background' : 'bg-background'}`}
+        className={`flex-1 p-4 ${
+          colorScheme === 'dark' ? 'bg-black' : 'bg-gray-100'
+        }`}
       >
         <FlatList
           data={meals}
-          keyExtractor={item => item}
-          renderItem={({ item, index }) => (
-            <View className="mb-3 relative" style={{ overflow: 'visible' }}>
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <View className="mb-3">
               <View
-                className={`flex-row items-center rounded-xl p-4 shadow-md shadow-black/10 ${
-                  colorScheme === 'dark' ? 'bg-black' : 'bg-white'
-                }`}
+                className={`flex-row justify-between items-center rounded-lg p-4 ${
+                  colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                } shadow-md`}
               >
                 {/* Accent Strip */}
                 <View
                   className={`w-2 h-full rounded-l-xl mr-3 ${cardColors[index % cardColors.length]}`}
                 />
 
-                {/* Meal Text */}
                 <TouchableOpacity
                   className="flex-1"
                   onPress={() => handleSelectMeal(item)}
                 >
-                  <Text className="text-base font-medium text-black dark:text-white">
-                    {item}
+                  <Text
+                    className={`text-lg ${
+                      colorScheme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}
+                  >
+                    {item.name}
                   </Text>
                 </TouchableOpacity>
 
@@ -141,30 +149,23 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
 
-              {/* Delete section */}
-              {expandedId === item && (
-                <View
-                  className={`mt-2 rounded-lg px-3 py-2 flex-row items-center justify-end shadow-xl ${
-                    colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                  }`}
-                  style={{ alignSelf: 'flex-end' }} // shrink width to content, align right
+              {/* Delete option below the meal row */}
+              {expandedId === item.id && (
+                <TouchableOpacity
+                  onPress={() => {
+                    toggleMenu(item);
+                    handleDeleteMeal(item);
+                  }}
+                  className={`flex-row items-center space-x-1`}
                 >
-                  <TouchableOpacity
-                    onPress={() => {
-                      toggleMenu(item);
-                      handleDeleteMeal(item);
-                    }}
-                    className="flex-row items-center space-x-1"
+                  <Text
+                    className={`text-lg font-semibold ${
+                      colorScheme === 'dark' ? 'text-red-300' : 'text-red-600'
+                    }`}
                   >
-                    <Text
-                      className={`text-lg font-semibold ${
-                        colorScheme === 'dark' ? 'text-red-300' : 'text-red-600'
-                      }`}
-                    >
-                      🗑️ Löschen
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                    🗑️ Löschen
+                  </Text>
+                </TouchableOpacity>
               )}
             </View>
           )}
