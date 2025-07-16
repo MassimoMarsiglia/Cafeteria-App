@@ -1,8 +1,8 @@
+import { Message } from '@/database/schema';
 import { stripMarkdown } from '@/utils/stripMarkdown';
 import React from 'react';
 import { Text, View } from 'react-native';
 import TypingDots from './TypingDots';
-import { Message } from '@/database/schema';
 
 export default function MessageBubble({ message }: { message: Message }) {
   if (message.sender === 'bot-typing') {

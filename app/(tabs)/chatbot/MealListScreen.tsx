@@ -49,7 +49,7 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
   const handleDeleteMeal = (meal: Chat) => {
     Alert.alert(
       'Meal löschen',
-      `Möchtest du „${meal}“ wirklich löschen?`,
+      `Möchtest du „${meal.name}“ wirklich löschen?`,
       [
         { text: 'Abbrechen', style: 'cancel' },
         {
@@ -109,7 +109,7 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
         <FlatList
           data={meals}
           keyExtractor={item => item.id}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <View className="mb-3">
               <View
                 className={`flex-row justify-between items-center rounded-lg p-4 ${
@@ -149,23 +149,30 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
 
-              {/* Delete option below the meal row */}
+              {/* Delete section */}
               {expandedId === item.id && (
-                <TouchableOpacity
-                  onPress={() => {
-                    toggleMenu(item);
-                    handleDeleteMeal(item);
-                  }}
-                  className={`flex-row items-center space-x-1`}
+                <View
+                  className={`mt-2 rounded-lg px-3 py-2 flex-row items-center justify-end shadow-xl ${
+                    colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                  }`}
+                  style={{ alignSelf: 'flex-end' }} // shrink width to content, align right
                 >
-                  <Text
-                    className={`text-lg font-semibold ${
-                      colorScheme === 'dark' ? 'text-red-300' : 'text-red-600'
-                    }`}
+                  <TouchableOpacity
+                    onPress={() => {
+                      toggleMenu(item);
+                      handleDeleteMeal(item);
+                    }}
+                    className="flex-row items-center space-x-1"
                   >
-                    🗑️ Löschen
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      className={`text-lg font-semibold ${
+                        colorScheme === 'dark' ? 'text-red-300' : 'text-red-600'
+                      }`}
+                    >
+                      🗑️ Löschen
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               )}
             </View>
           )}

@@ -36,7 +36,7 @@ const ChatBotScreen = () => {
   const [isTyping, setIsTyping] = useState(false);
 
   const callAIWithPrompt = useCallback(
-    async (prompt: string) => {
+    async (prompt: string, mealName: string) => {
       setIsTyping(true);
 
       try {
@@ -93,7 +93,7 @@ const ChatBotScreen = () => {
         const messages = [
           {
             chatId: mealId as string,
-            text: `Das Gericht heißt „${meal}“. Ich helfe dir dabei, ein Rezept dafür zu erstellen …
+            text: `Das Gericht heißt "${meal[0].name}". Ich helfe dir dabei, ein Rezept dafür zu erstellen …
 
 Bitte habe einen Moment Geduld – die Antwort des Bots kann ein paar Sekunden dauern`,
             sender: 'bot',
@@ -103,15 +103,16 @@ Bitte habe einen Moment Geduld – die Antwort des Bots kann ein paar Sekunden d
         const newMessage = await persistMessages(messages);
         if (!newMessage) return;
         setMessages(prev => [...prev, ...newMessage]);
+        console.log('meal[0].name:', meal[0].name);
 
         const systemPrompt = `Du bist ein freundlicher KI-Kochassistent und sprichst ausschließlich Deutsch.
 
-Deine Hauptaufgabe ist es, ein Rezept für das Gericht "${meal}" zu erstellen. Das Rezept soll alle notwendigen Schritte, Zutaten und Kochtechniken enthalten. Es soll klar, strukturiert und einfach verständlich sein – unabhängig vom kulinarischen Können der Leserinnen und Leser.
+Deine Hauptaufgabe ist es, ein Rezept für das Gericht "${meal[0].name}" zu erstellen. Das Rezept soll alle notwendigen Schritte, Zutaten und Kochtechniken enthalten. Es soll klar, strukturiert und einfach verständlich sein – unabhängig vom kulinarischen Können der Leserinnen und Leser.
 
 Zusätzlich kannst du auch allgemeine Fragen zum Kochen beantworten oder auf Smalltalk wie "Hallo", "Danke" usw. angemessen reagieren – ebenfalls auf Deutsch.
 
 Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich und hilfreich – aber immer auf Deutsch.`;
-        callAIWithPrompt(systemPrompt);
+        callAIWithPrompt(systemPrompt, meal[0].name);
       } else {
         setMessages(messages);
       }
@@ -132,8 +133,8 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
     if (!newMessage) return;
     setMessages(prev => [...prev, ...newMessage]);
 
-    const promptForAI = `Der Benutzer fragt nach „${meal[0].name}“. Seine Nachricht lautet: „${inputText}“. Bitte antworte hilfreich.`;
-    callAIWithPrompt(promptForAI);
+    // const promptForAI = `Der Benutzer fragt nach „${meal[0].name}“. Seine Nachricht lautet: „${inputText}“. Bitte antworte hilfreich.`;
+    await callAIWithPrompt(inputText, meal[0].name);
     setInputText('');
   };
 
@@ -157,7 +158,7 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
                     ...messages,
                     {
                       id: -1, // Use a numeric id for the typing indicator
-                      sender: 'bot',
+                      sender: 'bot-typing',
                       chatId: mealId as string,
                       text: '',
                       createdAt: Date.now(),
