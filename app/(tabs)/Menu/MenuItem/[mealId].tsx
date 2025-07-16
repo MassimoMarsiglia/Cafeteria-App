@@ -13,6 +13,8 @@ import { ChevronDownIcon } from '@/components/ui/icon';
 import { ScrollView } from '@/components/ui/scroll-view';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
+import { useSettings } from '@/hooks/redux/useSettings';
+import { useGetMealsQuery } from '@/services/mensaApi';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
@@ -21,24 +23,46 @@ import {
   ReactElement,
   ReactNode,
   ReactPortal,
+  useEffect,
   useState,
 } from 'react';
 
 export default function MealView() {
-  const params = useLocalSearchParams<{ mealData: string; mealId: string }>();
-
-  // State für Favoriten-Status
+  const params = useLocalSearchParams<{ mealId: string }>();
+  const { favoriteMeals, addFavoriteMeals, removeFavoriteMeals } =
+    useSettings();
+  const { data: mealData } = useGetMealsQuery({
+    ID: params.mealId,
+    loadingtype: 'complete',
+  });
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Meal-Objekt aus JSON-String parsen
-  const meal = params.mealData ? JSON.parse(params.mealData) : null;
+  useEffect(() => {
+    if (params.mealId) {
+      setIsFavorite(favoriteMeals.some(m => m.id === params.mealId)); // Check if the meal is in favorites
+    }
+  }, [params.mealId, favoriteMeals]);
+
+  if (!mealData || mealData.length === 0) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Fehler beim Laden der Mahlzeit</Text>
+      </View>
+    );
+  }
+
+  const meal = mealData![0];
 
   console.log('=== MEAL VIEW ===');
   console.log('Received meal:', meal?.name);
 
   // Handler für Favoriten-Button
   const handleFavoritePress = () => {
-    setIsFavorite(!isFavorite);
+    if (isFavorite) {
+      removeFavoriteMeals(meal);
+    } else {
+      addFavoriteMeals(meal);
+    }
   };
 
   // Handler für Rezept-Button
@@ -61,32 +85,15 @@ export default function MealView() {
     );
   }
 
-  // Helper component for icon titles
-  const IconTitle = ({
-    IconComponent,
-    iconName,
-    text,
-    color = '#666',
-  }: {
-    IconComponent: any;
-    iconName: string;
-    text: string;
-    color?: string;
-  }) => (
-    <View className="flex-row items-center">
-      <IconComponent
-        name={iconName}
-        size={20}
-        color={color}
-        style={{ marginRight: 8 }}
-      />
-      <Text className="text-base font-semibold">{text}</Text>
-    </View>
-  );
-
   return (
     <View className="flex-1">
       <ScrollView className="flex-1 p-4">
+        {/* Header Card */}
+        <Card variant="elevated" className="p-4 mb-4">
+          <Text className="text-2xl font-bold mb-2">{meal.name}</Text>
+          <Text className="text-lg mb-4">Kategorie: {meal.category}</Text>
+        </Card>
+
         {/* Header Card */}
         <Card variant="elevated" className="p-4 mb-4">
           <Text className="text-2xl font-bold mb-2">{meal.name}</Text>
@@ -164,76 +171,14 @@ export default function MealView() {
                 </AccordionTrigger>
               </AccordionHeader>
               <AccordionContent>
-                {meal.badges.map(
-                  (
-                    badge: {
-                      name:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | Promise<
-                            | string
-                            | number
-                            | bigint
-                            | boolean
-                            | ReactPortal
-                            | ReactElement<
-                                unknown,
-                                string | JSXElementConstructor<any>
-                              >
-                            | Iterable<ReactNode>
-                            | null
-                            | undefined
-                          >
-                        | null
-                        | undefined;
-                      description:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | Promise<
-                            | string
-                            | number
-                            | bigint
-                            | boolean
-                            | ReactPortal
-                            | ReactElement<
-                                unknown,
-                                string | JSXElementConstructor<any>
-                              >
-                            | Iterable<ReactNode>
-                            | null
-                            | undefined
-                          >
-                        | null
-                        | undefined;
-                    },
-                    index: Key | null | undefined,
-                  ) => (
-                    <View key={index} className="mb-3">
-                      <Text className="text-sm font-semibold">
-                        {badge.name}
-                      </Text>
-                      <Text className="text-xs text-gray-600">
-                        {badge.description}
-                      </Text>
-                    </View>
-                  ),
-                )}
+                {meal.badges.map((badge, index) => (
+                  <View key={index} className="mb-3">
+                    <Text className="text-sm font-semibold">{badge.name}</Text>
+                    <Text className="text-xs text-gray-600">
+                      {badge.description}
+                    </Text>
+                  </View>
+                ))}
               </AccordionContent>
             </AccordionItem>
           )}

@@ -15,7 +15,6 @@ import {
 } from 'redux-persist';
 import settingsReducer from './slices/settingsSlice';
 import sidebarReducer from './slices/sidebarSlice';
-import { version } from 'react';
 
 const storage = () => (Platform.OS === 'web' ? AsyncStorage : Storage);
 
