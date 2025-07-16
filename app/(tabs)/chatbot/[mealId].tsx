@@ -34,7 +34,7 @@ const ChatBotScreen = () => {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
-  // 📦 Open DB and create table
+  // Open DB and create table
   useEffect(() => {
     const initDb = async () => {
       const database = await SQLite.openDatabaseAsync('chat.db');
@@ -172,63 +172,62 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+    <SafeAreaView className="flex-1 bg-background dark:bg-black">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 40}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View className="flex-1">
-            <FlatList
-              ref={flatListRef}
-              data={
-                isTyping
-                  ? [
-                      ...messages,
-                      {
-                        id: 'typing',
-                        sender: 'bot-typing',
-                      },
-                    ]
-                  : messages
-              }
-              keyExtractor={item => item.id}
-              renderItem={renderItem}
-              contentContainerStyle={{ padding: 16, flexGrow: 1 }}
-              onContentSizeChange={() =>
-                flatListRef.current?.scrollToEnd({ animated: true })
-              }
-              keyboardShouldPersistTaps="handled"
-            />
+        <View className="flex-1">
+          <FlatList
+            scrollEnabled={true}
+            ref={flatListRef}
+            data={
+              isTyping
+                ? [
+                    ...messages,
+                    {
+                      id: 'typing',
+                      sender: 'bot-typing',
+                    },
+                  ]
+                : messages
+            }
+            keyExtractor={item => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+            onContentSizeChange={() =>
+              flatListRef.current?.scrollToEnd({ animated: true })
+            }
+          />
 
-            {/* Export DB Button, only for developing. Please uncomment when we don't need it  */}
-            <TouchableOpacity
-              onPress={exportDatabase}
-              style={{
-                position: 'absolute',
-                bottom: 90, // above input bar
-                right: 20,
-                backgroundColor: '#4f46e5',
-                paddingHorizontal: 16,
-                paddingVertical: 10,
-                borderRadius: 30,
-                zIndex: 10,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 3,
-                elevation: 5,
-              }}
-            >
-              <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                📤 Export DB
-              </Text>
-            </TouchableOpacity>
-
-            <View className="flex-row items-center border-t border-gray-300 dark:border-gray-700 px-4 py-4 bg-white dark:bg-gray-900">
+          {/* Export DB Button, only for developing. Please uncomment when we don't need it  */}
+          <TouchableOpacity
+            onPress={exportDatabase}
+            style={{
+              position: 'absolute',
+              bottom: 90, // above input bar
+              right: 20,
+              backgroundColor: '#4f46e5',
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              borderRadius: 30,
+              zIndex: 10,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 3,
+              elevation: 5,
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>
+              📤 Export DB
+            </Text>
+          </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View className="flex-row items-center border-t border-gray-300 dark:border-gray-700 px-4 py-4 bg-white dark:bg-black">
               <TextInput
-                className="flex-1 min-h-12 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                className="flex-1 min-h-12 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 multiline
                 value={inputText}
                 onChangeText={setInputText}
@@ -243,8 +242,8 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
                 <Feather name="send" size={24} color="white" />
               </TouchableOpacity>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

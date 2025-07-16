@@ -22,13 +22,16 @@ export default function MessageBubble({ message }: { message: Message }) {
 
   return (
     <View
+      pointerEvents="none"
       className={`my-1 p-3 rounded-lg max-w-4/5 ${
         isUser
           ? 'bg-indigo-200 dark:bg-indigo-600 self-end'
-          : 'bg-gray-200 dark:bg-gray-700 self-start'
+          : 'bg-gray-200 dark:bg-gray-900 self-start'
       }`}
+      style={{ flexShrink: 1 }}
     >
       <Text
+        selectable={false}
         className={
           isUser
             ? 'text-gray-900 dark:text-white'

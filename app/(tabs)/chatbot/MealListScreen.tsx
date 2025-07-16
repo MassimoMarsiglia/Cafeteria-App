@@ -77,72 +77,82 @@ const MealListScreen: React.FC<Props> = ({ navigation }) => {
     );
   }
 
+  const cardColors = [
+    'bg-teal-500 dark:bg-teal-600',
+    'bg-indigo-500 dark:bg-indigo-600',
+    'bg-pink-500 dark:bg-pink-600',
+    'bg-amber-400 dark:bg-amber-500',
+    'bg-sky-500 dark:bg-sky-600',
+  ];
+
   return (
     <SafeAreaView
-      className={`flex-1 p-4 ${
-        colorScheme === 'dark' ? 'bg-black' : 'bg-gray-100'
-      }`}
+      className={`flex-1 p-4 ${colorScheme === 'dark' ? 'bg-bg-background' : 'bg-background'}`}
     >
       <FlatList
         data={meals}
         keyExtractor={item => item}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <View className="mb-3">
             <View
-              className={`flex-row justify-between items-center rounded-lg p-4 ${
-                colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white'
-              } shadow-md`}
+              className={`flex-row items-center rounded-xl p-4 shadow-md shadow-black/10 ${
+                colorScheme === 'dark' ? 'bg-black' : 'bg-white'
+              }`}
             >
+              {/* Accent Strip */}
+              <View
+                className={`w-2 h-full rounded-l-xl mr-3 ${cardColors[index % cardColors.length]}`}
+              />
+
+              {/* Meal Text */}
               <TouchableOpacity
                 className="flex-1"
                 onPress={() => handleSelectMeal(item)}
               >
-                <Text
-                  className={`text-lg ${
-                    colorScheme === 'dark' ? 'text-white' : 'text-gray-900'
-                  }`}
-                >
+                <Text className="text-base font-medium text-black dark:text-white">
                   {item}
                 </Text>
               </TouchableOpacity>
 
+              {/* Menu Toggle Button */}
               <TouchableOpacity
                 onPress={() => toggleMenu(item)}
                 className={`px-2 py-1 rounded ${
                   colorScheme === 'dark'
-                    ? 'hover:bg-gray-700'
+                    ? 'hover:bg-black-800'
                     : 'hover:bg-gray-200'
                 }`}
               >
-                <Text
-                  className={`text-xl font-bold ${
-                    colorScheme === 'dark' ? 'text-white' : 'text-gray-700'
-                  }`}
-                >
+                <Text className="text-xl font-bold text-black dark:text-white">
                   ...
                 </Text>
               </TouchableOpacity>
             </View>
 
-            {/* Delete option below the meal row */}
+            {/* Delete section */}
             {expandedId === item && (
-              <TouchableOpacity
-                onPress={() => {
-                  toggleMenu(item);
-                  handleDeleteMeal(item);
-                }}
-                className={`mt-1 rounded px-4 py-2 ${
-                  colorScheme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
+              <View
+                className={`absolute top-full right-0 mt-2 rounded-lg px-4 py-3 flex-row items-center space-x-2 shadow-xl ${
+                  colorScheme === 'dark' ? 'bg-gray-800' : 'bg-white'
                 }`}
+                style={{ zIndex: 999, elevation: 5 }}
               >
-                <Text
-                  className={`text-center text-sm font-medium ${
-                    colorScheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
-                  }`}
+                <TouchableOpacity
+                  onPress={() => {
+                    toggleMenu(item);
+                    handleDeleteMeal(item);
+                  }}
+                  className="flex-row items-center space-x-2"
                 >
-                  Delete
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    className={`text-lg font-semibold ${
+                      colorScheme === 'dark' ? 'text-red-300' : 'text-red-600'
+                    }`}
+                  >
+                    🗑️ Löschen
+                  </Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         )}
