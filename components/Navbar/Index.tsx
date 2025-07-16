@@ -20,7 +20,7 @@ export const Navbar = () => {
       <Box className="flex-row items-center justify-between px-4 py-1 bg-background-0">
         <SidebarButton />
 
-        <Text className="text-lg font-bold flex-1 text-center">Schmausa</Text>
+        <Text className="text-xl font-bold flex-1 text-center">Schmausa</Text>
 
         <Settingsbutton />
 

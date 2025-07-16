@@ -3,7 +3,7 @@ import { Setting, SettingsCard } from '@/components/Settings/SettingsCard';
 import { Box } from '@/components/ui/box';
 import { Icon, MoonIcon, SunIcon } from '@/components/ui/icon';
 import { useSettings } from '@/hooks/redux/useSettings';
-import { FontAwesome, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -36,6 +36,7 @@ export default function SettingsScreen() {
   }, []);
 
   const handleFavoriteMealsPress = useCallback(() => {
+    console.log('Navigating to favorite meals');
     router.navigate({
       pathname: '/settings/favoritemeals',
     });
@@ -73,32 +74,10 @@ export default function SettingsScreen() {
     [isDarkMode],
   );
 
-  const notificationsIcon = useMemo(
-    () => (
-      <MaterialIcons
-        name="notifications"
-        size={20}
-        color={isDarkMode ? 'white' : 'black'}
-      />
-    ),
-    [isDarkMode],
-  );
-
   const mensaIcon = useMemo(
     () => (
       <FontAwesome5
         name="building"
-        size={20}
-        color={isDarkMode ? 'white' : 'black'}
-      />
-    ),
-    [isDarkMode],
-  );
-
-  const savedRecipesIcon = useMemo(
-    () => (
-      <FontAwesome
-        name="book"
         size={20}
         color={isDarkMode ? 'white' : 'black'}
       />
@@ -147,7 +126,7 @@ export default function SettingsScreen() {
         icon: favoriteMealsIcon,
         value: undefined,
         hasToggle: false,
-        onPress: () => handleFavoriteMealsPress,
+        onPress: handleFavoriteMealsPress,
       },
     ],
     [

@@ -27,7 +27,6 @@ function AppContent() {
 
   return (
     <GluestackUIProvider mode={themeMode}>
-      <Navbar />
       <Stack
         screenOptions={{
           headerShown: false,

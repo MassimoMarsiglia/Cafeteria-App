@@ -1,3 +1,4 @@
+import { Navbar } from '@/components/Navbar/Index';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { Stack } from 'expo-router';
 import React from 'react';
@@ -7,63 +8,25 @@ export default function TabLayout() {
 
   const backgroundColor = isDarkMode ? '#18181b' : '#ffffff';
 
-  const defaultScreenOptions = {
-    headerShown: false,
+  const defaultScreenOptions = () => ({
+    headerShown: true,
+    header: () => <Navbar />,
     gestureEnabled: true,
     contentStyle: { backgroundColor },
     cardStyle: { backgroundColor },
-  } as const;
+  });
 
   return (
     <Stack screenOptions={defaultScreenOptions}>
-      <Stack.Screen
-        name="index"
-        options={{
-          title: 'Dishes',
-        }}
-      />
-      <Stack.Screen
-        name="menu/[canteenId]"
-        options={{
-          title: 'Menu',
-        }}
-      />
-      <Stack.Screen
-        name="mensen/mensenList"
-        options={{
-          title: 'Mensen List',
-        }}
-      />
-      <Stack.Screen
-        name="mensen/mensenDetail/[canteenId]"
-        options={{
-          title: 'Menu',
-        }}
-      />
-      <Stack.Screen
-        name="settings"
-        options={{
-          title: 'Settings Screen',
-        }}
-      />
-      <Stack.Screen
-        name="chatbot/[mealId]"
-        options={{
-          title: 'Chat Bot',
-        }}
-      />
-      <Stack.Screen
-        name="chatbot/MealListScreen"
-        options={{
-          title: 'Chat Bot Saved List',
-        }}
-      />
-      <Stack.Screen
-        name="settings/pricecategory"
-        options={{
-          title: 'Price Category Settings',
-        }}
-      />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="menu/[canteenId]" />
+      <Stack.Screen name="mensen/mensenList" />
+      <Stack.Screen name="mensen/mensenDetail/[canteenId]" />
+      <Stack.Screen name="settings" />
+      <Stack.Screen name="chatbot/[mealId]" />
+      <Stack.Screen name="chatbot/MealListScreen" />
+      <Stack.Screen name="settings/favoritemeals" />
+      <Stack.Screen name="settings/pricecategory" />
     </Stack>
   );
 }
