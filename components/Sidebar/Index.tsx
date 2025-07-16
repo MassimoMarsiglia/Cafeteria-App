@@ -110,7 +110,7 @@ const SavedChats = ({ isDarkMode }: { isDarkMode: boolean }) => {
 
   return (
     <SidebarItem
-      title="Gespeicherte Chats"
+      title="Gespeicherte Rezepte"
       description="Lade gespeicherte Chatverläufe"
       icon={FontAwesome5}
       iconProps={{

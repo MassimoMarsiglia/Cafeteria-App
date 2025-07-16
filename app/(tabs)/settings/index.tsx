@@ -153,16 +153,6 @@ export default function SettingsScreen() {
         hasToggle: false,
         onPress: () => console.log('Not implemented yet'),
       },
-      {
-        id: 'saved recipes',
-        title: 'Gespeicherte Rezepte',
-        description: 'Deine gespeicherten Rezepte verwalten',
-        category: 'Gerichte',
-        icon: savedRecipesIcon,
-        value: undefined,
-        hasToggle: false,
-        onPress: () => console.log('Not implemented yet'),
-      },
     ],
     [
       isDarkMode,
@@ -175,7 +165,6 @@ export default function SettingsScreen() {
       mensaIcon,
       favoriteCanteen,
       favoriteMealsIcon,
-      savedRecipesIcon,
       notificationsIcon,
     ],
   );
