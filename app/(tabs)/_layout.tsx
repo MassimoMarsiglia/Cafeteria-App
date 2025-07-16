@@ -1,7 +1,6 @@
 import { useSettings } from '@/hooks/redux/useSettings';
 import { Stack } from 'expo-router';
 import React from 'react';
-import { NativeStackNavigationOptions } from 'react-native-screens/lib/typescript/native-stack/types';
 
 export default function TabLayout() {
   const { isDarkMode } = useSettings();
@@ -45,6 +44,18 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings Screen',
+        }}
+      />
+      <Stack.Screen
+        name="chatbot/[mealId]"
+        options={{
+          title: 'Chat Bot',
+        }}
+      />
+      <Stack.Screen
+        name="chatbot/MealListScreen"
+        options={{
+          title: 'Chat Bot Saved List',
         }}
       />
       <Stack.Screen

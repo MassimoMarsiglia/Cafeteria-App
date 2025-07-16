@@ -11,10 +11,12 @@ export const MealCard = ({
   item: meal,
   index,
   priceCategory,
+  onPress,
 }: {
   item: Meal;
   index: number;
   priceCategory: number;
+  onPress?: () => void;
 }) => {
   //Bildauswahl für Card // Salate Suppen Aktionen Essen Beilagen Desserts
   const getCategoryImage = (category: string | undefined) => {

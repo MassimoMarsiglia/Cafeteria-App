@@ -16,7 +16,7 @@ import { View } from '@/components/ui/view';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMealsQuery } from '@/services/mensaApi';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import {
   JSXElementConstructor,
   Key,
@@ -68,6 +68,13 @@ export default function MealView() {
   // Handler für Rezept-Button
   const handleRecipePress = () => {
     console.log('Rezept-Button gedrückt');
+    router.navigate({
+      pathname: '/chatbot/[mealId]',
+      params: {
+        mealId: meal.id,
+        mealName: meal.name,
+      },
+    });
   };
 
   if (!meal) {
@@ -81,6 +88,12 @@ export default function MealView() {
   return (
     <View className="flex-1">
       <ScrollView className="flex-1 p-4">
+        {/* Header Card */}
+        <Card variant="elevated" className="p-4 mb-4">
+          <Text className="text-2xl font-bold mb-2">{meal.name}</Text>
+          <Text className="text-lg mb-4">Kategorie: {meal.category}</Text>
+        </Card>
+
         {/* Header Card */}
         <Card variant="elevated" className="p-4 mb-4">
           <Text className="text-2xl font-bold mb-2">{meal.name}</Text>
@@ -160,9 +173,7 @@ export default function MealView() {
               <AccordionContent>
                 {meal.badges.map((badge, index) => (
                   <View key={index} className="mb-3">
-                    <Text className="text-sm font-semibold">
-                      {badge.name}
-                    </Text>
+                    <Text className="text-sm font-semibold">{badge.name}</Text>
                     <Text className="text-xs text-gray-600">
                       {badge.description}
                     </Text>

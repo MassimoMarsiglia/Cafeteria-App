@@ -147,17 +147,7 @@ export default function SettingsScreen() {
         icon: favoriteMealsIcon,
         value: undefined,
         hasToggle: false,
-        onPress: handleFavoriteMealsPress,
-      },
-      {
-        id: 'saved recipes',
-        title: 'Gespeicherte Rezepte',
-        description: 'Deine gespeicherten Rezepte verwalten',
-        category: 'Gerichte',
-        icon: savedRecipesIcon,
-        value: undefined,
-        hasToggle: false,
-        onPress: () => console.log('Not implemented yet'),
+        onPress: () => handleFavoriteMealsPress,
       },
     ],
     [
@@ -171,7 +161,6 @@ export default function SettingsScreen() {
       mensaIcon,
       favoriteCanteen,
       favoriteMealsIcon,
-      savedRecipesIcon,
       handleFavoriteMealsPress,
     ],
   );
