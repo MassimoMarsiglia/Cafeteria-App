@@ -293,7 +293,7 @@ const Menu = () => {
           setShow(true);
         }}
       >
-        <FabIcon as={CalendarDaysIcon} />
+        <FabIcon as={CalendarDaysIcon} size="xl" />
       </Fab>
     </View>
   );
