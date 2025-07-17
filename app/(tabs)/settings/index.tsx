@@ -164,7 +164,7 @@ export default function SettingsScreen() {
           placeholder="Suche nach Einstellungen."
         />
 
-        <Box className="rounded-3xl overflow-hidden">
+        <Box className="rounded-3xl overflow-hidden shadow-md">
           {filteredSettings.map((setting, index) => (
             <SettingsCard
               key={setting.id}
