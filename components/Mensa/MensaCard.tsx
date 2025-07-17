@@ -5,15 +5,10 @@ import { Text } from '@/components/ui/text';
 import { Toast, ToastTitle, useToast } from '@/components/ui/toast';
 import { VStack } from '@/components/ui/vstack';
 import { useSettings } from '@/hooks/redux/useSettings';
-import { Canteen } from '@/services/mensaTypes';
 import { getImageForCanteen } from '@/utils/imageMap';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-interface CanteenSelectionProps {
-  canteen: Canteen;
-}
 
 export default function CanteenCard({
   canteen,
