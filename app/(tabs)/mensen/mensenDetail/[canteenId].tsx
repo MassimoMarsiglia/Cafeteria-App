@@ -126,10 +126,7 @@ export default function MensaDetail() {
 
         {canteen.businessDays!.length > 0 && (
           <View className="w-full mt-5">
-            <Text className="text-black dark:text-white text-lg font-bold mb-3">
-              Business Hours
-            </Text>
-
+            <Text className="text-lg font-bold mb-3">Business Hours</Text>
             <CanteenBusinessHours businessDays={canteen.businessDays!} />
           </View>
         )}
