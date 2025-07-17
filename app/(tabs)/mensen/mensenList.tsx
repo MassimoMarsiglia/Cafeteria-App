@@ -15,26 +15,21 @@ export default function MensenListScreen() {
   const [search, setSearch] = useState('');
   const location = useUserLocation();
   const [sortedCanteens, setSortedCanteens] = useState<any[]>([]);
+  const [chatVisible, setChatVisible] = useState(false);
 
   // imageMap
   // getUserLocation
   useEffect(() => {
     if (!canteens) return;
 
-    // Filter out canteens with 'Backshop' or 'Späti' in the name (case-insensitive)
-    const filteredCanteens = canteens.filter(canteen => {
-      const lowerName = canteen.name.toLowerCase();
-      return !lowerName.includes('backshop') && !lowerName.includes('späti');
-    });
-
     // If no location, show canteens without sorting
     if (!location) {
-      setSortedCanteens(filteredCanteens); // no sorting
+      setSortedCanteens(canteens); // no sorting
       return;
     }
 
     // Sort canteen base on location
-    const withDistance = filteredCanteens.map(canteen => {
+    const withDistance = canteens.map(canteen => {
       const geo = canteen.address?.geoLocation;
       const distance =
         geo?.latitude && geo?.longitude
