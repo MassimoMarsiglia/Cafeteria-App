@@ -5,10 +5,10 @@ interface FavoriteFabProps {
   onPress: () => void;
   isFavorite: boolean;
   placement?:
-    | 'bottom-right'
-    | 'bottom-left'
-    | 'top-right'
-    | 'top-left'
+    | 'bottom right'
+    | 'bottom left'
+    | 'top right'
+    | 'top left'
     | 'top center'
     | 'bottom center';
 }
@@ -20,5 +20,9 @@ export const FavoriteFab = (props: FavoriteFabProps) => {
     <FontAwesome name="heart-o" size={30} color="gray" />
   );
 
-  return <Fab onPress={props.onPress}>{favHeartIconProps}</Fab>;
+  return (
+    <Fab onPress={props.onPress} placement={props.placement}>
+      {favHeartIconProps}
+    </Fab>
+  );
 };

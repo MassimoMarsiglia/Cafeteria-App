@@ -4,6 +4,7 @@ import { CanteenContacts } from '@/components/Mensa/CanteenContacts';
 import { CanteenHeader } from '@/components/Mensa/CanteenHeader/';
 import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
+import { MenuFab } from '@/components/Mensa/MenuFab';
 import NotFoundView from '@/components/Mensa/NotFoundView';
 import { Divider } from '@/components/ui/divider';
 import { HStack } from '@/components/ui/hstack';
@@ -15,7 +16,7 @@ import { VStack } from '@/components/ui/vstack';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetCanteensQuery } from '@/services/mensaApi';
 import images from '@/utils/mensaImage';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -81,10 +82,7 @@ export default function MensaDetail() {
 
   return (
     <View className="flex-1 bg-background-0">
-      <ScrollView
-        className="p-5"
-        contentContainerStyle={{ paddingBottom: 100 }}
-      >
+      <ScrollView className="p-5">
         {imageSource && (
           <Image
             source={imageSource}
@@ -119,7 +117,18 @@ export default function MensaDetail() {
           handleFavoritePress();
         }}
         isFavorite={favoriteCanteen?.id === canteen.id}
-        placement="bottom-right"
+        placement="bottom right"
+      />
+      <MenuFab
+        onPress={() => {
+          router.navigate({
+            pathname: '/menu/[canteenId]',
+            params: {
+              canteenId: canteen.id,
+            },
+          });
+        }}
+        placement="bottom left"
       />
     </View>
   );
