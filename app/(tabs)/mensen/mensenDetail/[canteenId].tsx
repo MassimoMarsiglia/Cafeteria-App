@@ -1,11 +1,10 @@
+import { ErrorState } from '@/components/ErrorView';
 import { FavoriteFab } from '@/components/FavoriteFab';
 import { CanteenBusinessHours } from '@/components/Mensa/CanteenBusinessHours';
 import { CanteenContacts } from '@/components/Mensa/CanteenContacts';
 import { CanteenHeader } from '@/components/Mensa/CanteenHeader/';
-import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
 import { MenuFab } from '@/components/Mensa/MenuFab';
-import NotFoundView from '@/components/Mensa/NotFoundView';
 import { Divider } from '@/components/ui/divider';
 import { HStack } from '@/components/ui/hstack';
 import { Icon, InfoIcon } from '@/components/ui/icon';
@@ -18,13 +17,14 @@ import { useGetCanteensQuery } from '@/services/mensaApi';
 import images from '@/utils/mensaImage';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { Dimensions, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
+  const { height } = Dimensions.get('window');
 
-  const { data, isLoading, error } = useGetCanteensQuery();
+  const { data, isLoading, isFetching, error, refetch } = useGetCanteensQuery();
 
   const { favoriteCanteen, setFavoriteCanteen } = useSettings();
 
@@ -70,15 +70,37 @@ export default function MensaDetail() {
   };
 
   if (isLoading) return <LoadingView />;
-  if (error) return <ErrorView />;
-  if (!canteen) return <NotFoundView />;
+
+  if (error) {
+    return (
+      <ErrorState
+        icon="wifi"
+        title="Fehler beim Laden der Mensa"
+        description="Die Mensa-Details konnten nicht geladen werden. Überprüfe deine Internetverbindung."
+        onRefresh={refetch}
+        isRefreshing={isLoading || isFetching}
+        minHeight={height - 150}
+      />
+    );
+  }
+
+  if (!canteen) {
+    return (
+      <ErrorState
+        icon="closecircleo"
+        title="Mensa nicht gefunden"
+        description="Diese Mensa existiert nicht oder ist nicht mehr verfügbar."
+        onRefresh={refetch}
+        isRefreshing={isLoading || isFetching}
+        minHeight={height - 150}
+      />
+    );
+  }
 
   const imageSource =
     imageKey && typeof imageKey === 'string' && imageKey in images
       ? images[imageKey as keyof typeof images]
       : null;
-
-  // Define collapsable day section
 
   return (
     <View className="flex-1 bg-background-0">
@@ -111,6 +133,7 @@ export default function MensaDetail() {
             <CanteenBusinessHours businessDays={canteen.businessDays!} />
           </View>
         )}
+        <View className="h-20" />
       </ScrollView>
       <FavoriteFab
         onPress={() => {

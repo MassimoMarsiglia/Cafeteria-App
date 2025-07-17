@@ -1,30 +1,32 @@
-import ErrorView from '@/components/Mensa/ErrorView';
+import { ErrorState } from '@/components/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
 import CanteenCard from '@/components/Mensa/MensaCard';
-import NotFoundView from '@/components/Mensa/NotFoundView';
 import { Searchbar } from '@/components/Mensa/Searchbar';
 import { useUserLocation } from '@/hooks/Mensa/useUserLocation';
 import { useGetCanteensQuery } from '@/services/mensaApi';
 import { getDistanceFromLatLonInMeters } from '@/utils/distance';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
+import { Dimensions, FlatList, RefreshControl, View } from 'react-native';
 
 export default function MensenListScreen() {
-  const { data: canteens, isLoading, error, refetch } = useGetCanteensQuery();
+  const {
+    data: canteens,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = useGetCanteensQuery();
   const [search, setSearch] = useState('');
   const location = useUserLocation();
   const [sortedCanteens, setSortedCanteens] = useState<any[]>([]);
-  const [chatVisible, setChatVisible] = useState(false);
+  const { height } = Dimensions.get('window');
 
-  // imageMap
-  // getUserLocation
   useEffect(() => {
     if (!canteens) return;
 
-    // If no location, show canteens without sorting
     if (!location) {
-      setSortedCanteens(canteens); // no sorting
+      setSortedCanteens(canteens);
       return;
     }
 
@@ -68,8 +70,32 @@ export default function MensenListScreen() {
   };
 
   if (isLoading) return <LoadingView />;
-  if (error) return <ErrorView />;
-  if (!canteens || canteens.length === 0) return <NotFoundView />;
+
+  if (error) {
+    return (
+      <ErrorState
+        icon="wifi"
+        title="Fehler beim Laden der Mensen"
+        description="Die Mensen konnten nicht geladen werden. Überprüfe deine Internetverbindung."
+        onRefresh={refetch}
+        isRefreshing={isLoading || isFetching}
+        minHeight={height - 150}
+      />
+    );
+  }
+
+  if (!canteens || canteens.length === 0) {
+    return (
+      <ErrorState
+        icon="closecircleo"
+        title="Keine Mensen gefunden"
+        description="Es konnten keine Mensen geladen werden. Versuche es später erneut."
+        onRefresh={refetch}
+        isRefreshing={isLoading || isFetching}
+        minHeight={height - 150}
+      />
+    );
+  }
 
   return (
     <View className="flex-1 bg-background-0 px-4 pt-4">
@@ -81,7 +107,10 @@ export default function MensenListScreen() {
 
       <FlatList
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+          <RefreshControl
+            refreshing={isLoading || isFetching}
+            onRefresh={refetch}
+          />
         }
         data={filtered}
         keyExtractor={item => item.id.toString()}
