@@ -1,4 +1,3 @@
-// components/ErrorView.tsx
 import { Text } from '@/components/ui/text';
 import { AntDesign } from '@expo/vector-icons';
 import React from 'react';
@@ -32,8 +31,8 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
         style={{ minHeight }}
       >
         <AntDesign name={icon} size={75} color="grey" className="mb-6" />
-        <Text className="text-base font-medium mb-4">{title}</Text>
-        <Text className="text-base font-small mb-4">{description}</Text>
+        <Text className="text-base font-medium mb-4 text-center">{title}</Text>
+        <Text className="text-base font-small mb-4 text-center">{description}</Text>
       </View>
     </ScrollView>
   );

@@ -2,9 +2,8 @@ import CanteenContact from '@/components/Mensa/CanteenContact';
 import CanteenHeader from '@/components/Mensa/CanteenHeader';
 import { CanteenSelection } from '@/components/Mensa/CanteenSelection';
 import { formatBusinessHours } from '@/components/Mensa/CollapsibleDay';
-import ErrorView from '@/components/Mensa/ErrorView';
+import { ErrorState } from '@/components/ErrorView'; 
 import LoadingView from '@/components/Mensa/LoadingView';
-import NotFoundView from '@/components/Mensa/NotFoundView';
 import { Image } from '@/components/ui/image';
 import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
@@ -12,34 +11,57 @@ import { useGetCanteensQuery } from '@/services/mensaApi';
 import images from '@/utils/mensaImage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { Dimensions, Platform, ScrollView, View } from 'react-native';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
+  const { height } = Dimensions.get('window'); 
 
   const {
     data: canteens,
     isLoading,
     error,
     refetch,
+    isFetching, 
   } = useGetCanteensQuery({
     ID: canteenId as string,
   });
 
   const router = useRouter();
-
   const canteen = canteens?.[0];
 
   if (isLoading) return <LoadingView />;
-  if (error) return <ErrorView />;
-  if (!canteen) return <NotFoundView />;
+
+  if (error) {
+    return (
+      <ErrorState
+        icon="wifi"
+        title="Fehler beim Laden der Mensa"
+        description="Die Mensa-Details konnten nicht geladen werden. Überprüfe deine Internetverbindung."
+        onRefresh={refetch}
+        isRefreshing={isLoading || isFetching}
+        minHeight={height - 150}
+      />
+    );
+  }
+
+  if (!canteen) {
+    return (
+      <ErrorState
+        icon="closecircleo"
+        title="Mensa nicht gefunden"
+        description="Diese Mensa existiert nicht oder ist nicht mehr verfügbar."
+        onRefresh={refetch}
+        isRefreshing={isLoading || isFetching}
+        minHeight={height - 150}
+      />
+    );
+  }
 
   const imageSource =
     imageKey && typeof imageKey === 'string' && imageKey in images
       ? images[imageKey as keyof typeof images]
       : null;
-
-  // Define collapsable day section
 
   return (
     <ScrollView
