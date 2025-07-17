@@ -66,7 +66,7 @@ export default function MealView() {
     let formatted = badgeName.replace(/_/g, ' ');
 
     // Entferne "_A", "_B", "_C" etc. am Ende (case-insensitive)
-    formatted = formatted.replace(/\s*[A-Z]$/i, '');
+    formatted = formatted.replace(/_[A-Z]$/i, '');
 
     return formatted;
   };
