@@ -1,34 +1,26 @@
-import CanteenContact from '@/components/Mensa/CanteenContact';
-import CanteenHeader from '@/components/Mensa/CanteenHeader';
+import { CanteenContacts } from '@/components/Mensa/CanteenContacts';
+import { CanteenHeader } from '@/components/Mensa/CanteenHeader/';
 import { CanteenSelection } from '@/components/Mensa/CanteenSelection';
 import { formatBusinessHours } from '@/components/Mensa/CollapsibleDay';
 import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
 import NotFoundView from '@/components/Mensa/NotFoundView';
 import { Image } from '@/components/ui/image';
-import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { useGetCanteensQuery } from '@/services/mensaApi';
 import images from '@/utils/mensaImage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
 
-  const {
-    data: canteens,
-    isLoading,
-    error,
-    refetch,
-  } = useGetCanteensQuery({
-    ID: canteenId as string,
-  });
+  const { data, isLoading, error, refetch } = useGetCanteensQuery();
 
   const router = useRouter();
 
-  const canteen = canteens?.[0];
+  const canteen = data?.find(c => c.id === canteenId); // filter in JS instead of request so less gets cached
 
   if (isLoading) return <LoadingView />;
   if (error) return <ErrorView />;
@@ -46,12 +38,6 @@ export default function MensaDetail() {
       contentContainerStyle={{ alignItems: 'center' }}
       className="bg-background-0 p-5"
     >
-      {Platform.OS === 'android' && (
-        <Pressable onPress={() => router.back()} className="self-start mb-3">
-          <Text className="text-black dark:text-white text-base">← Zurück</Text>
-        </Pressable>
-      )}
-
       {imageSource && (
         <Image
           source={imageSource}
@@ -61,9 +47,12 @@ export default function MensaDetail() {
         />
       )}
 
-      <CanteenHeader name={canteen.name} address={canteen.address} />
+      <CanteenHeader name={canteen.name} address={canteen.address!} />
 
-      <CanteenContact contactInfo={canteen.contactInfo} />
+      <CanteenContacts
+        address={canteen.address!}
+        contactInfo={canteen.contactInfo!}
+      />
 
       <CanteenSelection canteen={canteen} />
 
