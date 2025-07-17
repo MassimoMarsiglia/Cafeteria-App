@@ -61,10 +61,10 @@ export default function SettingsScreen() {
       <FontAwesome5
         name="money-bill"
         size={20}
-        color={iconColor} // ← Einfach iconColor verwenden
+        color={iconColor} 
       />
     ),
-    [iconColor], // ← iconColor dependency
+    [iconColor], 
   );
 
   const favoriteMealsIcon = useMemo(
@@ -72,10 +72,10 @@ export default function SettingsScreen() {
       <MaterialIcons
         name="fastfood"
         size={20}
-        color={iconColor} // ← Einfach iconColor verwenden
+        color={iconColor} 
       />
     ),
-    [iconColor], // ← iconColor dependency
+    [iconColor],
   );
 
   const mensaIcon = useMemo(
@@ -83,10 +83,10 @@ export default function SettingsScreen() {
       <FontAwesome5
         name="building"
         size={20}
-        color={iconColor} // ← Einfach iconColor verwenden
+        color={iconColor}
       />
     ),
-    [iconColor], // ← iconColor dependency
+    [iconColor],
   );
 
   // Define settings items with memoization
