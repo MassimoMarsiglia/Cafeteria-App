@@ -1,3 +1,4 @@
+import { ErrorState } from '@/components/ErrorView';
 import { MealCard } from '@/components/Menu/MealCard/Index';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { CalendarDaysIcon } from '@/components/ui/icon';
@@ -136,24 +137,14 @@ const Menu = () => {
 
     if (isError) {
       return (
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
-          }
-        >
-          <View
-            className="flex-1 justify-center items-center"
-            style={{ minHeight: height - 150 }}
-          >
-            <AntDesign name="wifi" size={75} color="grey" className="mb-6" />
-            <Text className="text-base font-medium mb-4">
-              Fehler beim Laden des Menüs!
-            </Text>
-            <Text className="text-base font-small mb-4">
-              Überprüfe deine Internetverbindung um zu Schmausen.
-            </Text>
-          </View>
-        </ScrollView>
+        <ErrorState
+          icon="wifi"
+          title="Fehler beim Laden des Menüs!"
+          description="Überprüfe deine Internetverbindung um zu Schmausen."
+          onRefresh={handleRefresh}
+          isRefreshing={isLoading}
+          minHeight={height - 150}
+        />
       );
     }
 
