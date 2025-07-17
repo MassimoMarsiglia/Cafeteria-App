@@ -1,6 +1,6 @@
 import { chatdb } from '@/database/chatdatabase';
 import { Message } from '@/database/schema';
-import { desc, eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 
 export const saveMessage = async (message: Message) => {
   try {
@@ -28,7 +28,7 @@ export const getMessagesByChatId = async (chatId: string) => {
       .select()
       .from(Message)
       .where(eq(Message.chatId, chatId))
-      .orderBy(desc(Message.createdAt));
+      .orderBy(asc(Message.createdAt));
     return messages;
   } catch (error) {
     console.error('Error fetching messages from database:', error);

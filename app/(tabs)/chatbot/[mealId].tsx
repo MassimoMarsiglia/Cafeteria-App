@@ -1,4 +1,3 @@
-import exportDatabase from '@/utils/database';
 import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import OpenAI from 'openai';
@@ -9,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  Text,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -118,7 +116,16 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
       }
     };
     loadMessages();
-  }, [meal, mealId, isLoading, callAIWithPrompt]);
+  }, [
+    meal,
+    mealId,
+    isLoading,
+    callAIWithPrompt,
+    findChatById,
+    loadChat,
+    newChat,
+    persistMessages,
+  ]);
 
   const sendMessage = async () => {
     if (inputText.trim().length === 0 || !meal) return;
@@ -129,13 +136,13 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
       sender: 'user',
     };
 
+    setInputText('');
+
     const newMessage = await persistMessages([userMessage]);
     if (!newMessage) return;
     setMessages(prev => [...prev, ...newMessage]);
 
-    // const promptForAI = `Der Benutzer fragt nach „${meal[0].name}“. Seine Nachricht lautet: „${inputText}“. Bitte antworte hilfreich.`;
     await callAIWithPrompt(inputText, meal[0].name);
-    setInputText('');
   };
 
   const renderItem = ({ item }: { item: Message }) => (
@@ -175,29 +182,6 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
             keyboardShouldPersistTaps="handled"
           />
 
-          {/* Export DB Button, only for developing. Please uncomment when we don't need it  */}
-          <TouchableOpacity
-            onPress={exportDatabase}
-            style={{
-              position: 'absolute',
-              bottom: 90, // above input bar
-              right: 20,
-              backgroundColor: '#4f46e5',
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderRadius: 30,
-              zIndex: 10,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 3,
-              elevation: 5,
-            }}
-          >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>
-              📤 Export DB
-            </Text>
-          </TouchableOpacity>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View className="flex-row items-center border-t border-gray-300 dark:border-gray-700 px-4 py-4 bg-white dark:bg-black">
               <TextInput

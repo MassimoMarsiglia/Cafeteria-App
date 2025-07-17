@@ -82,9 +82,11 @@ export default function CanteenCard({
       </Text>
 
       {/* City and distance */}
-      <Text className="text-gray-700 dark:text-[#cccccc] text-sm mb-1">
-        {canteen.city} – {(canteen.distance / 1000).toFixed(2)} km entfernt
-      </Text>
+      {typeof canteen.distance === 'number' && !isNaN(canteen.distance) && (
+        <Text className="text-gray-700 dark:text-[#cccccc] text-sm mb-1">
+          {canteen.city} – {(canteen.distance / 1000).toFixed(2)} km entfernt
+        </Text>
+      )}
 
       {/* Address and heart icon in same row */}
       <HStack className="flex-row justify-between items-center mt-1">

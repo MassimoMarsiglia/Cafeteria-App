@@ -22,14 +22,20 @@ export default function MensenListScreen() {
   useEffect(() => {
     if (!canteens) return;
 
+    // Filter out canteens with 'Backshop' or 'Späti' in the name (case-insensitive)
+    const filteredCanteens = canteens.filter(canteen => {
+      const lowerName = canteen.name.toLowerCase();
+      return !lowerName.includes('backshop') && !lowerName.includes('späti');
+    });
+
     // If no location, show canteens without sorting
     if (!location) {
-      setSortedCanteens(canteens); // no sorting
+      setSortedCanteens(filteredCanteens); // no sorting
       return;
     }
 
     // Sort canteen base on location
-    const withDistance = canteens.map(canteen => {
+    const withDistance = filteredCanteens.map(canteen => {
       const geo = canteen.address?.geoLocation;
       const distance =
         geo?.latitude && geo?.longitude
