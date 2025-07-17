@@ -32,6 +32,7 @@ const ChatBotScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const key = process.env.EXPO_PUBLIC_OPEN_ROUTER_API_KEY;
 
   const callAIWithPrompt = useCallback(
     async (prompt: string, mealName: string) => {
@@ -40,7 +41,7 @@ const ChatBotScreen = () => {
       try {
         const openAi = new OpenAI({
           baseURL: 'https://openrouter.ai/api/v1',
-          apiKey: 'API_KEY',
+          apiKey: key,
         });
 
         const response = await openAi.chat.completions.create({

@@ -1,18 +1,28 @@
-import { chatdb } from '@/database/chatdatabase';
+import { chatdb, isDatabaseAvailable } from '@/database/chatdatabase';
 import { Chat } from '@/database/schema';
 import { desc, eq } from 'drizzle-orm';
 
 export const createChat = async (chat: Chat) => {
+  if (!isDatabaseAvailable()) {
+    console.warn('Database not available on web platform');
+    return;
+  }
+
   try {
-    await chatdb.insert(Chat).values(chat);
+    await chatdb!.insert(Chat).values(chat);
   } catch (error) {
     console.error('Error creating chat in database:', error);
   }
 };
 
 export const getAllChats = async () => {
+  if (!isDatabaseAvailable()) {
+    console.warn('Database not available on web platform');
+    return [];
+  }
+
   try {
-    const chats = await chatdb
+    const chats = await chatdb!
       .select()
       .from(Chat)
       .orderBy(desc(Chat.createdAt));
@@ -24,8 +34,13 @@ export const getAllChats = async () => {
 };
 
 export const getChatByName = async (name: string) => {
+  if (!isDatabaseAvailable()) {
+    console.warn('Database not available on web platform');
+    return null;
+  }
+
   try {
-    const chat = await chatdb
+    const chat = await chatdb!
       .select()
       .from(Chat)
       .where(eq(Chat.name, name))
@@ -38,8 +53,13 @@ export const getChatByName = async (name: string) => {
 };
 
 export const getChatById = async (id: string) => {
+  if (!isDatabaseAvailable()) {
+    console.warn('Database not available on web platform');
+    return null;
+  }
+
   try {
-    const chat = await chatdb
+    const chat = await chatdb!
       .select()
       .from(Chat)
       .where(eq(Chat.id, id))
@@ -52,8 +72,13 @@ export const getChatById = async (id: string) => {
 };
 
 export const deleteChatById = async (id: string) => {
+  if (!isDatabaseAvailable()) {
+    console.warn('Database not available on web platform');
+    return;
+  }
+
   try {
-    await chatdb.delete(Chat).where(eq(Chat.id, id));
+    await chatdb!.delete(Chat).where(eq(Chat.id, id));
   } catch (error) {
     console.error('Error deleting chat by ID from database:', error);
   }

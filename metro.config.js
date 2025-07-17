@@ -5,6 +5,9 @@ const config = getDefaultConfig(__dirname);
 
 config.resolver.sourceExts.push('sql');
 
+// Add WASM support
+config.resolver.assetExts.push('wasm');
+
 config.server.enhanceMiddleware = middleware => {
   return (req, res, next) => {
     res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');

@@ -15,16 +15,21 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons';
+import { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '../store';
 
 // Create a wrapper component that has access to Redux
 function AppContent() {
-  const { success, error } = useMigrations(chatdb, migrations);
+  const { success, error } = useMigrations(
+    chatdb as ExpoSQLiteDatabase<any>,
+    migrations,
+  );
   const { isDarkMode } = useSettings();
   const colorscheme = useColorScheme();
 
@@ -33,7 +38,7 @@ function AppContent() {
     colorscheme.setColorScheme(themeMode);
   }, [themeMode, colorscheme]);
 
-  if (error) {
+  if (error && Platform.OS !== 'web') {
     return (
       <ErrorState
         icon="closecircleo"
