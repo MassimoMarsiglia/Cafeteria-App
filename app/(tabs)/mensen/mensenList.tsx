@@ -15,7 +15,6 @@ export default function MensenListScreen() {
   const [search, setSearch] = useState('');
   const location = useUserLocation();
   const [sortedCanteens, setSortedCanteens] = useState<any[]>([]);
-  const [chatVisible, setChatVisible] = useState(false);
 
   // imageMap
   // getUserLocation
