@@ -9,7 +9,7 @@ interface SearchbarProps {
 
 export const Searchbar = (props: SearchbarProps) => {
   return (
-    <Input className="bg-secondary-100 w-full rounded-lg mb-3 h-12">
+    <Input className="bg-secondary-100 w-full rounded-lg mb-3 h-12 shadow">
       <InputSlot className="pl-2">
         <InputIcon as={SearchIcon} />
       </InputSlot>
