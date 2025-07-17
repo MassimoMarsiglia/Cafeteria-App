@@ -1,4 +1,6 @@
 import { ErrorState } from '@/components/ErrorView';
+import { FavoriteFab } from '@/components/FavoriteFab';
+import { GenerateFab } from '@/components/Menu/GenerateFab';
 import {
   Accordion,
   AccordionContent,
@@ -7,7 +9,6 @@ import {
   AccordionTitleText,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollView } from '@/components/ui/scroll-view';
 import { Text } from '@/components/ui/text';
@@ -16,7 +17,6 @@ import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMealsQuery } from '@/services/mensaApi';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions } from 'react-native';
 
 export default function MealView() {
@@ -32,15 +32,10 @@ export default function MealView() {
     ID: params.mealId,
     loadingtype: 'complete',
   });
-  const [isFavorite, setIsFavorite] = useState(false);
 
   const { height } = Dimensions.get('window');
 
-  useEffect(() => {
-    if (params.mealId) {
-      setIsFavorite(favoriteMeals.some(m => m.id === params.mealId));
-    }
-  }, [params.mealId, favoriteMeals]);
+  const isFavorite = favoriteMeals.some(meal => meal.id === params.mealId);
 
   if (isLoading) {
     return (
@@ -265,31 +260,19 @@ export default function MealView() {
         {/* Zusätzlicher Platz für FAB-Buttons */}
         <View className="h-20" />
       </ScrollView>
-
-      {/* Floating Action Buttons */}
-      <View className="absolute bottom-6 left-6">
-        <Button
-          size="lg"
-          className="rounded-full shadow-lg w-20 h-20 p-0 items-center justify-center"
-          onPress={handleRecipePress}
-        >
-          <Ionicons name="sparkles" size={34} color="#FBC02D" />
-        </Button>
-      </View>
-
-      <View className="absolute bottom-6 right-6">
-        <Button
-          size="lg"
-          className="rounded-full shadow-lg w-20 h-20 p-0 items-center justify-center"
-          onPress={handleFavoritePress}
-        >
-          <Ionicons
-            name={isFavorite ? 'heart' : 'heart-outline'}
-            size={40}
-            color={isFavorite ? '#FF6B6B' : '#999'}
-          />
-        </Button>
-      </View>
+      <GenerateFab
+        onPress={() => {
+          handleRecipePress();
+        }}
+        placement="bottom left"
+      />
+      <FavoriteFab
+        onPress={() => {
+          handleFavoritePress();
+        }}
+        isFavorite={isFavorite}
+        placement="bottom right"
+      />
     </View>
   );
 }

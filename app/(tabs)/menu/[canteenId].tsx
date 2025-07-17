@@ -5,6 +5,7 @@ import { CalendarDaysIcon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMenusQuery } from '@/services/mensaApi';
+import { Ionicons } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -277,13 +278,12 @@ const Menu = () => {
 
       {/* Fab mit Icon */}
       <Fab
-        size="lg"
         placement="bottom right"
         onPress={() => {
           setShow(true);
         }}
       >
-        <FabIcon as={CalendarDaysIcon} size="xl" />
+        <Ionicons name="calendar-outline" size={40} color="black" />
       </Fab>
     </View>
   );

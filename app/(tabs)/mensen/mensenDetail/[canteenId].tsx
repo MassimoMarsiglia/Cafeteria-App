@@ -1,8 +1,8 @@
+import { ErrorState } from '@/components/ErrorView';
 import { FavoriteFab } from '@/components/FavoriteFab';
 import { CanteenBusinessHours } from '@/components/Mensa/CanteenBusinessHours';
 import { CanteenContacts } from '@/components/Mensa/CanteenContacts';
 import { CanteenHeader } from '@/components/Mensa/CanteenHeader/';
-import { ErrorState } from '@/components/ErrorView'; 
 import LoadingView from '@/components/Mensa/LoadingView';
 import { MenuFab } from '@/components/Mensa/MenuFab';
 import { Divider } from '@/components/ui/divider';
@@ -22,9 +22,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
-  const { height } = Dimensions.get('window'); 
+  const { height } = Dimensions.get('window');
 
-  const { data, isLoading, isFetching, error } = useGetCanteensQuery();
+  const { data, isLoading, isFetching, error, refetch } = useGetCanteensQuery();
 
   const { favoriteCanteen, setFavoriteCanteen } = useSettings();
 
@@ -133,6 +133,7 @@ export default function MensaDetail() {
             <CanteenBusinessHours businessDays={canteen.businessDays!} />
           </View>
         )}
+        <View className="h-20" />
       </ScrollView>
       <FavoriteFab
         onPress={() => {
