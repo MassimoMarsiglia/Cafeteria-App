@@ -22,11 +22,11 @@ export default function TabLayout() {
       <Stack.Screen name="menu/[canteenId]" />
       <Stack.Screen name="mensen/mensenList" />
       <Stack.Screen name="mensen/mensenDetail/[canteenId]" />
-      <Stack.Screen name="settings" />
+      <Stack.Screen name="settings/index" />
       <Stack.Screen name="chatbot/[mealId]" />
       <Stack.Screen name="chatbot/MealListScreen" />
-      <Stack.Screen name="settings/favoritemeals" />
-      <Stack.Screen name="settings/pricecategory" />
+      <Stack.Screen name="settings/favoritemeals/index" />
+      <Stack.Screen name="settings/pricecategory/index" />
     </Stack>
   );
 }
