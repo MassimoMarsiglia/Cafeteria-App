@@ -147,10 +147,10 @@ const Menu = () => {
           >
             <AntDesign name="wifi" size={75} color="grey" className="mb-6" />
             <Text className="text-base font-medium mb-4">
-              Fehler beim Laden des Menüs
+              Fehler beim Laden des Menüs!
             </Text>
             <Text className="text-base font-small mb-4">
-              Überprüfe deine Internetverbindung
+              Überprüfe deine Internetverbindung um zu Schmausen.
             </Text>
           </View>
         </ScrollView>
@@ -167,10 +167,10 @@ const Menu = () => {
             className="mb-6"
           />
           <Text className="text-base font-medium mb-4">
-            Es gibt noch kein Menü für den {date.toLocaleDateString('de-DE')}
+            Zu früh für den Schmaus am {date.toLocaleDateString('de-DE')}!
           </Text>
           <Text className="text-base font-small mb-4">
-            Wählen Sie ein anderes Datum aus
+            Für diesen Tag gibt es noch kein Schmaus-Angebot.
           </Text>
         </View>
       );
@@ -182,13 +182,13 @@ const Menu = () => {
           <AntDesign name="frowno" size={75} color="gray" className="mb-6" />
           <Text className="text-base font-medium mb-4">
             {isWeekend(date)
-              ? 'Am Wochenende ist die Mensa geschlossen'
+              ? 'Mensa zu, Schmaus tabu!'
               : `Keine Gerichte verfügbar für den ${date.toLocaleDateString('de-DE')}`}
           </Text>
           <Text className="text-base font-small mb-4">
             {isWeekend(date)
-              ? 'Wählen Sie einen Werktag aus'
-              : 'Wählen Sie ein anderes Datum aus'}
+              ? 'Geschmaust wird hier nur unter der Woche.'
+              : 'Für diesen Tag gibt es kein Schmaus-Angebot.'}
           </Text>
         </View>
       );
@@ -289,7 +289,6 @@ const Menu = () => {
         size="lg"
         placement="bottom right"
         onPress={() => {
-          console.log('Fab clicked!');
           setShow(true);
         }}
       >
