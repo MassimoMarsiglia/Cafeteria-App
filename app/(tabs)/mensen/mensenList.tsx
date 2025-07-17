@@ -77,8 +77,8 @@ export default function MensenListScreen() {
         icon="wifi"
         title="Fehler beim Laden der Mensen"
         description="Die Mensen konnten nicht geladen werden. Überprüfe deine Internetverbindung."
-        onRefresh={refetch} 
-        isRefreshing={isLoading || isFetching} 
+        onRefresh={refetch}
+        isRefreshing={isLoading || isFetching}
         minHeight={height - 150}
       />
     );
