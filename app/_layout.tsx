@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '../store';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Create a wrapper component that has access to Redux
 function AppContent() {
@@ -48,6 +48,8 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...AntDesign.font,
+    ...FontAwesome5.font,
+    ...MaterialCommunityIcons.font,
   });
 
   useEffect(() => {

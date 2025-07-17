@@ -1,5 +1,4 @@
 import { MealCard } from '@/components/Menu/MealCard/Index';
-import { Box } from '@/components/ui/box';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { CalendarDaysIcon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -28,6 +27,7 @@ const Menu = () => {
   const flatListRef = useRef<FlatList>(null);
   const tabScrollRef = useRef<ScrollView>(null);
   const { width } = Dimensions.get('window');
+  const { height } = Dimensions.get('window');
 
   const {
     data: menu,
@@ -141,7 +141,10 @@ const Menu = () => {
             <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
           }
         >
-          <Box className="flex-1 justify-center items-center">
+          <View
+            className="flex-1 justify-center items-center"
+            style={{ minHeight: height - 150 }}
+          >
             <AntDesign name="wifi" size={75} color="grey" className="mb-6" />
             <Text className="text-base font-medium mb-4">
               Fehler beim Laden des Menüs
@@ -149,7 +152,7 @@ const Menu = () => {
             <Text className="text-base font-small mb-4">
               Überprüfe deine Internetverbindung
             </Text>
-          </Box>
+          </View>
         </ScrollView>
       );
     }
