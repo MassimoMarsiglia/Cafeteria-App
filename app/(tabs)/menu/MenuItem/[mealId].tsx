@@ -65,8 +65,8 @@ export default function MealView() {
     // Entferne Unterstriche und ersetze sie durch Leerzeichen
     let formatted = badgeName.replace(/_/g, ' ');
 
-    // Entferne "_A" am Ende (case-insensitive)
-    formatted = formatted.replace(/\s*A$/i, '');
+    // Entferne "_A", "_B", "_C" etc. am Ende (case-insensitive)
+    formatted = formatted.replace(/\s*[A-Z]$/i, '');
 
     return formatted;
   };
@@ -91,13 +91,13 @@ export default function MealView() {
     <View className="flex-1">
       <ScrollView className="flex-1 p-4">
         {/* Header Card */}
-        <Card variant="elevated" className="p-4 mb-4">
-          <Text className="text-2xl font-bold mb-2">{meal.name}</Text>
+        <Card variant="elevated" className="p-4 mb-4 shadow-md">
+          <Text className="text-4xl font-bold mb-2">{meal.name}</Text>
           <Text className="text-lg mb-4">Kategorie: {meal.category}</Text>
         </Card>
 
         {/* Preise */}
-        <Card variant="elevated" className="p-4 mb-4">
+        <Card variant="elevated" className="p-4 mb-4 shadow-md">
           <View className="flex-row items-center mb-3">
             <Ionicons
               name="cash"
@@ -105,12 +105,12 @@ export default function MealView() {
               color="#FBC02D"
               style={{ marginRight: 8 }}
             />
-            <Text className="text-lg font-semibold">Preise</Text>
+            <Text className="text-2xl font-semibold">Preise</Text>
           </View>
           {meal.prices?.map((price: any, index: number) => (
             <View key={index} className="flex-row justify-between mb-2">
-              <Text className="text-base">{price.priceType}:</Text>
-              <Text className="text-base font-semibold">
+              <Text className="text-lg">{price.priceType}:</Text>
+              <Text className="text-lg font-semibold">
                 {price.price.toFixed(2)}€
               </Text>
             </View>
@@ -119,7 +119,7 @@ export default function MealView() {
 
         {/* Generelle-Infos */}
         {generalBadges && generalBadges.length > 0 && (
-          <Card variant="elevated" className="p-4 mb-4">
+          <Card variant="elevated" className="p-4 mb-4 shadow-md">
             <View className="flex-row items-center mb-3">
               <Ionicons
                 name="information-circle"
@@ -127,14 +127,14 @@ export default function MealView() {
                 color="#1565C0"
                 style={{ marginRight: 8 }}
               />
-              <Text className="text-lg font-semibold">Generelle-Infos</Text>
+              <Text className="text-2xl font-semibold">Generelle-Infos</Text>
             </View>
             {generalBadges.map((badge: any, index: number) => (
               <View key={index} className="mb-3">
-                <Text className="text-sm font-semibold">
+                <Text className="text-base font-semibold">
                   {formatBadgeName(badge.name)}
                 </Text>
-                <Text className="text-xs text-gray-600">
+                <Text className="text-sm text-gray-600">
                   {badge.description}
                 </Text>
               </View>
@@ -144,7 +144,7 @@ export default function MealView() {
 
         <Accordion
           type="multiple"
-          className="mb-4 rounded-lg overflow-hidden border-none"
+          className="mb-4 rounded-lg overflow-hidden border-none shadow-md bg-transparent"
         >
           {/* Umwelt-Informationen */}
           {(meal.co2Bilanz ||
@@ -160,28 +160,30 @@ export default function MealView() {
                       color="#43A047"
                       style={{ marginRight: 8 }}
                     />
-                    <AccordionTitleText>Umwelt-Info</AccordionTitleText>
+                    <AccordionTitleText className="text-2xl">
+                      Umwelt-Info
+                    </AccordionTitleText>
                   </View>
                 </AccordionTrigger>
               </AccordionHeader>
               <AccordionContent>
                 {environmentBadges.map((badge: any, index: number) => (
                   <View key={index} className="mb-3">
-                    <Text className="text-sm font-semibold">
+                    <Text className="text-base font-semibold">
                       {formatBadgeName(badge.name)}
                     </Text>
-                    <Text className="text-xs text-gray-600">
+                    <Text className="text-sm text-gray-600">
                       {badge.description}
                     </Text>
                     {badge.name.toLowerCase().includes('co2') &&
                       meal.co2Bilanz && (
-                        <Text className="text-xs text-gray-500 mt-1">
+                        <Text className="text-sm text-gray-500 mt-1">
                           CO₂-Bilanz: {meal.co2Bilanz}g
                         </Text>
                       )}
                     {badge.name.toLowerCase().includes('h2o') &&
                       meal.waterBilanz && (
-                        <Text className="text-xs text-gray-500 mt-1">
+                        <Text className="text-sm text-gray-500 mt-1">
                           Wasserverbrauch: {meal.waterBilanz}L
                         </Text>
                       )}
@@ -203,14 +205,16 @@ export default function MealView() {
                       color="#FFEE58"
                       style={{ marginRight: 8 }}
                     />
-                    <AccordionTitleText>Allergene</AccordionTitleText>
+                    <AccordionTitleText className="text-2xl">
+                      Allergene
+                    </AccordionTitleText>
                   </View>
                 </AccordionTrigger>
               </AccordionHeader>
               <AccordionContent>
                 {meal.additives.map((additive: any, index: number) => (
                   <View key={index} className="mb-2">
-                    <Text className="text-sm">
+                    <Text className="text-base">
                       <Text className="font-semibold">
                         {additive.referenceid}:
                       </Text>{' '}
