@@ -161,8 +161,12 @@ export default function SettingsScreen() {
         />
 
         <Box className="rounded-3xl overflow-hidden">
-          {filteredSettings.map(setting => (
-            <SettingsCard key={setting.id} setting={setting} />
+          {filteredSettings.map((setting, index) => (
+            <SettingsCard
+              key={setting.id}
+              setting={setting}
+              isLast={index === filteredSettings.length - 1}
+            />
           ))}
         </Box>
       </Box>
