@@ -67,7 +67,7 @@ export const SettingsCard = React.memo((props: SettingCardProps) => {
       {!props.isLast ? (
         <Divider orientation="horizontal" className="mt-2 mb-2" />
       ) : (
-        <Box className="mt-2 mb-2" /> // Ersetzt den Divider durch leeren Raum
+        <Box className="mt-2 mb-2" />
       )}
     </Box>
   );

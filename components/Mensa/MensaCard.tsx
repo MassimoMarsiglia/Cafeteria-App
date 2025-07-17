@@ -66,7 +66,7 @@ export default function CanteenCard({
 
   return (
     <TouchableOpacity
-      className="bg-secondary-100 p-4 rounded-lg mb-2.5"
+      className="bg-secondary-100 p-4 rounded-lg mb-2.5 shadow-md"
       onPress={onPress}
     >
       <Image
