@@ -19,7 +19,7 @@ export const MenuFab = (props: MenuFabProps) => {
     <Fab onPress={props.onPress} placement={props.placement}>
       <MaterialIcons
         name="menu-book"
-        size={30}
+        size={40}
         color={isDarkMode ? 'black' : 'white'}
       />
     </Fab>

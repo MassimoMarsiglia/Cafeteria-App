@@ -15,9 +15,9 @@ interface FavoriteFabProps {
 
 export const FavoriteFab = (props: FavoriteFabProps) => {
   const favHeartIconProps = props.isFavorite ? (
-    <FontAwesome name="heart" size={30} color="#FF6B6B" />
+    <FontAwesome name="heart" size={40} color="#FF6B6B" />
   ) : (
-    <FontAwesome name="heart-o" size={30} color="gray" />
+    <FontAwesome name="heart-o" size={40} color="gray" />
   );
 
   return (
