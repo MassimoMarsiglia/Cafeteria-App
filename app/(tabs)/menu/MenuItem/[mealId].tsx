@@ -1,3 +1,4 @@
+import { ErrorState } from '@/components/ErrorView';
 import {
   Accordion,
   AccordionContent,
@@ -16,16 +17,24 @@ import { useGetMealsQuery } from '@/services/mensaApi';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { ActivityIndicator, Dimensions } from 'react-native';
 
 export default function MealView() {
   const params = useLocalSearchParams<{ mealId: string }>();
   const { favoriteMeals, addFavoriteMeals, removeFavoriteMeals } =
     useSettings();
-  const { data: mealData } = useGetMealsQuery({
+  const {
+    data: mealData,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetMealsQuery({
     ID: params.mealId,
     loadingtype: 'complete',
   });
   const [isFavorite, setIsFavorite] = useState(false);
+
+  const { height } = Dimensions.get('window');
 
   useEffect(() => {
     if (params.mealId) {
@@ -33,11 +42,37 @@ export default function MealView() {
     }
   }, [params.mealId, favoriteMeals]);
 
-  if (!mealData || mealData.length === 0) {
+  if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center">
-        <Text>Fehler beim Laden der Mahlzeit</Text>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ErrorState
+        icon="wifi"
+        title="Das Gericht konnte nicht geladen werden."
+        description="Es hat sich ausgeschmaust. Überprüfe deine Internetverbindung."
+        onRefresh={refetch}
+        isRefreshing={isLoading}
+        minHeight={height - 150}
+      />
+    );
+  }
+
+  if (!mealData || mealData.length === 0) {
+    return (
+      <ErrorState
+        icon="closecircleo"
+        title="Mahlzeit nicht gefunden"
+        description="Diese Mahlzeit existiert nicht oder ist nicht mehr verfügbar."
+        onRefresh={refetch}
+        isRefreshing={isLoading}
+        minHeight={height - 150}
+      />
     );
   }
 
