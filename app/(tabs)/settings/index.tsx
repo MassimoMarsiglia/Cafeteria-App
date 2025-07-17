@@ -5,13 +5,17 @@ import { Icon, MoonIcon, SunIcon } from '@/components/ui/icon';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
 export default function SettingsScreen() {
   const { isDarkMode, toggleDarkMode, priceCategory, favoriteCanteen } =
     useSettings();
+  const { colorScheme } = useColorScheme();
   const [search, setSearch] = useState('');
+
+  const iconColor = colorScheme === 'dark' ? 'white' : 'black';
 
   const handleFavoriteCanteenPress = useCallback(() => {
     const imageKey = favoriteCanteen?.name
@@ -44,45 +48,27 @@ export default function SettingsScreen() {
 
   const themeIcon = useMemo(
     () =>
-      !isDarkMode ? (
+      colorScheme !== 'dark' ? (
         <Icon as={MoonIcon} className="text-typography-900" size="xl" />
       ) : (
         <Icon as={SunIcon} className="text-typography-900" size="xl" />
       ),
-    [isDarkMode],
+    [colorScheme],
   );
 
   const priceIcon = useMemo(
-    () => (
-      <FontAwesome5
-        name="money-bill"
-        size={20}
-        color={isDarkMode ? 'white' : 'black'}
-      />
-    ),
-    [isDarkMode],
+    () => <FontAwesome5 name="money-bill" size={20} color={iconColor} />,
+    [iconColor],
   );
 
   const favoriteMealsIcon = useMemo(
-    () => (
-      <MaterialIcons
-        name="fastfood"
-        size={20}
-        color={isDarkMode ? 'white' : 'black'}
-      />
-    ),
-    [isDarkMode],
+    () => <MaterialIcons name="fastfood" size={20} color={iconColor} />,
+    [iconColor],
   );
 
   const mensaIcon = useMemo(
-    () => (
-      <FontAwesome5
-        name="building"
-        size={20}
-        color={isDarkMode ? 'white' : 'black'}
-      />
-    ),
-    [isDarkMode],
+    () => <FontAwesome5 name="building" size={20} color={iconColor} />,
+    [iconColor],
   );
 
   // Define settings items with memoization
@@ -160,9 +146,13 @@ export default function SettingsScreen() {
           placeholder="Suche nach Einstellungen."
         />
 
-        <Box className="rounded-3xl overflow-hidden">
-          {filteredSettings.map(setting => (
-            <SettingsCard key={setting.id} setting={setting} />
+        <Box className="rounded-3xl overflow-hidden shadow-md">
+          {filteredSettings.map((setting, index) => (
+            <SettingsCard
+              key={setting.id}
+              setting={setting}
+              isLast={index === filteredSettings.length - 1}
+            />
           ))}
         </Box>
       </Box>

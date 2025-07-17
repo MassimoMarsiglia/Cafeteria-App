@@ -22,6 +22,7 @@ export interface Setting<T = any> {
 
 interface SettingCardProps {
   setting: Setting;
+  isLast?: boolean;
 }
 
 export const SettingsCard = React.memo((props: SettingCardProps) => {
@@ -36,11 +37,13 @@ export const SettingsCard = React.memo((props: SettingCardProps) => {
   const content = (
     <Box className="bg-secondary-100 pt-4 px-4">
       <Box className="flex flex-row items-center gap-4 mb-2">
-        <Box className="w-12 flex justify-center">
+        {/* Icon Container - breiter und zentriert */}
+        <Box className="w-12 flex justify-center items-center">
           {typeof props.setting.icon === 'function'
             ? props.setting.icon()
             : props.setting.icon}
         </Box>
+
         <Box className="flex-1">
           <Text className="text-typography-900 font-semibold">
             {props.setting.title}
@@ -49,6 +52,7 @@ export const SettingsCard = React.memo((props: SettingCardProps) => {
             {props.setting.description}
           </Text>
         </Box>
+
         <Box className="w-10 flex justify-center">
           {props.setting.hasToggle ? (
             <Switch
@@ -60,7 +64,11 @@ export const SettingsCard = React.memo((props: SettingCardProps) => {
           )}
         </Box>
       </Box>
-      <Divider orientation="horizontal" className="mt-2 mb-2" />
+      {!props.isLast ? (
+        <Divider orientation="horizontal" className="mt-2 mb-2" />
+      ) : (
+        <Box className="mt-2 mb-2" />
+      )}
     </Box>
   );
 

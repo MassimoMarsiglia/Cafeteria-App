@@ -1,12 +1,11 @@
-import { BusinessDay } from '@/services/mensaTypes';
+import { BusinessDay, BusinessHour } from '@/services/mensaTypes';
+import { View } from 'react-native';
+import { BusinessHourCard } from './BusinessHourCard';
 
-type BusinessHour = {
-  businessHourType: string;
-  openAt: string;
-  closeAt: string;
-};
-
-export function formatBusinessHours(businessDays: BusinessDay[]) {
+interface CanteenBusinessHoursProps {
+  businessDays: BusinessDay[];
+}
+const formatBusinessHours = (businessDays: BusinessDay[]) => {
   const monThuDays = ['Mo', 'Di', 'Mi', 'Do'];
   const fridayDay = 'Fr';
   const weekendDays = ['Sa', 'So'];
@@ -75,4 +74,16 @@ export function formatBusinessHours(businessDays: BusinessDay[]) {
   }
 
   return result;
-}
+};
+
+export const CanteenBusinessHours = (props: CanteenBusinessHoursProps) => {
+  return (
+    <View>
+      {Object.entries(formatBusinessHours(props.businessDays)).map(
+        ([label, times]) => (
+          <BusinessHourCard key={label} day={label} hours={times} />
+        ),
+      )}
+    </View>
+  );
+};

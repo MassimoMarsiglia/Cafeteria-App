@@ -12,6 +12,8 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts"
-, "app/(tabs)/chatbot/[mealId].js", "components/ChatBot/ChatBotScreen.js"  ]
+    "nativewind-env.d.ts",
+    "app/(tabs)/chatbot/[mealId].js",
+    "components/ChatBot/ChatBotScreen.js"
+  ]
 }

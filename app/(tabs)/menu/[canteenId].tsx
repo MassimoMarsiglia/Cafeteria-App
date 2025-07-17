@@ -1,5 +1,5 @@
+import { ErrorState } from '@/components/ErrorView';
 import { MealCard } from '@/components/Menu/MealCard/Index';
-import { Box } from '@/components/ui/box';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { CalendarDaysIcon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
@@ -28,6 +28,7 @@ const Menu = () => {
   const flatListRef = useRef<FlatList>(null);
   const tabScrollRef = useRef<ScrollView>(null);
   const { width } = Dimensions.get('window');
+  const { height } = Dimensions.get('window');
 
   const {
     data: menu,
@@ -136,21 +137,14 @@ const Menu = () => {
 
     if (isError) {
       return (
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
-          }
-        >
-          <Box className="flex-1 justify-center items-center">
-            <AntDesign name="wifi" size={75} color="grey" className="mb-6" />
-            <Text className="text-base font-medium mb-4">
-              Fehler beim Laden des Menüs
-            </Text>
-            <Text className="text-base font-small mb-4">
-              Überprüfe deine Internetverbindung
-            </Text>
-          </Box>
-        </ScrollView>
+        <ErrorState
+          icon="wifi"
+          title="Fehler beim Laden des Menüs!"
+          description="Überprüfe deine Internetverbindung um zu Schmausen."
+          onRefresh={handleRefresh}
+          isRefreshing={isLoading}
+          minHeight={height - 150}
+        />
       );
     }
 
@@ -164,10 +158,10 @@ const Menu = () => {
             className="mb-6"
           />
           <Text className="text-base font-medium mb-4">
-            Es gibt noch kein Menü für den {date.toLocaleDateString('de-DE')}
+            Zu früh für den Schmaus am {date.toLocaleDateString('de-DE')}!
           </Text>
           <Text className="text-base font-small mb-4">
-            Wählen Sie ein anderes Datum aus
+            Für diesen Tag gibt es noch kein Schmaus-Angebot.
           </Text>
         </View>
       );
@@ -179,13 +173,13 @@ const Menu = () => {
           <AntDesign name="frowno" size={75} color="gray" className="mb-6" />
           <Text className="text-base font-medium mb-4">
             {isWeekend(date)
-              ? 'Am Wochenende ist die Mensa geschlossen'
+              ? 'Mensa zu, Schmaus tabu!'
               : `Keine Gerichte verfügbar für den ${date.toLocaleDateString('de-DE')}`}
           </Text>
           <Text className="text-base font-small mb-4">
             {isWeekend(date)
-              ? 'Wählen Sie einen Werktag aus'
-              : 'Wählen Sie ein anderes Datum aus'}
+              ? 'Geschmaust wird hier nur unter der Woche.'
+              : 'Für diesen Tag gibt es kein Schmaus-Angebot.'}
           </Text>
         </View>
       );
@@ -286,11 +280,10 @@ const Menu = () => {
         size="lg"
         placement="bottom right"
         onPress={() => {
-          console.log('Fab clicked!');
           setShow(true);
         }}
       >
-        <FabIcon as={CalendarDaysIcon} />
+        <FabIcon as={CalendarDaysIcon} size="xl" />
       </Fab>
     </View>
   );

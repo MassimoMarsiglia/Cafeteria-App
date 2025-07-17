@@ -10,7 +10,7 @@ export const Settingsbutton = () => {
         hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
         onPress={() => router.navigate({ pathname: '/(tabs)/settings' })}
       >
-        <Icon as={SettingsIcon} size="xl" />
+        <Icon as={SettingsIcon} className="w-8 h-8" />
       </Pressable>
     </Box>
   );

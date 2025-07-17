@@ -1,33 +1,73 @@
-import CanteenContact from '@/components/Mensa/CanteenContact';
-import CanteenHeader from '@/components/Mensa/CanteenHeader';
-import { CanteenSelection } from '@/components/Mensa/CanteenSelection';
-import { formatBusinessHours } from '@/components/Mensa/CollapsibleDay';
+import { FavoriteFab } from '@/components/FavoriteFab';
+import { CanteenBusinessHours } from '@/components/Mensa/CanteenBusinessHours';
+import { CanteenContacts } from '@/components/Mensa/CanteenContacts';
+import { CanteenHeader } from '@/components/Mensa/CanteenHeader/';
 import ErrorView from '@/components/Mensa/ErrorView';
 import LoadingView from '@/components/Mensa/LoadingView';
+import { MenuFab } from '@/components/Mensa/MenuFab';
 import NotFoundView from '@/components/Mensa/NotFoundView';
+import { Divider } from '@/components/ui/divider';
+import { HStack } from '@/components/ui/hstack';
+import { Icon, InfoIcon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
+import { Toast, ToastTitle, useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
+import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetCanteensQuery } from '@/services/mensaApi';
 import images from '@/utils/mensaImage';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MensaDetail() {
   const { canteenId, imageKey } = useLocalSearchParams();
 
-  const {
-    data: canteens,
-    isLoading,
-    error,
-    refetch,
-  } = useGetCanteensQuery({
-    ID: canteenId as string,
-  });
+  const { data, isLoading, error } = useGetCanteensQuery();
 
-  const router = useRouter();
+  const { favoriteCanteen, setFavoriteCanteen } = useSettings();
 
-  const canteen = canteens?.[0];
+  const toast = useToast();
+
+  const canteen = data?.find(c => c.id === canteenId); // filter in JS instead of request so less gets cached
+
+  const handleFavoritePress = () => {
+    setFavoriteCanteen(canteen!);
+
+    // Show toast
+    const newId = Math.random();
+    toast.show({
+      id: newId.toString(),
+      placement: 'top',
+      duration: 2000,
+      render: ({ id }: { id: string | number }) => {
+        const uniqueToastId = 'toast-' + id;
+        return (
+          <SafeAreaView>
+            <Toast
+              nativeID={uniqueToastId}
+              action="info"
+              variant="outline"
+              className="border-2"
+            >
+              <HStack space="md">
+                <Icon as={InfoIcon} />
+                <VStack space="xs">
+                  <ToastTitle className="text-black dark:text-white">
+                    Lieblingsmensa wurde aktualisiert
+                  </ToastTitle>
+                  <Text className="text-gray-500 dark:text-gray-400">
+                    {canteen?.name}
+                  </Text>
+                </VStack>
+              </HStack>
+            </Toast>
+          </SafeAreaView>
+        );
+      },
+    });
+  };
 
   if (isLoading) return <LoadingView />;
   if (error) return <ErrorView />;
@@ -42,10 +82,7 @@ export default function MensaDetail() {
 
   return (
     <View className="flex-1 bg-background-0">
-      <ScrollView
-        contentContainerStyle={{ alignItems: 'center' }}
-        className="bg-background-0 p-5"
-      >
+      <ScrollView className="p-5">
         {imageSource && (
           <Image
             source={imageSource}
@@ -55,50 +92,44 @@ export default function MensaDetail() {
           />
         )}
 
-        <CanteenHeader name={canteen.name} address={canteen.address} />
+        <CanteenHeader name={canteen.name} address={canteen.address!} />
 
-        <CanteenContact contactInfo={canteen.contactInfo} />
+        <CanteenContacts
+          address={canteen.address!}
+          contactInfo={canteen.contactInfo!}
+        />
+        <Divider orientation="horizontal" className="my-4" />
 
-        {canteen.businessDays?.length > 0 && (
+        {/* <CanteenSelection canteen={canteen} /> */}
+
+        {canteen.businessDays!.length > 0 && (
           <View className="w-full mt-5">
             <Text className="text-black dark:text-white text-lg font-bold mb-3">
               Business Hours
             </Text>
 
-            {Object.entries(formatBusinessHours(canteen.businessDays)).map(
-              ([label, times]) => (
-                <View
-                  key={label}
-                  className="mb-4 px-4 py-3 rounded-xl bg-[#FDFAF6] dark:bg-gray-950 border border-gray-600"
-                >
-                  <Text className="text-blue-800 dark:text-blue-300 font-semibold text-base mb-2">
-                    📅 {label}
-                  </Text>
-
-                  {times.length > 0 ? (
-                    times.map((entry, idx) => (
-                      <Text
-                        key={idx}
-                        className="text-gray-800 dark:text-gray-200 text-sm mb-1"
-                      >
-                        {entry}
-                      </Text>
-                    ))
-                  ) : (
-                    <Text className="text-gray-500 italic dark:text-gray-400">
-                      Closed
-                    </Text>
-                  )}
-                </View>
-              ),
-            )}
+            <CanteenBusinessHours businessDays={canteen.businessDays!} />
           </View>
         )}
       </ScrollView>
-
-      <View className="absolute bottom-6 right-6 z-50">
-        <CanteenSelection canteen={canteen} />
-      </View>
+      <FavoriteFab
+        onPress={() => {
+          handleFavoritePress();
+        }}
+        isFavorite={favoriteCanteen?.id === canteen.id}
+        placement="bottom right"
+      />
+      <MenuFab
+        onPress={() => {
+          router.navigate({
+            pathname: '/menu/[canteenId]',
+            params: {
+              canteenId: canteen.id,
+            },
+          });
+        }}
+        placement="bottom left"
+      />
     </View>
   );
 }
