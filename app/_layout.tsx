@@ -5,6 +5,9 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { ErrorState } from '@/components/ErrorView';
+import { chatdb } from '@/database/chatdatabase';
+import migrations from '@/drizzle/migrations';
 import { useSettings } from '@/hooks/redux/useSettings';
 import {
   AntDesign,
@@ -12,6 +15,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
@@ -20,14 +24,27 @@ import { persistor, store } from '../store';
 
 // Create a wrapper component that has access to Redux
 function AppContent() {
+  const { success, error } = useMigrations(chatdb, migrations);
   const { isDarkMode } = useSettings();
   const colorscheme = useColorScheme();
 
   const themeMode = isDarkMode ? 'dark' : 'light';
-
   useEffect(() => {
     colorscheme.setColorScheme(themeMode);
   }, [themeMode, colorscheme]);
+
+  if (error) {
+    return (
+      <ErrorState
+        icon="closecircleo"
+        title="Migration Error"
+        description="There was an error during the database migration."
+        minHeight={500}
+        onRefresh={() => {}}
+        isRefreshing={false}
+      />
+    );
+  }
 
   return (
     <GluestackUIProvider mode={themeMode}>

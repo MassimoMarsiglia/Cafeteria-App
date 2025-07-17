@@ -118,16 +118,16 @@ export default function MealView() {
     ) || [];
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-background-0">
       <ScrollView className="flex-1 p-4">
         {/* Header Card */}
-        <Card variant="elevated" className="p-4 mb-4 shadow-md">
+        <Card variant="elevated" className="p-4 mb-4 shadow-md bg-secondary-100">
           <Text className="text-4xl font-bold mb-2">{meal.name}</Text>
           <Text className="text-lg mb-4">Kategorie: {meal.category}</Text>
         </Card>
 
         {/* Preise */}
-        <Card variant="elevated" className="p-4 mb-4 shadow-md">
+        <Card variant="elevated" className="p-4 mb-4 shadow-md bg-secondary-100">
           <View className="flex-row items-center mb-3">
             <Ionicons
               name="cash"
@@ -149,7 +149,7 @@ export default function MealView() {
 
         {/* Generelle-Infos */}
         {generalBadges && generalBadges.length > 0 && (
-          <Card variant="elevated" className="p-4 mb-4 shadow-md">
+          <Card variant="elevated" className="p-4 mb-4 shadow-md bg-secondary-100">
             <View className="flex-row items-center mb-3">
               <Ionicons
                 name="information-circle"
