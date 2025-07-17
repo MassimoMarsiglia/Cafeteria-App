@@ -1,24 +1,30 @@
 export interface Canteen {
   id: string; // MongoDB ObjectID string
   name: string;
-  address?: {
-    street?: string;
-    city?: string;
-    zipcode?: string;
-    district?: string;
-    geoLocation?: {
-      latitude: number;
-      longitude: number;
-    };
-  };
-  contactInfo?: {
-    phone?: string;
-    email?: string;
-  };
+  address?: Address;
+  contactInfo?: ContactInfo;
   businessDays?: BusinessDay[];
   url?: string;
   lastUpdated?: string;
   canteenReviews?: CanteenReview[];
+}
+
+export interface ContactInfo {
+  phone?: string;
+  email?: string;
+}
+
+export interface Address {
+  street?: string;
+  city?: string;
+  zipcode?: string;
+  district?: string;
+  geoLocation?: GeoLocation;
+}
+
+export interface GeoLocation {
+  latitude: number;
+  longitude: number;
 }
 
 export interface BusinessDay {

@@ -71,29 +71,27 @@ export default function MensenListScreen() {
 
   if (isLoading) return <LoadingView />;
 
-  // Error State mit neuer ErrorState Component
   if (error) {
     return (
       <ErrorState
         icon="wifi"
         title="Fehler beim Laden der Mensen"
         description="Die Mensen konnten nicht geladen werden. Überprüfe deine Internetverbindung."
-        onRefresh={refetch} // ← Refetch Funktion
-        isRefreshing={isLoading || isFetching} // ← Loading oder Fetching
+        onRefresh={refetch} 
+        isRefreshing={isLoading || isFetching} 
         minHeight={height - 150}
       />
     );
   }
 
-  // No Data State mit neuer ErrorState Component
   if (!canteens || canteens.length === 0) {
     return (
       <ErrorState
         icon="closecircleo"
         title="Keine Mensen gefunden"
         description="Es konnten keine Mensen geladen werden. Versuche es später erneut."
-        onRefresh={refetch} // ← Refetch Funktion
-        isRefreshing={isLoading || isFetching} // ← Loading oder Fetching
+        onRefresh={refetch}
+        isRefreshing={isLoading || isFetching}
         minHeight={height - 150}
       />
     );

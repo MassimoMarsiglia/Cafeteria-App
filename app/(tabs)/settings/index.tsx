@@ -57,35 +57,17 @@ export default function SettingsScreen() {
   );
 
   const priceIcon = useMemo(
-    () => (
-      <FontAwesome5
-        name="money-bill"
-        size={20}
-        color={iconColor} 
-      />
-    ),
-    [iconColor], 
+    () => <FontAwesome5 name="money-bill" size={20} color={iconColor} />,
+    [iconColor],
   );
 
   const favoriteMealsIcon = useMemo(
-    () => (
-      <MaterialIcons
-        name="fastfood"
-        size={20}
-        color={iconColor} 
-      />
-    ),
+    () => <MaterialIcons name="fastfood" size={20} color={iconColor} />,
     [iconColor],
   );
 
   const mensaIcon = useMemo(
-    () => (
-      <FontAwesome5
-        name="building"
-        size={20}
-        color={iconColor}
-      />
-    ),
+    () => <FontAwesome5 name="building" size={20} color={iconColor} />,
     [iconColor],
   );
 
