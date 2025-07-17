@@ -2,14 +2,12 @@ import {
   Accordion,
   AccordionContent,
   AccordionHeader,
-  AccordionIcon,
   AccordionItem,
   AccordionTitleText,
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ChevronDownIcon } from '@/components/ui/icon';
 import { ScrollView } from '@/components/ui/scroll-view';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
@@ -17,15 +15,7 @@ import { useSettings } from '@/hooks/redux/useSettings';
 import { useGetMealsQuery } from '@/services/mensaApi';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import {
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
 export default function MealView() {
   const params = useLocalSearchParams<{ mealId: string }>();
@@ -39,7 +29,7 @@ export default function MealView() {
 
   useEffect(() => {
     if (params.mealId) {
-      setIsFavorite(favoriteMeals.some(m => m.id === params.mealId)); // Check if the meal is in favorites
+      setIsFavorite(favoriteMeals.some(m => m.id === params.mealId));
     }
   }, [params.mealId, favoriteMeals]);
 
@@ -51,12 +41,8 @@ export default function MealView() {
     );
   }
 
-  const meal = mealData![0];
+  const meal = mealData[0];
 
-  console.log('=== MEAL VIEW ===');
-  console.log('Received meal:', meal?.name);
-
-  // Handler für Favoriten-Button
   const handleFavoritePress = () => {
     if (isFavorite) {
       removeFavoriteMeals(meal);
@@ -65,9 +51,7 @@ export default function MealView() {
     }
   };
 
-  // Handler für Rezept-Button
   const handleRecipePress = () => {
-    console.log('Rezept-Button gedrückt');
     router.navigate({
       pathname: '/chatbot/[mealId]',
       params: {
@@ -77,13 +61,31 @@ export default function MealView() {
     });
   };
 
-  if (!meal) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Fehler beim Laden der Mahlzeit</Text>
-      </View>
-    );
-  }
+  const formatBadgeName = (badgeName: string) => {
+    // Entferne Unterstriche und ersetze sie durch Leerzeichen
+    let formatted = badgeName.replace(/_/g, ' ');
+
+    // Entferne "_A" am Ende (case-insensitive)
+    formatted = formatted.replace(/\s*A$/i, '');
+
+    return formatted;
+  };
+
+  // Filtere CO2 und H2O Bewertungen für Umwelt-Info
+  const environmentBadges =
+    meal.badges?.filter(
+      (badge: any) =>
+        badge.name.toLowerCase().includes('co2') ||
+        badge.name.toLowerCase().includes('h2o'),
+    ) || [];
+
+  // Filtere andere Badges für Generelle-Infos
+  const generalBadges =
+    meal.badges?.filter(
+      (badge: any) =>
+        !badge.name.toLowerCase().includes('co2') &&
+        !badge.name.toLowerCase().includes('h2o'),
+    ) || [];
 
   return (
     <View className="flex-1">
@@ -105,80 +107,49 @@ export default function MealView() {
             />
             <Text className="text-lg font-semibold">Preise</Text>
           </View>
-          {meal.prices?.map(
-            (
-              price: {
-                priceType:
-                  | string
-                  | number
-                  | bigint
-                  | boolean
-                  | ReactElement<unknown, string | JSXElementConstructor<any>>
-                  | Iterable<ReactNode>
-                  | ReactPortal
-                  | Promise<
-                      | string
-                      | number
-                      | bigint
-                      | boolean
-                      | ReactPortal
-                      | ReactElement<
-                          unknown,
-                          string | JSXElementConstructor<any>
-                        >
-                      | Iterable<ReactNode>
-                      | null
-                      | undefined
-                    >
-                  | null
-                  | undefined;
-                price: number;
-              },
-              index: Key | null | undefined,
-            ) => (
-              <View key={index} className="flex-row justify-between mb-2">
-                <Text className="text-base">{price.priceType}:</Text>
-                <Text className="text-base font-semibold">
-                  {price.price.toFixed(2)}€
-                </Text>
-              </View>
-            ),
-          )}
+          {meal.prices?.map((price: any, index: number) => (
+            <View key={index} className="flex-row justify-between mb-2">
+              <Text className="text-base">{price.priceType}:</Text>
+              <Text className="text-base font-semibold">
+                {price.price.toFixed(2)}€
+              </Text>
+            </View>
+          ))}
         </Card>
 
-        <Accordion type="multiple" className="mb-4 rounded-lg overflow-hidden">
-          {/* Badges */}
-          {meal.badges && meal.badges.length > 0 && (
-            <AccordionItem value="badges">
-              <AccordionHeader>
-                <AccordionTrigger>
-                  <View className="flex-row items-center flex-1">
-                    <Ionicons
-                      name="information-circle"
-                      size={30}
-                      color="#1565C0"
-                      style={{ marginRight: 8 }}
-                    />
-                    <AccordionTitleText>Generelle-Infos</AccordionTitleText>
-                  </View>
-                  <AccordionIcon as={ChevronDownIcon} />
-                </AccordionTrigger>
-              </AccordionHeader>
-              <AccordionContent>
-                {meal.badges.map((badge, index) => (
-                  <View key={index} className="mb-3">
-                    <Text className="text-sm font-semibold">{badge.name}</Text>
-                    <Text className="text-xs text-gray-600">
-                      {badge.description}
-                    </Text>
-                  </View>
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          )}
+        {/* Generelle-Infos */}
+        {generalBadges && generalBadges.length > 0 && (
+          <Card variant="elevated" className="p-4 mb-4">
+            <View className="flex-row items-center mb-3">
+              <Ionicons
+                name="information-circle"
+                size={30}
+                color="#1565C0"
+                style={{ marginRight: 8 }}
+              />
+              <Text className="text-lg font-semibold">Generelle-Infos</Text>
+            </View>
+            {generalBadges.map((badge: any, index: number) => (
+              <View key={index} className="mb-3">
+                <Text className="text-sm font-semibold">
+                  {formatBadgeName(badge.name)}
+                </Text>
+                <Text className="text-xs text-gray-600">
+                  {badge.description}
+                </Text>
+              </View>
+            ))}
+          </Card>
+        )}
 
+        <Accordion
+          type="multiple"
+          className="mb-4 rounded-lg overflow-hidden border-none"
+        >
           {/* Umwelt-Informationen */}
-          {(meal.co2Bilanz || meal.waterBilanz) && (
+          {(meal.co2Bilanz ||
+            meal.waterBilanz ||
+            environmentBadges.length > 0) && (
             <AccordionItem value="environment">
               <AccordionHeader>
                 <AccordionTrigger>
@@ -191,22 +162,31 @@ export default function MealView() {
                     />
                     <AccordionTitleText>Umwelt-Info</AccordionTitleText>
                   </View>
-                  <AccordionIcon as={ChevronDownIcon} />
                 </AccordionTrigger>
               </AccordionHeader>
               <AccordionContent>
-                {meal.co2Bilanz && (
-                  <View className="flex-row justify-between mb-2">
-                    <Text className="text-base">CO₂-Bilanz:</Text>
-                    <Text className="text-base">{meal.co2Bilanz}g</Text>
+                {environmentBadges.map((badge: any, index: number) => (
+                  <View key={index} className="mb-3">
+                    <Text className="text-sm font-semibold">
+                      {formatBadgeName(badge.name)}
+                    </Text>
+                    <Text className="text-xs text-gray-600">
+                      {badge.description}
+                    </Text>
+                    {badge.name.toLowerCase().includes('co2') &&
+                      meal.co2Bilanz && (
+                        <Text className="text-xs text-gray-500 mt-1">
+                          CO₂-Bilanz: {meal.co2Bilanz}g
+                        </Text>
+                      )}
+                    {badge.name.toLowerCase().includes('h2o') &&
+                      meal.waterBilanz && (
+                        <Text className="text-xs text-gray-500 mt-1">
+                          Wasserverbrauch: {meal.waterBilanz}L
+                        </Text>
+                      )}
                   </View>
-                )}
-                {meal.waterBilanz && (
-                  <View className="flex-row justify-between mb-2">
-                    <Text className="text-base">Wasserverbrauch:</Text>
-                    <Text className="text-base">{meal.waterBilanz}L</Text>
-                  </View>
-                )}
+                ))}
               </AccordionContent>
             </AccordionItem>
           )}
@@ -223,105 +203,52 @@ export default function MealView() {
                       color="#FFEE58"
                       style={{ marginRight: 8 }}
                     />
-                    <AccordionTitleText>Zusatzstoffe</AccordionTitleText>
+                    <AccordionTitleText>Allergene</AccordionTitleText>
                   </View>
-                  <AccordionIcon as={ChevronDownIcon} />
                 </AccordionTrigger>
               </AccordionHeader>
               <AccordionContent>
-                {meal.additives.map(
-                  (
-                    additive: {
-                      referenceid:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | Promise<
-                            | string
-                            | number
-                            | bigint
-                            | boolean
-                            | ReactPortal
-                            | ReactElement<
-                                unknown,
-                                string | JSXElementConstructor<any>
-                              >
-                            | Iterable<ReactNode>
-                            | null
-                            | undefined
-                          >
-                        | null
-                        | undefined;
-                      text:
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | ReactElement<
-                            unknown,
-                            string | JSXElementConstructor<any>
-                          >
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | Promise<
-                            | string
-                            | number
-                            | bigint
-                            | boolean
-                            | ReactPortal
-                            | ReactElement<
-                                unknown,
-                                string | JSXElementConstructor<any>
-                              >
-                            | Iterable<ReactNode>
-                            | null
-                            | undefined
-                          >
-                        | null
-                        | undefined;
-                    },
-                    index: Key | null | undefined,
-                  ) => (
-                    <View key={index} className="mb-2">
-                      <Text className="text-sm">
-                        <Text className="font-semibold">
-                          {additive.referenceid}:
-                        </Text>{' '}
-                        {additive.text}
-                      </Text>
-                    </View>
-                  ),
-                )}
+                {meal.additives.map((additive: any, index: number) => (
+                  <View key={index} className="mb-2">
+                    <Text className="text-sm">
+                      <Text className="font-semibold">
+                        {additive.referenceid}:
+                      </Text>{' '}
+                      {additive.text}
+                    </Text>
+                  </View>
+                ))}
               </AccordionContent>
             </AccordionItem>
           )}
         </Accordion>
+
+        {/* Zusätzlicher Platz für FAB-Buttons */}
+        <View className="h-20" />
       </ScrollView>
-      <View className="flex-row justify-between items-center p-4">
+
+      {/* Floating Action Buttons */}
+      <View className="absolute bottom-6 left-6">
         <Button
           size="lg"
-          className="rounded-full p-8"
+          className="rounded-full shadow-lg w-20 h-20 p-0 items-center justify-center"
+          onPress={handleRecipePress}
+        >
+          <Ionicons name="sparkles" size={34} color="#FBC02D" />
+        </Button>
+      </View>
+
+      <View className="absolute bottom-6 right-6">
+        <Button
+          size="lg"
+          className="rounded-full shadow-lg w-20 h-20 p-0 items-center justify-center"
           onPress={handleFavoritePress}
         >
           <Ionicons
             name={isFavorite ? 'heart' : 'heart-outline'}
-            size={45}
+            size={40}
             color={isFavorite ? '#FF6B6B' : '#999'}
           />
-        </Button>
-        <Button
-          size="lg"
-          className="rounded-full p-8"
-          onPress={handleRecipePress}
-        >
-          <Ionicons name="sparkles" size={45} color="#FBC02D" />
         </Button>
       </View>
     </View>
