@@ -5,14 +5,18 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { Navbar } from '@/components/Navbar/Index';
 import { useSettings } from '@/hooks/redux/useSettings';
+import {
+  AntDesign,
+  FontAwesome5,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '../store';
-import { AntDesign, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Create a wrapper component that has access to Redux
 function AppContent() {
@@ -50,6 +54,7 @@ export default function RootLayout() {
     ...AntDesign.font,
     ...FontAwesome5.font,
     ...MaterialCommunityIcons.font,
+    ...MaterialIcons.font,
   });
 
   useEffect(() => {
