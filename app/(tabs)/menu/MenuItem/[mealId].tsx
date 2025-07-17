@@ -94,12 +94,6 @@ export default function MealView() {
           <Text className="text-lg mb-4">Kategorie: {meal.category}</Text>
         </Card>
 
-        {/* Header Card */}
-        <Card variant="elevated" className="p-4 mb-4">
-          <Text className="text-2xl font-bold mb-2">{meal.name}</Text>
-          <Text className="text-lg mb-4">Kategorie: {meal.category}</Text>
-        </Card>
-
         {/* Preise */}
         <Card variant="elevated" className="p-4 mb-4">
           <View className="flex-row items-center mb-3">
