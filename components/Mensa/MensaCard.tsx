@@ -6,6 +6,7 @@ import { Toast, ToastTitle, useToast } from '@/components/ui/toast';
 import { VStack } from '@/components/ui/vstack';
 import { useSettings } from '@/hooks/redux/useSettings';
 import { getImageForCanteen } from '@/utils/imageMap';
+import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -92,11 +93,11 @@ export default function CanteenCard({
 
         {/* Heart icon on the right */}
         <TouchableOpacity onPress={handleFavoritePress}>
-          <Text
-            className={`text-3xl ${isFavorite ? 'text-red-500' : 'text-gray-400'}`}
-          >
-            {isFavorite ? '♥' : '♡'}
-          </Text>
+          {isFavorite ? (
+            <FontAwesome name="heart" size={24} color="#FF6B6B" />
+          ) : (
+            <FontAwesome name="heart-o" size={24} color="gray" />
+          )}
         </TouchableOpacity>
       </HStack>
     </TouchableOpacity>
