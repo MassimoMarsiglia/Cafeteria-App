@@ -27,7 +27,7 @@ export default function MessageBubble({ message }: { message: Message }) {
       className={`my-1 p-3 rounded-lg flex-shrink ${
         isUser
           ? 'bg-indigo-200 dark:bg-indigo-600 self-end'
-          : 'bg-gray-200 dark:bg-gray-900 self-start'
+          : 'bg-gray-200 dark:bg-secondary-100 self-start'
       }`}
       style={{ maxWidth: bubbleMaxWidth }}
     >
