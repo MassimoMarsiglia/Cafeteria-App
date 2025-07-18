@@ -18,15 +18,18 @@
    ```
 
 2. Configure ENVS
-   Example env format in .env.production
+   Example env format in .env.example
 
-2. Start the app
+3. Start the app
 
    ```bash
    npx expo start
    ```
 
-3. Build the app for production (android)
+4. Configure ENVS on the EAS Website
+   https://expo.dev/accounts/%5Baccount%5D/projects/%5Bproject%5D/environment-variables/new
+
+5. Build the app for production (android)
 
    ```bash
    eas build --platform android --profile production
