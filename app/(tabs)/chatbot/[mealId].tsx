@@ -186,7 +186,7 @@ Wenn die Benutzerfrage keinen Bezug zum Rezept hat, antworte trotzdem höflich u
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View className="flex-row items-center border-t border-gray-300 dark:border-gray-700 px-4 py-4 bg-white dark:bg-black">
               <TextInput
-                className="flex-1 min-h-12 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                className="flex-1 min-h-12 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-secondary-100 text-gray-900 dark:text-gray-100"
                 multiline
                 value={inputText}
                 onChangeText={setInputText}
