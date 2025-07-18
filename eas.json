@@ -21,8 +21,7 @@
       "autoIncrement": true,
       "android": {
         "buildType": "apk"
-      },
-      "envFile": ".env.production"
+      }
     }
   },
   "submit": {
