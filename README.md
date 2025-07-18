@@ -17,10 +17,19 @@
    npm install
    ```
 
+2. Configure ENVS
+   Example env format in .env.production
+
 2. Start the app
 
    ```bash
    npx expo start
+   ```
+
+3. Build the app for production (android)
+
+   ```bash
+   eas build --platform android --profile production
    ```
 
 In the output, you'll find options to open the app in a
